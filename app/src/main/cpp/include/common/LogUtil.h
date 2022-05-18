@@ -10,20 +10,25 @@
 #define TAG "Assembler"
 #define __FILENAME__ (strrchr(__FILE__, '/') + 1)
 
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG ""
+
 #define LogD(format, ...) __android_log_print(ANDROID_LOG_DEBUG, TAG,\
-                          "[%s][%s][%d]: " format, __FILENAME__,\
+                          "[%s][%s][%s][%d]: " format, LOCAL_TAG, __FILENAME__,\
                           __FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #define LogI(format, ...) __android_log_print(ANDROID_LOG_INFO, TAG,\
-                          "[%s][%s][%d]: " format, __FILENAME__,\
+                          "[%s][%s][%s][%d]: " format, LOCAL_TAG, __FILENAME__,\
                           __FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #define LogW(format, ...) __android_log_print(ANDROID_LOG_WARN, TAG,\
-                          "[%s][%s][%d]: " format, __FILENAME__,\
+                          "[%s][%s][%s][%d]: " format, LOCAL_TAG, __FILENAME__,\
                           __FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #define LogE(format, ...) __android_log_print(ANDROID_LOG_ERROR, TAG,\
-                          "[%s][%s][%d]: " format, __FILENAME__,\
+                          "[%s][%s][%s][%d]: " format, LOCAL_TAG, __FILENAME__,\
                           __FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #endif //OPENGLASSEMBLE_LOGUTIL_H
