@@ -5,6 +5,7 @@
 #define OPENGLASSEMBLE_SIMPLELOOPER_H
 
 #include <string>
+#include <deque>
 #include <mutex>
 #include <memory>
 
@@ -30,8 +31,9 @@ public:
     MessageEnvelope(int64_t u, const std::shared_ptr<MessageHandler> &h, const Message &m);
     MessageEnvelope(MessageEnvelope &&envelope) noexcept;
     MessageEnvelope& operator =(MessageEnvelope &&envelope) noexcept;
+    ~MessageEnvelope();
 
-    int64_t mUpTimeUs;
+    int64_t mUpTimeNano;
     std::shared_ptr<MessageHandler> mHandler;
     Message mMessage;
 
@@ -53,21 +55,30 @@ public:
     bool isValid();
     void loop();
     void sendMessage(const std::shared_ptr<MessageHandler> &handler, const Message &msg);
-    void sendMessageDelay(int64_t delayMilSec, const std::shared_ptr<MessageHandler> &handler, const Message &msg);
+    void sendMessageDelay(int64_t upTimeMill, const std::shared_ptr<MessageHandler> &handler, const Message &msg);
 private:
     std::string mName;
-    int mWeakEventFd;
+    int mWakeEventFd;
     int mEpollFd;
-    int64_t mNextMsgTime;
+    int64_t mNextMsgTimeNano;
+    std::deque<MessageEnvelope> mMessageEnvelopes;
+    // this filed is guarded by mMutex
+    bool mSendingMessage;
 
     std::mutex mMutex;
 
     void awoken();
-    int64_t currentTimeU();
+    int64_t currentTimeNano();
     void createEpoll();
-    int pollOnce();
+    int pollOnce(int64_t timeoutMill);
     void release();
-    void sendMessageAtTime(int64_t execTimeU, const std::shared_ptr<MessageHandler> &handler, const Message &msg);
+    void sendMessageAtTime(int64_t upTimeNano, const std::shared_ptr<MessageHandler> &handler, const Message &msg);
+    /**
+     * Wakes the poll asynchronously.
+     *
+     * This method can be called on any thread and returns immediately.
+     */
+    void wake();
 };
 
 #endif //OPENGLASSEMBLE_SIMPLELOOPER_H
