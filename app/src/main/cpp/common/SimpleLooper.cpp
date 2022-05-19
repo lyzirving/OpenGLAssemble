@@ -53,7 +53,8 @@ MessageEnvelope::~MessageEnvelope() {
 
 SimpleLooper::SimpleLooper(const char *name) : mName(name), mWakeEventFd(-1), mEpollFd(-1),
                                                mNextMsgTimeNano(LLONG_MAX), mMessageEnvelopes(),
-                                               mSendingMessage(false), mMutex() {
+                                               mSendingMessage(false), mRunning(true),
+                                               mPolling(false), mMutex() {
     mWakeEventFd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if (mWakeEventFd < 0)
         LogE("looper(%s) fail to create wake event fd", mName.c_str());
@@ -100,6 +101,10 @@ int64_t SimpleLooper::currentTimeNano() {
     return time.tv_sec * 1000000 + time.tv_usec;
 }
 
+const std::string& SimpleLooper::getName() {
+    return mName;
+}
+
 bool SimpleLooper::isValid() {
     return mWakeEventFd >= 0 && mEpollFd >= 0;
 }
@@ -107,8 +112,32 @@ bool SimpleLooper::isValid() {
 void SimpleLooper::loop() {
     if (!isValid()) {
         LogE("looper(%s) is not valid, return", mName.c_str());
+        release();
         return;
     }
+    while(mRunning.load()) {
+        int ret = pollOnce(-1);
+        switch (ret) {
+            case POLL_WAKE:
+            case POLL_CALLBACK: {
+                continue;
+            }
+            case POLL_ERROR: {
+                LogE("looper(%s) poll error", mName.c_str());
+                continue;
+            }
+            case POLL_TIMEOUT: {
+                LogE("looper(%s) poll timeout", mName.c_str());
+                continue;
+            }
+            default: {
+                LogW("looper(%s) unknown poll state %d", mName.c_str(), ret);
+                continue;
+            }
+        }
+    }
+    LogI("looper(%s) quit", mName.c_str());
+    release();
 }
 
 int SimpleLooper::pollOnce(int64_t timeoutMill) {
@@ -129,8 +158,10 @@ int SimpleLooper::pollOnce(int64_t timeoutMill) {
     }
 
     int result = POLL_WAKE;
+    mPolling.store(true);
     epoll_event eventItems[EPOLL_MAX_EVENTS];
     int eventCnt = epoll_wait(mEpollFd, eventItems, EPOLL_MAX_EVENTS, timeoutMill);
+    mPolling.store(false);
 
     mMutex.lock();
     //check for epoll error
@@ -188,7 +219,18 @@ int SimpleLooper::pollOnce(int64_t timeoutMill) {
     return result;
 }
 
+void SimpleLooper::requestQuit() {
+    if(mRunning.load()) {
+        mRunning.store(false);
+        if(mPolling.load())
+            wake();
+    } else {
+        release();
+    }
+}
+
 void SimpleLooper::release() {
+    LogFunctionEnter;
     int ret{0};
     if(mWakeEventFd >= 0) {
         ret = close(mWakeEventFd);

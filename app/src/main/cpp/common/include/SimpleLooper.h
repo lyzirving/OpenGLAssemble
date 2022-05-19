@@ -8,6 +8,7 @@
 #include <deque>
 #include <mutex>
 #include <memory>
+#include <atomic>
 
 struct Message {
     Message() : what(0) { }
@@ -54,6 +55,7 @@ public:
 
     bool isValid();
     void loop();
+    void requestQuit();
     void sendMessage(const std::shared_ptr<MessageHandler> &handler, const Message &msg);
     void sendMessageDelay(int64_t upTimeMill, const std::shared_ptr<MessageHandler> &handler, const Message &msg);
 private:
@@ -64,12 +66,15 @@ private:
     std::deque<MessageEnvelope> mMessageEnvelopes;
     // this filed is guarded by mMutex
     bool mSendingMessage;
+    std::atomic<bool> mRunning;
+    std::atomic<bool> mPolling;
 
     std::mutex mMutex;
 
     void awoken();
     int64_t currentTimeNano();
     void createEpoll();
+    const std::string& getName();
     int pollOnce(int64_t timeoutMill);
     void release();
     void sendMessageAtTime(int64_t upTimeNano, const std::shared_ptr<MessageHandler> &handler, const Message &msg);

@@ -31,4 +31,10 @@
                           "[%s][%s][%s][%d]: " format, LOCAL_TAG, __FILENAME__,\
                           __FUNCTION__, __LINE__, ##__VA_ARGS__)
 
+#define LogFunctionEnter __android_log_print(ANDROID_LOG_INFO, TAG,\
+                          "[%s][%s][%s]: enter", LOCAL_TAG, __FILENAME__, __FUNCTION__)
+
+#define LogFunctionExit __android_log_print(ANDROID_LOG_INFO, TAG,\
+                          "[%s][%s][%s]: exit", LOCAL_TAG, __FILENAME__, __FUNCTION__)
+
 #endif //OPENGLASSEMBLE_LOGUTIL_H
