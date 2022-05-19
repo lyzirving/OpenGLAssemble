@@ -221,29 +221,29 @@ void SimpleLooper::sendMessageDelay(int64_t upTimeMill,
 void SimpleLooper::sendMessageAtTime(int64_t upTimeNano,
                                      const std::shared_ptr<MessageHandler> &handler,
                                      const Message &msg) {
-    int i = 0;
+    int insertPos = 0;
+    auto it = mMessageEnvelopes.begin();
     {
         std::lock_guard<std::mutex> lock(mMutex);
-        int cnt = mMessageEnvelopes.size();
-        auto iterator= mMessageEnvelopes.begin();
-        //todo use iterator to find the proper position?
-        while(i < cnt && upTimeNano >= mMessageEnvelopes.at(i).mUpTimeNano) {
-            i++;
-            iterator++;
-        }
-        if(i == cnt) {
-            i = mMessageEnvelopes.size();
-            iterator--;
+        auto end = mMessageEnvelopes.end();
+        while(it != end && upTimeNano >= it->mUpTimeNano) {
+            insertPos++;
+            it++;
         }
         MessageEnvelope envelope(upTimeNano, handler, msg);
-        mMessageEnvelopes.insert(iterator, std::move(envelope));
+        if(mMessageEnvelopes.empty()) {
+            mMessageEnvelopes.push_back(std::move(envelope));
+        } else {
+            if(it == end)
+                it--;
+            mMessageEnvelopes.insert(it, std::move(envelope));
+        }
         // if the looper is sending message to its handlers, we should not produce a wake event;
         if(mSendingMessage)
             return;
     }
-
     // Wake the poll loop only when we enqueue a new message at the head.
-    if(i == 0)
+    if(insertPos == 0)
         wake();
 }
 
