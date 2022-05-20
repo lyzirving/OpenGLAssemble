@@ -51,10 +51,15 @@ MessageEnvelope::~MessageEnvelope() {
         mHandler.reset();
 }
 
-SimpleLooper::SimpleLooper(const char *name) : mName(name), mWakeEventFd(-1), mEpollFd(-1),
-                                               mNextMsgTimeNano(LLONG_MAX), mMessageEnvelopes(),
-                                               mSendingMessage(false), mRunning(true),
-                                               mPolling(false), mMutex() {
+SimpleLooperListener::SimpleLooperListener() {}
+
+SimpleLooperListener::~SimpleLooperListener() {}
+
+SimpleLooper::SimpleLooper(const char *name, SimpleLooperListener *listener) :
+                                                mName(name), mWakeEventFd(-1), mEpollFd(-1),
+                                                mNextMsgTimeNano(LLONG_MAX), mMessageEnvelopes(),
+                                                mSendingMessage(false), mRunning(true),
+                                                mPolling(false), mMutex(), mLooperListener(listener) {
     mWakeEventFd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if (mWakeEventFd < 0)
         LogE("looper(%s) fail to create wake event fd", mName.c_str());
@@ -110,11 +115,6 @@ bool SimpleLooper::isValid() {
 }
 
 void SimpleLooper::loop() {
-    if (!isValid()) {
-        LogE("looper(%s) is not valid, return", mName.c_str());
-        release();
-        return;
-    }
     while(mRunning.load()) {
         int ret = pollOnce(-1);
         switch (ret) {
@@ -137,6 +137,8 @@ void SimpleLooper::loop() {
         }
     }
     LogI("looper(%s) quit", mName.c_str());
+    if(mLooperListener)
+        mLooperListener->onLooperQuit();
     release();
 }
 
@@ -245,6 +247,9 @@ void SimpleLooper::release() {
             LogE("looper(%s) fail to close wake epoll instance, reason = %s", mName.c_str(), strerror(errno));
     }
     mEpollFd = -1;
+    // notice we should not destruct the listener
+    //todo use weak ptr?
+    mLooperListener = nullptr;
 }
 
 void SimpleLooper::sendMessage(const std::shared_ptr<MessageHandler> &handler,

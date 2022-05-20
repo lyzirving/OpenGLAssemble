@@ -13,6 +13,11 @@
 
 #define JAVA_CLASS "com/lyzirving/opengl/assemble/renderer/RendererContext"
 
+static struct {
+    jclass mClazz;
+    jmethodID mMethodOnThreadQuit;
+} gRendererContextClassInfo;
+
 static jlong nativeCreateContext(JNIEnv *env, jclass clazz, jstring jName) {
     const char* name = env->GetStringUTFChars(jName, nullptr);
     auto *context = new RendererContext(name);
@@ -20,11 +25,23 @@ static jlong nativeCreateContext(JNIEnv *env, jclass clazz, jstring jName) {
     return reinterpret_cast<jlong>(context);
 }
 
+static void nativeSendMessage(JNIEnv *env, jclass clazz, jlong address, jint what) {
+    auto *context = reinterpret_cast<RendererContext *>(address);
+    if(context) {
+        context->sendMessage(what);
+    }
+}
+
 static JNINativeMethod methods[] = {
         {
                 "nCreateContext",
                 "(Ljava/lang/String;)J",
                 (void *) nativeCreateContext
+        },
+        {
+                "nSendMessage",
+                "(JI)V",
+                (void *) nativeSendMessage
         },
 };
 
@@ -37,6 +54,12 @@ bool register_native_RendererContext(JNIEnv *env) {
     }
     if (env->RegisterNatives(javaClass, methods, count) < 0) {
         LogE("fail to register jni methods for class %s", JAVA_CLASS);
+        goto error;
+    }
+    gRendererContextClassInfo.mClazz = static_cast<jclass>(env->NewGlobalRef(javaClass));
+    gRendererContextClassInfo.mMethodOnThreadQuit = env->GetMethodID(javaClass, "onRendererThreadQuit", "()V");
+    if(gRendererContextClassInfo.mMethodOnThreadQuit == nullptr) {
+        LogE("fail to find method onRendererThreadQuit for class %s", JAVA_CLASS);
         goto error;
     }
     LogI("succeed to load class %s", JAVA_CLASS);

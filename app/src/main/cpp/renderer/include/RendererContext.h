@@ -8,12 +8,19 @@
 
 #include "SimpleLooper.h"
 
-class RendererContext {
+enum MessageId : uint8_t {
+    MESSAGE_QUIT = 0x00,
+};
+
+class RendererContext : public SimpleLooperListener {
 public:
     RendererContext(const char* name);
     ~RendererContext();
 
+    void onLooperQuit() override;
     void prepare();
+    void requestQuit();
+    void sendMessage(uint32_t what);
 
 private:
 

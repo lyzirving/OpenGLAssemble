@@ -17,7 +17,7 @@ void *threadStart(void *arg) {
     return nullptr;
 }
 
-RendererContext::RendererContext(const char *name) : mLooper(name), mThreadId(0) {
+RendererContext::RendererContext(const char *name) : mLooper(name, this), mThreadId(0) {
     pthread_create(&mThreadId, nullptr, threadStart, this);
 }
 
@@ -28,14 +28,46 @@ RendererHandler::RendererHandler(RendererContext *ctx) : mCtx(ctx) {}
 RendererHandler::~RendererHandler() {
     //only set the context pointer null, do not deconstruct it
     mCtx = nullptr;
+    LogI("deconstruct");
 }
 
 void RendererHandler::handleMessage(const Message &message) {
+    switch(message.what) {
+        case MessageId::MESSAGE_QUIT: {
+            mCtx->requestQuit();
+            break;
+        }
+        default: {
+            LogI("handle unknown message(%d)", message.what);
+            break;
+        }
+    }
+}
+
+void RendererContext::onLooperQuit() {
 
 }
 
 void RendererContext::prepare() {
-    mLooper.loop();
+    if(mLooper.isValid()) {
+        mLooper.loop();
+    } else {
+        LogE("looper(%s) is not valid", mLooper.getName().c_str());
+    }
+}
+
+void RendererContext::sendMessage(uint32_t what) {
+    if(mLooper.isValid()) {
+        std::shared_ptr<RendererHandler> handler(new RendererHandler(this));
+        Message msg(what);
+        mLooper.sendMessage(handler, msg);
+    } else {
+        LogE("looper(%s) is not valid", mLooper.getName().c_str());
+    }
+}
+
+void RendererContext::requestQuit() {
+    mLooper.requestQuit();
 }
 
 

@@ -4,11 +4,15 @@ package com.lyzirving.opengl.assemble.renderer;
  * @author lyzirving
  */
 public class RendererContext {
-    private long mContext;
+    private static final long INVALID_ADDRESS = -1;
+    static { System.loadLibrary("lib-assembler"); }
+
+
+    private long mAddress = INVALID_ADDRESS;
     private String mName;
 
     private RendererContext(long address, String name) {
-        mContext = address;
+        mAddress = address;
         mName = name;
     }
 
@@ -16,5 +20,16 @@ public class RendererContext {
         return new RendererContext(nCreateContext(name), name);
     }
 
+    public void onRendererThreadQuit() {
+
+    }
+
+    public void sendMessage(int what) {
+        if(mAddress != INVALID_ADDRESS) {
+            nSendMessage(mAddress, what);
+        }
+    }
+
     private static native long nCreateContext(String name);
+    private static native void nSendMessage(long address, int what);
 }
