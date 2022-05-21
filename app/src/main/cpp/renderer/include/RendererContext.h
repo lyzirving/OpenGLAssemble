@@ -7,6 +7,7 @@
 #include <pthread.h>
 
 #include "SimpleLooper.h"
+#include "EglCore.h"
 
 enum MessageId : uint8_t {
     MESSAGE_QUIT = 0x00,
@@ -17,7 +18,8 @@ public:
     RendererContext(const char* name);
     ~RendererContext();
 
-    void prepare();
+    void prepareAndLoop();
+    void quitLoop();
     void requestQuit();
     void sendMessage(uint32_t what);
 
@@ -25,6 +27,7 @@ private:
 
     pthread_t mThreadId;
     SimpleLooper mLooper;
+    EglCore mEglCore;
 };
 
 class RendererHandler : public MessageHandler {

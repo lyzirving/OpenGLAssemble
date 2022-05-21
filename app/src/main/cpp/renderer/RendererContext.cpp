@@ -12,18 +12,20 @@
 void *threadStart(void *arg) {
     LogFunctionEnter;
     auto *context = static_cast<RendererContext *>(arg);
-    context->prepare();
+    context->prepareAndLoop();
+    context->quitLoop();
     delete context;
     LogFunctionExit;
     return nullptr;
 }
 
-RendererContext::RendererContext(const char *name) : mLooper(name), mThreadId(0) {
+RendererContext::RendererContext(const char *name) : mThreadId(0), mLooper(name),
+                                                     mEglCore() {
     pthread_create(&mThreadId, nullptr, threadStart, this);
 }
 
 RendererContext::~RendererContext() {
-    LogI("destroy");
+    mEglCore.release();
 }
 
 RendererHandler::RendererHandler(RendererContext *ctx) : mCtx(ctx) {}
@@ -34,7 +36,7 @@ RendererHandler::~RendererHandler() {
 }
 
 void RendererHandler::handleMessage(const Message &message) {
-    switch(message.what) {
+    switch (message.what) {
         case MessageId::MESSAGE_QUIT: {
             mCtx->requestQuit();
             break;
@@ -46,16 +48,26 @@ void RendererHandler::handleMessage(const Message &message) {
     }
 }
 
-void RendererContext::prepare() {
-    if(mLooper.isValid()) {
-        mLooper.loop();
-    } else {
+void RendererContext::prepareAndLoop() {
+    if (!mLooper.isValid()) {
         LogE("looper(%s) is not valid", mLooper.getName().c_str());
+        goto done;
     }
+    if(!mEglCore.prepare())
+        goto done;
+
+    mLooper.loop();
+
+    done:
+    LogFunctionExit;
+}
+
+void RendererContext::quitLoop() {
+    mEglCore.release();
 }
 
 void RendererContext::sendMessage(uint32_t what) {
-    if(mLooper.isValid()) {
+    if (mLooper.isValid()) {
         std::shared_ptr<RendererHandler> handler(new RendererHandler(this));
         Message msg(what);
         mLooper.sendMessage(handler, msg);
