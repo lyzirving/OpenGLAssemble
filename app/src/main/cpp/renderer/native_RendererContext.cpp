@@ -32,6 +32,13 @@ static void nativeSendMessage(JNIEnv *env, jclass clazz, jlong address, jint wha
     }
 }
 
+static void nativeRelease(JNIEnv *env, jclass clazz, jlong address) {
+    auto *context = reinterpret_cast<RendererContext *>(address);
+    if(context) {
+        context->requestQuit();
+    }
+}
+
 static JNINativeMethod methods[] = {
         {
                 "nCreateContext",
@@ -42,6 +49,11 @@ static JNINativeMethod methods[] = {
                 "nSendMessage",
                 "(JI)V",
                 (void *) nativeSendMessage
+        },
+        {
+                "nRelease"  ,
+                "(J)V",
+                (void *) nativeRelease
         },
 };
 
@@ -57,11 +69,6 @@ bool register_native_RendererContext(JNIEnv *env) {
         goto error;
     }
     gRendererContextClassInfo.mClazz = static_cast<jclass>(env->NewGlobalRef(javaClass));
-    gRendererContextClassInfo.mMethodOnThreadQuit = env->GetMethodID(javaClass, "onRendererThreadQuit", "()V");
-    if(gRendererContextClassInfo.mMethodOnThreadQuit == nullptr) {
-        LogE("fail to find method onRendererThreadQuit for class %s", JAVA_CLASS);
-        goto error;
-    }
     LogI("succeed to load class %s", JAVA_CLASS);
     return true;
 

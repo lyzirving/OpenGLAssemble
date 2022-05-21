@@ -51,15 +51,10 @@ MessageEnvelope::~MessageEnvelope() {
         mHandler.reset();
 }
 
-SimpleLooperListener::SimpleLooperListener() {}
-
-SimpleLooperListener::~SimpleLooperListener() {}
-
-SimpleLooper::SimpleLooper(const char *name, SimpleLooperListener *listener) :
-                                                mName(name), mWakeEventFd(-1), mEpollFd(-1),
+SimpleLooper::SimpleLooper(const char *name) :  mName(name), mWakeEventFd(-1), mEpollFd(-1),
                                                 mNextMsgTimeNano(LLONG_MAX), mMessageEnvelopes(),
                                                 mSendingMessage(false), mRunning(true),
-                                                mPolling(false), mMutex(), mLooperListener(listener) {
+                                                mPolling(false), mMutex(){
     mWakeEventFd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if (mWakeEventFd < 0)
         LogE("looper(%s) fail to create wake event fd", mName.c_str());
@@ -137,8 +132,6 @@ void SimpleLooper::loop() {
         }
     }
     LogI("looper(%s) quit", mName.c_str());
-    if(mLooperListener)
-        mLooperListener->onLooperQuit();
     release();
 }
 
@@ -232,24 +225,24 @@ void SimpleLooper::requestQuit() {
 }
 
 void SimpleLooper::release() {
-    LogFunctionEnter;
     int ret{0};
     if(mWakeEventFd >= 0) {
         ret = close(mWakeEventFd);
-        if(ret != 0)
+        if (ret == 0)
+            LogI("looper(%s) succeed to close wake event fd %d", mName.c_str(), mWakeEventFd);
+        else
             LogE("looper(%s) fail to close wake evt fd, reason = %s", mName.c_str(), strerror(errno));
     }
     mWakeEventFd = -1;
 
     if(mEpollFd >= 0) {
         ret = close(mEpollFd);
-        if(ret != 0)
+        if (ret == 0)
+            LogI("looper(%s) succeed to close epoll fd %d", mName.c_str(), mEpollFd);
+        else
             LogE("looper(%s) fail to close wake epoll instance, reason = %s", mName.c_str(), strerror(errno));
     }
     mEpollFd = -1;
-    // notice we should not destruct the listener
-    //todo use weak ptr?
-    mLooperListener = nullptr;
 }
 
 void SimpleLooper::sendMessage(const std::shared_ptr<MessageHandler> &handler,

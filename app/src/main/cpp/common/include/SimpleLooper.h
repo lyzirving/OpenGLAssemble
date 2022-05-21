@@ -42,14 +42,6 @@ private:
     MessageEnvelope(const MessageEnvelope &msgHandler);
 };
 
-class SimpleLooperListener {
-public:
-    SimpleLooperListener();
-    virtual ~SimpleLooperListener();
-
-    virtual void onLooperQuit() = 0;
-};
-
 class SimpleLooper {
 public:
     enum {
@@ -58,7 +50,7 @@ public:
         POLL_TIMEOUT  = -3,
         POLL_ERROR    = -4,
     };
-    SimpleLooper(const char* name, SimpleLooperListener *listener);
+    SimpleLooper(const char* name);
     ~SimpleLooper();
 
     const std::string& getName();
@@ -79,7 +71,6 @@ private:
     std::atomic<bool> mPolling;
 
     std::mutex mMutex;
-    SimpleLooperListener *mLooperListener;
 
     void awoken();
     int64_t currentTimeNano();

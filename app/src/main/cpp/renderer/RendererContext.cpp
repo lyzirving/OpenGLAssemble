@@ -13,22 +13,24 @@ void *threadStart(void *arg) {
     LogFunctionEnter;
     auto *context = static_cast<RendererContext *>(arg);
     context->prepare();
+    delete context;
     LogFunctionExit;
     return nullptr;
 }
 
-RendererContext::RendererContext(const char *name) : mLooper(name, this), mThreadId(0) {
+RendererContext::RendererContext(const char *name) : mLooper(name), mThreadId(0) {
     pthread_create(&mThreadId, nullptr, threadStart, this);
 }
 
-RendererContext::~RendererContext() = default;
+RendererContext::~RendererContext() {
+    LogI("destroy");
+}
 
 RendererHandler::RendererHandler(RendererContext *ctx) : mCtx(ctx) {}
 
 RendererHandler::~RendererHandler() {
     //only set the context pointer null, do not deconstruct it
     mCtx = nullptr;
-    LogI("deconstruct");
 }
 
 void RendererHandler::handleMessage(const Message &message) {
@@ -42,10 +44,6 @@ void RendererHandler::handleMessage(const Message &message) {
             break;
         }
     }
-}
-
-void RendererContext::onLooperQuit() {
-
 }
 
 void RendererContext::prepare() {

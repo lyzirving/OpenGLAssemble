@@ -20,8 +20,11 @@ public class RendererContext {
         return new RendererContext(nCreateContext(name), name);
     }
 
-    public void onRendererThreadQuit() {
-
+    public static void releaseContext(RendererContext context) {
+        if(context.mAddress != INVALID_ADDRESS) {
+            nRelease(context.mAddress);
+            context.mAddress = INVALID_ADDRESS;
+        }
     }
 
     public void sendMessage(int what) {
@@ -32,4 +35,5 @@ public class RendererContext {
 
     private static native long nCreateContext(String name);
     private static native void nSendMessage(long address, int what);
+    private static native void nRelease(long address);
 }

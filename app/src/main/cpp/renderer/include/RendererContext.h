@@ -12,12 +12,11 @@ enum MessageId : uint8_t {
     MESSAGE_QUIT = 0x00,
 };
 
-class RendererContext : public SimpleLooperListener {
+class RendererContext {
 public:
     RendererContext(const char* name);
     ~RendererContext();
 
-    void onLooperQuit() override;
     void prepare();
     void requestQuit();
     void sendMessage(uint32_t what);
