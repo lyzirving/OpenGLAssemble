@@ -1,5 +1,7 @@
 package com.lyzirving.opengl.assemble.renderer;
 
+import android.view.Surface;
+
 /**
  * @author lyzirving
  */
@@ -27,13 +29,27 @@ public class RendererContext {
         }
     }
 
-    public void sendMessage(int what) {
+    public void registerWindow(String name, Surface window) {
         if(mAddress != INVALID_ADDRESS) {
-            nSendMessage(mAddress, what);
+            nRegisterWindow(mAddress, name, window);
+        }
+    }
+
+    public void removeWindow(String name) {
+        if(mAddress != INVALID_ADDRESS) {
+           nRemoveWindow(mAddress, name);
+        }
+    }
+
+    public void sendMessage(int what, int arg0, int arg1) {
+        if(mAddress != INVALID_ADDRESS) {
+            nSendMessage(mAddress, what, arg0, arg1);
         }
     }
 
     private static native long nCreateContext(String name);
-    private static native void nSendMessage(long address, int what);
+    private static native void nSendMessage(long address, int what, int arg0, int agr1);
     private static native void nRelease(long address);
+    private static native void nRegisterWindow(long address, String name, Surface window);
+    private static native void nRemoveWindow(long address, String name);
 }

@@ -49,15 +49,15 @@ void EglCore::release() {
     if (mEglCtx != EGL_NO_CONTEXT) {
         LogI("destroy egl context");
         eglDestroyContext(mEglDisplay, mEglCtx);
+        mEglCtx = EGL_NO_CONTEXT;
+        mEglConfig = EGL_NO_CONFIG_KHR;
     }
     if (mEglDisplay != EGL_NO_DISPLAY) {
         LogI("terminate egl display");
         eglMakeCurrent(mEglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
         eglTerminate(mEglDisplay);
+        mEglDisplay = EGL_NO_DISPLAY;
     }
-    mEglCtx = EGL_NO_CONTEXT;
-    mEglDisplay = EGL_NO_DISPLAY;
-    mEglConfig = EGL_NO_CONFIG_KHR;
 }
 
 bool EglCore::prepare(EGLContext shareContext) {

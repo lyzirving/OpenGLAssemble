@@ -1,7 +1,7 @@
 //
 // Created by lyzirving on 2022/5/19.
 //
-#include <jni.h>
+#include <android/native_window_jni.h>
 
 #include "RendererContext.h"
 #include "LogUtil.h"
@@ -25,7 +25,7 @@ static jlong nativeCreateContext(JNIEnv *env, jclass clazz, jstring jName) {
     return reinterpret_cast<jlong>(context);
 }
 
-static void nativeSendMessage(JNIEnv *env, jclass clazz, jlong address, jint what) {
+static void nativeSendMessage(JNIEnv *env, jclass clazz, jlong address, jint what, jint arg0, jint arg1) {
     auto *context = reinterpret_cast<RendererContext *>(address);
     if(context) {
         context->sendMessage(what);
@@ -39,6 +39,28 @@ static void nativeRelease(JNIEnv *env, jclass clazz, jlong address) {
     }
 }
 
+static void nativeRegisterWindow(JNIEnv *env, jclass clazz, jlong address,
+                                 jstring jName, jobject jWindow) {
+    auto *context = reinterpret_cast<RendererContext *>(address);
+    if (context) {
+        const char* name = env->GetStringUTFChars(jName, nullptr);
+        ANativeWindow *window = ANativeWindow_fromSurface(env, jWindow);
+        if (!context->registerWindow(name, window)) {
+            ANativeWindow_release(window);
+        }
+        env->ReleaseStringUTFChars(jName, name);
+    }
+}
+
+static void nativeRemoveWindow(JNIEnv *env, jclass clazz, jlong address, jstring jName) {
+    auto *context = reinterpret_cast<RendererContext *>(address);
+    if (context) {
+        const char* name = env->GetStringUTFChars(jName, nullptr);
+        context->sendMessage(MessageId::MESSAGE_REMOVE_WINDOW, 0, 0, name);
+        env->ReleaseStringUTFChars(jName, name);
+    }
+}
+
 static JNINativeMethod methods[] = {
         {
                 "nCreateContext",
@@ -47,13 +69,23 @@ static JNINativeMethod methods[] = {
         },
         {
                 "nSendMessage",
-                "(JI)V",
+                "(JIII)V",
                 (void *) nativeSendMessage
         },
         {
                 "nRelease"  ,
                 "(J)V",
                 (void *) nativeRelease
+        },
+        {
+                "nRegisterWindow"  ,
+                "(JLjava/lang/String;Landroid/view/Surface;)V",
+                (void *) nativeRegisterWindow
+        },
+        {
+                "nRemoveWindow"  ,
+                "(JLjava/lang/String;)V",
+                (void *) nativeRemoveWindow
         },
 };
 

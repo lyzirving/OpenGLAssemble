@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guid_hor_0.75"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.75" />
+
+    <SurfaceView
+        android:id="@+id/view_surface"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/guid_hor_0.75" />
+
     <Button
         android:id="@+id/btn_start"
         android:layout_width="wrap_content"
@@ -13,7 +27,7 @@
         android:textAllCaps="false"
         android:text="start"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view_surface"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"/>
 

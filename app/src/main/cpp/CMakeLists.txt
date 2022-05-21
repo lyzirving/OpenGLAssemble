@@ -19,9 +19,9 @@ target_link_libraries( # Specifies the target library.
                        lib-assembler
                        # Links the target library to the log library
                        # included in the NDK.
+                       android
                        log
                        EGL
                        GLESv2
                        GLESv3
-                       jnigraphics
-                       nativewindow)
+                       jnigraphics)
