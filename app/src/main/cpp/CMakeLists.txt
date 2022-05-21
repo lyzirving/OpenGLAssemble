@@ -23,4 +23,5 @@ target_link_libraries( # Specifies the target library.
                        EGL
                        GLESv2
                        GLESv3
-                       jnigraphics)
+                       jnigraphics
+                       nativewindow)

@@ -122,18 +122,15 @@ bool EglCore::prepare(EGLContext shareContext) {
         LogE("failed to create egl context, reason = 0x%x", eglGetError());
         goto quit;
     }
-
+    eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, context);
     eglQueryContext(display, context, EGL_CONTEXT_CLIENT_VERSION, &version);
     LogI("succeed to prepare egl environment, information is list as bellow:\n"
          "****** EGL context client version %d\n"
          "****** OpenGL ES version          %s\n"
          "****** vendor                     %s\n"
-         "****** renderer                   %s\n"
-         "****** max texture size           %s\n"
-         "****** max viewport dims          %s",
+         "****** renderer                   %s",
          version, glGetString(GL_VERSION), glGetString(GL_VENDOR),
-         glGetString(GL_RENDERER), glGetString(GL_MAX_TEXTURE_SIZE),
-         glGetString(GL_MAX_VIEWPORT_DIMS));
+         glGetString(GL_RENDERER));
     success = true;
 
     goto quit;
