@@ -5,6 +5,7 @@
 #include <GLES2/gl2.h>
 
 #include "BaseRendererProgram.h"
+#include "MatrixUtil.h"
 #include "GlHelper.h"
 #include "LogUtil.h"
 
@@ -13,33 +14,28 @@
 #endif
 #define LOCAL_TAG "BaseRendererProgram"
 
-BaseRendererProgram::BaseRendererProgram(const char *name, const char *vertexShader,
-                                         const char *fragShader)
-        : mInitialized(false), mName(name), mProgram(0) {
-    std::memset(mMatrix, 0, sizeof(float) * 16);
-    if(vertexShader != nullptr && std::strlen(vertexShader) != 0) {
-        mVertexShader = static_cast<char *>(std::calloc(strlen(vertexShader + 1), sizeof(char)));
-        std::memcpy(mVertexShader, vertexShader, strlen(vertexShader) * sizeof(char));
-    } else {
-        LogE("input vertex shader is null");
-    }
-    if(fragShader != nullptr && std::strlen(fragShader) != 0) {
-        mFragmentShader = static_cast<char *>(std::calloc(strlen(fragShader + 1), sizeof(char)));
-        std::memcpy(mFragmentShader, fragShader, strlen(fragShader) * sizeof(char));
-    } else {
-        LogE("input fragment shader is null");
-    }
+BaseRendererProgram::BaseRendererProgram(const char *name) : mInitialized(false), mName(name),
+                                                             mProgram(0), mMatrix(), mViewport() {
+    MatrixUtil::identity(mMatrix);
 }
 
-BaseRendererProgram::~BaseRendererProgram() {
-    if (mVertexShader != nullptr) {
-        std::free(mVertexShader);
-        mVertexShader = nullptr;
+BaseRendererProgram::~BaseRendererProgram() = default;
+
+void BaseRendererProgram::calculateVertex(float *vertex, float x, float y) {
+    if (mViewport.mWidth == 0 || mViewport.mHeight == 0) {
+        LogE("render(%s) invalid view port(%u, %u, %u, %u)", mName.c_str(), mViewport.mStartX,
+             mViewport.mStartY, mViewport.mWidth, mViewport.mHeight);
+        return;
     }
-    if (mFragmentShader != nullptr) {
-        std::free(mFragmentShader);
-        mFragmentShader = nullptr;
-    }
+    float halfPortWidth = ((float) mViewport.mWidth) / ((float) 2);
+    float halfPortHeight = ((float) mViewport.mHeight) / ((float) 2);
+    *vertex = (x - halfPortWidth) / halfPortWidth;
+    vertex++;
+    *vertex = (halfPortHeight - y) / halfPortHeight;
+}
+
+const Viewport &BaseRendererProgram::getViewport() {
+    return mViewport;
 }
 
 bool BaseRendererProgram::init() {
@@ -71,14 +67,16 @@ bool BaseRendererProgram::init() {
     return success;
 }
 
-bool BaseRendererProgram::initProgram() {
-    mProgram = GlHelper::buildProgram(mVertexShader, mFragmentShader);
-    return mProgram != 0;
-}
-
 void BaseRendererProgram::release() {
     if(mProgram != 0) {
         glDeleteProgram(mProgram);
         mProgram = 0;
     }
+}
+
+void BaseRendererProgram::updateViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+    mViewport.mStartX = x;
+    mViewport.mStartY = y;
+    mViewport.mWidth = width;
+    mViewport.mHeight = height;
 }

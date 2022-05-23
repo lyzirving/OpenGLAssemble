@@ -6,17 +6,33 @@
 
 #include <string>
 
+struct Viewport {
+public:
+    uint32_t mStartX;
+    uint32_t mStartY;
+    uint32_t mWidth;
+    uint32_t mHeight;
+
+    Viewport() : mStartX(0), mStartY(0), mWidth(0), mHeight(0) {}
+    Viewport(uint32_t x, uint32_t y, uint32_t width, int32_t height)
+            : mStartX(x), mStartY(y), mWidth(width), mHeight(height) {}
+};
+
 class BaseRendererProgram {
 public:
-    BaseRendererProgram(const char *name, const char* vertexShader, const char* fragShader);
+    BaseRendererProgram(const char *name);
     virtual ~BaseRendererProgram();
 
     bool init();
+    const Viewport &getViewport();
+    void updateViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+
     virtual void draw(unsigned int textureId) = 0;
     virtual void release();
 protected:
+    void calculateVertex(float *vertex, float x, float y);
 
-    bool initProgram();
+    virtual bool initProgram() = 0;
     virtual void initHandler() = 0;
     virtual void initCoordinate() = 0;
     virtual void initBuffer() = 0;
@@ -28,8 +44,7 @@ protected:
     std::string mName;
     unsigned int mProgram;
     float mMatrix[16];
-    char *mVertexShader;
-    char *mFragmentShader;
+    Viewport mViewport;
 };
 
 #endif //OPENGLASSEMBLE_BASERENDERERPROGRAM_H
