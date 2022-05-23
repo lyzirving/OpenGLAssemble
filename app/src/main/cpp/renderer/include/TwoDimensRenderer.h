@@ -25,6 +25,9 @@ protected:
     virtual void initCoordinate() override;
     virtual void initBuffer() override;
 
+    virtual void onBeforeInit() override;
+    virtual void onPostInit(bool success) override;
+
     unsigned int mVertexHandler;
     unsigned int mTexCoordHandler;
     unsigned int mTwoDimenSampler;

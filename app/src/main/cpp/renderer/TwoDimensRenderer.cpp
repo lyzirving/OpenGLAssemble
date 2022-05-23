@@ -113,7 +113,12 @@ void TwoDimensRenderer::initBuffer() {
     //empty implementation for this case
 }
 
+void TwoDimensRenderer::onBeforeInit() {}
+
+void TwoDimensRenderer::onPostInit(bool success) {}
+
 void TwoDimensRenderer::release() {
+    LogI("renderer(%s) release", mName.c_str());
     glDeleteBuffers(2, mVbo);
     BaseRendererProgram::release();
 }

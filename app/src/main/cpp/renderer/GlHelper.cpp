@@ -12,7 +12,7 @@
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "BaseRendererProgram"
+#define LOCAL_TAG "GlHelper"
 
 GlHelper::GlHelper() = default;
 

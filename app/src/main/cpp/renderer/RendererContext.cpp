@@ -5,6 +5,8 @@
 
 #include "RendererContext.h"
 #include "WindowSurface.h"
+#include "TwoDimensRenderer.h"
+#include "RendererMetadata.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -23,11 +25,14 @@ void *threadStart(void *arg) {
 }
 
 RendererContext::RendererContext(const char *name) : mThreadId(0), mLooper(name),
-                                                     mEglCore(new EglCore), mWindows() {
+                                                     mEglCore(new EglCore),
+                                                     mTwoDimensRenderer(new TwoDimensRenderer(renderer::TWO_DIMEN_RENDERER)),
+                                                     mWindows() {
     pthread_create(&mThreadId, nullptr, threadStart, this);
 }
 
 RendererContext::~RendererContext() {
+    mTwoDimensRenderer.reset();
     mEglCore.reset();
 }
 
@@ -82,6 +87,9 @@ void RendererContext::prepareAndLoop() {
     if(!mEglCore->prepare())
         goto done;
 
+    if(!mTwoDimensRenderer->init())
+        goto done;
+
     mLooper.loop();
 
     done:
@@ -95,6 +103,7 @@ void RendererContext::quitLoop() {
         it = mWindows.erase(it);
         window.reset();
     }
+    mTwoDimensRenderer->release();
 }
 
 void RendererContext::sendMessage(uint32_t what, uint32_t arg0, uint32_t arg1, const char* argStr) {

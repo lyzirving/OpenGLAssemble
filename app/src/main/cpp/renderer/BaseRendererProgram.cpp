@@ -62,7 +62,10 @@ bool BaseRendererProgram::init() {
     done:
     if(!success)
         release();
+
     mInitialized = success;
+    LogI("renderer(%s) succeed to init %s", mName.c_str(), (success ? "true" : "false"));
+
     onPostInit(success);
     return success;
 }

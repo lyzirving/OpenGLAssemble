@@ -12,6 +12,7 @@
 struct ANativeWindow;
 class EglCore;
 class WindowSurface;
+class TwoDimensRenderer;
 
 enum MessageId : uint8_t {
     MESSAGE_QUIT = 0x00,
@@ -39,6 +40,7 @@ private:
     pthread_t mThreadId;
     SimpleLooper mLooper;
     std::shared_ptr<EglCore> mEglCore;
+    std::shared_ptr<TwoDimensRenderer> mTwoDimensRenderer;
     std::unordered_map<std::string, std::shared_ptr<WindowSurface>> mWindows;
 };
 
