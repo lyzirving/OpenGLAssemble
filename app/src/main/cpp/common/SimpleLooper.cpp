@@ -36,12 +36,26 @@ MessageEnvelope::MessageEnvelope(MessageEnvelope &&envelope) noexcept : mUpTimeN
                                                                mHandler(std::move(envelope.mHandler)),
                                                                mMessage(envelope.mMessage)  {}
 
+MessageEnvelope::MessageEnvelope(const MessageEnvelope &envelope) noexcept
+        : mUpTimeNano(envelope.mUpTimeNano),
+          mHandler(envelope.mHandler),
+          mMessage(envelope.mMessage) {}
+
 MessageEnvelope &MessageEnvelope::operator=(MessageEnvelope &&envelope) noexcept {
     if(this != &envelope) {
         this->mUpTimeNano = envelope.mUpTimeNano;
         this->mHandler = envelope.mHandler;
         this->mMessage = envelope.mMessage;
         envelope.mHandler.reset();
+    }
+    return *this;
+}
+
+MessageEnvelope &MessageEnvelope::operator=(const MessageEnvelope &envelope) noexcept {
+    if(this != &envelope) {
+        this->mUpTimeNano = envelope.mUpTimeNano;
+        this->mHandler = envelope.mHandler;
+        this->mMessage = envelope.mMessage;
     }
     return *this;
 }
@@ -262,9 +276,9 @@ void SimpleLooper::sendMessageAtTime(int64_t upTimeNano,
                                      const std::shared_ptr<MessageHandler> &handler,
                                      const Message &msg) {
     int insertPos = 0;
-    auto it = mMessageEnvelopes.begin();
     {
         std::lock_guard<std::mutex> lock(mMutex);
+        auto it = mMessageEnvelopes.begin();
         auto end = mMessageEnvelopes.end();
         while(it != end && upTimeNano >= it->mUpTimeNano) {
             insertPos++;

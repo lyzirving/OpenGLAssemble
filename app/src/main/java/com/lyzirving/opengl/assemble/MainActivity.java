@@ -9,6 +9,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import com.lyzirving.opengl.assemble.renderer.RendererConstant;
 import com.lyzirving.opengl.assemble.renderer.RendererContext;
 
 /**
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
         Surface surface = holder.getSurface();
         mRenderer.registerWindow("test", surface);
+        mRenderer.sendMessage(RendererConstant.MSG_DRAW, 0, 0);
     }
 
     @Override

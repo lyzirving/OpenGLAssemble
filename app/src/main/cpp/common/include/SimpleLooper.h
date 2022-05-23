@@ -31,15 +31,14 @@ public:
     MessageEnvelope();
     MessageEnvelope(int64_t u, const std::shared_ptr<MessageHandler> &h, const Message &m);
     MessageEnvelope(MessageEnvelope &&envelope) noexcept;
+    MessageEnvelope(const MessageEnvelope &msgHandler) noexcept;
     MessageEnvelope& operator =(MessageEnvelope &&envelope) noexcept;
+    MessageEnvelope& operator =(const MessageEnvelope &envelope) noexcept;
     ~MessageEnvelope();
 
     int64_t mUpTimeNano;
     std::shared_ptr<MessageHandler> mHandler;
     Message mMessage;
-
-private:
-    MessageEnvelope(const MessageEnvelope &msgHandler);
 };
 
 class SimpleLooper {
@@ -64,6 +63,7 @@ private:
     int mWakeEventFd;
     int mEpollFd;
     int64_t mNextMsgTimeNano;
+    //todo use link to implement message queue;
     std::deque<MessageEnvelope> mMessageEnvelopes;
     // this filed is guarded by mMutex
     bool mSendingMessage;

@@ -14,8 +14,13 @@
 #endif
 #define LOCAL_TAG "BaseRendererProgram"
 
-BaseRendererProgram::BaseRendererProgram(const char *name) : mInitialized(false), mName(name),
-                                                             mProgram(0), mMatrix(), mViewport() {
+BaseRendererProgram::BaseRendererProgram(const char *name)
+        : mInitialized(false),
+          mName(name),
+          mProgram(0),
+          mMatrixHandler(0),
+          mMatrix(),
+          mViewport() {
     MatrixUtil::identity(mMatrix);
 }
 

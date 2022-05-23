@@ -41,7 +41,7 @@ public class RendererContext {
         }
     }
 
-    public void sendMessage(int what, int arg0, int arg1) {
+    public void sendMessage(@RendererConstant.Message int what, int arg0, int arg1) {
         if(mAddress != INVALID_ADDRESS) {
             nSendMessage(mAddress, what, arg0, arg1);
         }

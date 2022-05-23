@@ -18,10 +18,12 @@
 
 TwoDimensRenderer::TwoDimensRenderer(const char *name)
         : BaseRendererProgram(name),
-          mVertexHandler(0), mTexCoordHandler(0), mTwoDimenSampler(0), mMatrixHandler(0),
-          mVertex(), mTexCoordinate(), mVbo() {
-
-}
+          mVertexHandler(0),
+          mTexCoordHandler(0),
+          mTwoDimenSampler(0),
+          mVertex(),
+          mTexCoordinate(),
+          mVbo() {}
 
 TwoDimensRenderer::~TwoDimensRenderer() = default;
 

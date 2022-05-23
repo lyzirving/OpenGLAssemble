@@ -23,14 +23,13 @@ public:
     BaseRendererProgram(const char *name);
     virtual ~BaseRendererProgram();
 
+    void calculateVertex(float *vertex, float x, float y);
     bool init();
     const Viewport &getViewport();
     void updateViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
-    virtual void draw(unsigned int textureId) = 0;
     virtual void release();
 protected:
-    void calculateVertex(float *vertex, float x, float y);
 
     virtual bool initProgram() = 0;
     virtual void initHandler() = 0;
@@ -43,6 +42,7 @@ protected:
     bool mInitialized;
     std::string mName;
     unsigned int mProgram;
+    unsigned int mMatrixHandler;
     float mMatrix[16];
     Viewport mViewport;
 };

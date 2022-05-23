@@ -23,6 +23,33 @@ namespace shader {
             "    vec4 color = texture2D(uTwoDimensTextureSampler, vTexCoords);\n"
             "    gl_FragColor = color;\n"
             "}\n";
+
+    static const char GRAPHIC_VERTEX_SHADER[] =
+            "#version 320 es\n"
+            "precision mediump float;\n"
+            "in vec2 aVertexCoords;\n"
+            "uniform int uVertexCount;\n"
+            "uniform mat4 uMatrix;\n"
+            "uniform vec4 uGradient[2];\n"
+            "out vec4 vColor;\n"
+            "void main() {\n"
+            "  float rRange = uGradient[1].r - uGradient[0].r;"
+            "  float gRange = uGradient[1].g - uGradient[0].g;"
+            "  float bRange = uGradient[1].b - uGradient[0].b;"
+            "  float aRange = uGradient[1].a - uGradient[0].a;"
+            "  float ratio = float(gl_VertexID) / float(uVertexCount - 1);"
+            "  vColor = vec4(uGradient[0].r + ratio * rRange, uGradient[0].g + ratio * gRange, uGradient[0].b + ratio * bRange, uGradient[0].a + ratio * aRange);"
+            "  gl_Position = uMatrix * vec4(aVertexCoords, 0.0, 1.0);\n"
+            "}\n";
+
+    static const char GRAPHIC_FRAGMENT_SHADER[] =
+            "#version 320 es\n"
+            "precision mediump float;\n"
+            "in vec4 vColor;\n"
+            "out vec4 mFragColor;\n"
+            "void main() {\n"
+            "    mFragColor = vColor;\n"
+            "}\n";
 }
 
 namespace vertex {
@@ -84,6 +111,7 @@ namespace texturecoord {
 namespace renderer
 {
     static const char TWO_DIMEN_RENDERER[] = "2d renderer";
+    static const char GRAPHIC_RENDERER[] = "graphic renderer";
 };
 
 #endif //OPENGLASSEMBLE_RENDERERMETADATA_H
