@@ -92,6 +92,7 @@ void GraphicRenderer::initHandler() {
     mVertexHandler = glGetAttribLocation(mProgram, "aVertexCoords");
     mVertexCntHandler = glGetUniformLocation(mProgram, "uVertexCount");
     mGradientHandler = glGetUniformLocation(mProgram, "uGradient");
+    mMatrixHandler = glGetUniformLocation(mProgram, "uMatrix");
 }
 
 void GraphicRenderer::initCoordinate() {

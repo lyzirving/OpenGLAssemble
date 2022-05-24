@@ -96,7 +96,7 @@ void RendererContext::draw() {
                 float(width) / float(2) + float(width) / float(4),
                 float(height) / float(2) - float(height) / float(4));
         mGraphicRenderer->drawGradientLines(vArray, 2, 2,
-                                            0xFF6699ff, 0xFF3333ff, 4);
+                                            0x6950a1ff, 0xf26522ff, 10);
         window->swapBuffer();
         it++;
     }
