@@ -9,6 +9,7 @@
 #include "WindowSurface.h"
 #include "TwoDimensRenderer.h"
 #include "GraphicRenderer.h"
+#include "AntialiasingLineRenderer.h"
 #include "RendererMetadata.h"
 #include "LogUtil.h"
 
@@ -31,6 +32,7 @@ RendererContext::RendererContext(const char *name) : mThreadId(0), mLooper(name)
                                                      mEglCore(new EglCore),
                                                      mTwoDimensRenderer(new TwoDimensRenderer(renderer::TWO_DIMEN_RENDERER)),
                                                      mGraphicRenderer(new GraphicRenderer(renderer::GRAPHIC_RENDERER)),
+                                                     mAntialiasRenderer(new AntialiasingLineRenderer(renderer::ANTI_ALIAS_RENDERER)),
                                                      mWindows() {
     pthread_create(&mThreadId, nullptr, threadStart, this);
 }
@@ -38,6 +40,7 @@ RendererContext::RendererContext(const char *name) : mThreadId(0), mLooper(name)
 RendererContext::~RendererContext() {
     mTwoDimensRenderer.reset();
     mGraphicRenderer.reset();
+    mAntialiasRenderer.reset();
     mEglCore.reset();
 }
 
@@ -85,16 +88,25 @@ void RendererContext::draw() {
         uint32_t height = window->getHeight();
 
         glViewport(0, 0, width, height);
+        mAntialiasRenderer->updateViewport(0, 0, width, height);
+        uint32_t start[2];
+        uint32_t end[2];
+        start[0] = width / 5;
+        start[1] = height / 6;
+        end[0] = width / 2 + width / 3;
+        end[1] = height / 3;
+        mAntialiasRenderer->drawSegment(start, end, 0.05, 0xf26522ff);
+
         mGraphicRenderer->updateViewport(0, 0, width, height);
         float vArray[4];
         mGraphicRenderer->calculateVertex(
                 vArray,
-                float(width) / float(4),
-                float(height) / float(2) + float(height) / float(4));
+                float(width) / 5.f,
+                float(height) / 6.f);
         mGraphicRenderer->calculateVertex(
                 vArray + 2,
-                float(width) / float(2) + float(width) / float(4),
-                float(height) / float(2) - float(height) / float(4));
+                float(width) / 2.f + float(width) / 3.f,
+                float(height) / 3.f);
         mGraphicRenderer->drawGradientLines(vArray, 2, 2,
                                             0x6950a1ff, 0xf26522ff, 10);
         window->swapBuffer();
@@ -124,6 +136,9 @@ void RendererContext::prepareAndLoop() {
     if(!mGraphicRenderer->init())
         goto done;
 
+    if(!mAntialiasRenderer->init())
+        goto done;
+
     mLooper.loop();
 
     done:
@@ -139,6 +154,7 @@ void RendererContext::quitLoop() {
     }
     mTwoDimensRenderer->release();
     mGraphicRenderer->release();
+    mAntialiasRenderer->release();
 }
 
 void RendererContext::sendMessage(uint32_t what, uint32_t arg0, uint32_t arg1, const char* argStr) {

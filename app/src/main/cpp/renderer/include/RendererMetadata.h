@@ -50,6 +50,38 @@ namespace shader {
             "void main() {\n"
             "    mFragColor = vColor;\n"
             "}\n";
+
+    static const char ANTI_ALIS_LINE_VERTEX_SHADER[] =
+            "precision mediump float;\n"
+            "attribute vec2 aVertexCoords;\n"
+            "uniform float uThreshold;\n"
+            "uniform vec2 uSegment[2];\n"
+            "uniform mat4 uMatrix;\n"
+            "void main() {\n"
+            "  gl_Position = uMatrix * vec4(aVertexCoords, 0.0, 1.0);\n"
+            "}\n";
+
+    static const char ANTI_ALIS_LINE_FRAGMENT_SHADER[] =
+            "precision mediump float;\n"
+            "uniform vec4 uColor;\n"
+            "void main() {\n"
+            "    gl_FragColor = uColor;\n"
+            "}\n";
+
+    static const char POINT_VERTEX_SHADER[] =
+            "precision mediump float;\n"
+            "attribute vec2 aVertexCoords;\n"
+            "void main() {\n"
+            "  gl_Position = vec4(aVertexCoords, 0.0, 1.0);\n"
+            "  gl_PointSize = 10.0;\n"
+            "}\n";
+
+    static const char POINT_FRAGMENT_SHADER[] =
+            "precision mediump float;\n"
+            "void main() {\n"
+            "    gl_FragColor = vec4(0.7, 0.0, 0.3, 1.0);\n"
+            "}\n";
+
 }
 
 namespace vertex {
@@ -112,6 +144,7 @@ namespace renderer
 {
     static const char TWO_DIMEN_RENDERER[] = "2d renderer";
     static const char GRAPHIC_RENDERER[] = "graphic renderer";
+    static const char ANTI_ALIAS_RENDERER[] = "antialias renderer";
 };
 
 #endif //OPENGLASSEMBLE_RENDERERMETADATA_H
