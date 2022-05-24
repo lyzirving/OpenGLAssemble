@@ -38,29 +38,26 @@ void GraphicRenderer::drawLines(float *vertex, uint32_t vertexCnt, uint32_t vert
 
 void GraphicRenderer::drawGradientLines(float *vertex, uint32_t vertexCnt, uint32_t vertexComponent,
                                         uint32_t startColor, uint32_t endColor, float lineWidth) {
-    if (!mInitialized)
-    {
+    if (!mInitialized) {
         LogE("err, renderer(%s) is not initialized", mName.c_str());
         return;
     }
     glUseProgram(mProgram);
 
     glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
-    if (mLastVertexCount != vertexCnt)
-    {
+    if (mLastVertexCount != vertexCnt) {
         /**
          * if mLastVertexCount is 0, glBufferData will create a data store for the buffer object
          * if mLastVertexCount is not equal to current count, glBufferData will delete the pre-existing data store, and create a new one
          */
         glBufferData(GL_ARRAY_BUFFER, vertexCnt * vertexComponent * sizeof(GLfloat), vertex, GL_DYNAMIC_DRAW);
-    }
-    else
-    {
+    } else {
         glBufferSubData(GL_ARRAY_BUFFER, 0, vertexCnt * vertexComponent * sizeof(GLfloat), vertex);
     }
     mLastVertexCount = vertexCnt;
     glVertexAttribPointer(mVertexHandler, vertexComponent, GL_FLOAT, GL_FALSE, vertexComponent * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(mVertexHandler);
+
     glUniformMatrix4fv(mMatrixHandler, 1, false, mMatrix);
 
     mGradientColor[0] = (GLfloat)CHANNEL_R(startColor);
@@ -79,11 +76,10 @@ void GraphicRenderer::drawGradientLines(float *vertex, uint32_t vertexCnt, uint3
     glLineWidth(lineWidth);
 
     glDrawArrays(GL_LINE_STRIP, 0, vertexCnt);
+
     glDisableVertexAttribArray(mVertexHandler);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
     MatrixUtil::identity(mMatrix);
-
     glUseProgram(0);
 }
 

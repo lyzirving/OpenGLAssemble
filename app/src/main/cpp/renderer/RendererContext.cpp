@@ -49,8 +49,8 @@ RendererHandler::~RendererHandler() {
     mCtx = nullptr;
 }
 
-void RendererHandler::handleMessage(const Message &message) {
-    switch (message.what) {
+void RendererHandler::handleMessage(uint8_t what) {
+    switch (what) {
         case MessageId::MESSAGE_QUIT: {
             mCtx->requestQuit();
             break;
@@ -68,14 +68,13 @@ void RendererHandler::handleMessage(const Message &message) {
             break;
         }
         default: {
-            LogI("handle unknown message(%d)", message.what);
+            LogI("handle unknown message(%d)", what);
             break;
         }
     }
 }
 
 void RendererContext::draw() {
-    LogFunctionEnter;
     auto it = mWindows.begin();
     while(it != mWindows.end()) {
         std::shared_ptr<WindowSurface> window = it->second;
@@ -84,9 +83,9 @@ void RendererContext::draw() {
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
         uint32_t width = window->getWidth();
         uint32_t height = window->getHeight();
+
         glViewport(0, 0, width, height);
         mGraphicRenderer->updateViewport(0, 0, width, height);
-
         float vArray[4];
         mGraphicRenderer->calculateVertex(
                 vArray,
@@ -96,7 +95,6 @@ void RendererContext::draw() {
                 vArray + 2,
                 float(width) / float(2) + float(width) / float(4),
                 float(height) / float(2) - float(height) / float(4));
-
         mGraphicRenderer->drawGradientLines(vArray, 2, 2,
                                             0xFF6699ff, 0xFF3333ff, 4);
         window->swapBuffer();
@@ -146,8 +144,8 @@ void RendererContext::quitLoop() {
 void RendererContext::sendMessage(uint32_t what, uint32_t arg0, uint32_t arg1, const char* argStr) {
     if (mLooper.isValid()) {
         std::shared_ptr<RendererHandler> handler(new RendererHandler(this, arg0, arg1, argStr));
-        Message msg(what);
-        mLooper.sendMessage(handler, msg);
+        std::shared_ptr<Message> message(new Message(what, handler));
+        mLooper.sendMessage(message);
     } else {
         LogE("looper(%s) is not valid", mLooper.getName().c_str());
     }

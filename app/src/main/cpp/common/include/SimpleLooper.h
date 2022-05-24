@@ -5,41 +5,10 @@
 #define OPENGLASSEMBLE_SIMPLELOOPER_H
 
 #include <string>
-#include <deque>
 #include <mutex>
-#include <memory>
 #include <atomic>
 
-struct Message {
-    Message() : what(0) { }
-    Message(int w) : what(w) {}
-    Message(const Message &msg) : what(msg.what) {}
-
-    int what;
-};
-
-class MessageHandler {
-public:
-    MessageHandler();
-    virtual ~MessageHandler();
-
-    virtual void handleMessage(const Message &message) = 0;
-};
-
-class MessageEnvelope {
-public:
-    MessageEnvelope();
-    MessageEnvelope(int64_t u, const std::shared_ptr<MessageHandler> &h, const Message &m);
-    MessageEnvelope(MessageEnvelope &&envelope) noexcept;
-    MessageEnvelope(const MessageEnvelope &msgHandler) noexcept;
-    MessageEnvelope& operator =(MessageEnvelope &&envelope) noexcept;
-    MessageEnvelope& operator =(const MessageEnvelope &envelope) noexcept;
-    ~MessageEnvelope();
-
-    int64_t mUpTimeNano;
-    std::shared_ptr<MessageHandler> mHandler;
-    Message mMessage;
-};
+#include "Message.h"
 
 class SimpleLooper {
 public:
@@ -56,19 +25,19 @@ public:
     bool isValid();
     void loop();
     void requestQuit();
-    void sendMessage(const std::shared_ptr<MessageHandler> &handler, const Message &msg);
-    void sendMessageDelay(int64_t upTimeMill, const std::shared_ptr<MessageHandler> &handler, const Message &msg);
+    void sendMessage(const std::shared_ptr<Message> &message);
+    void sendMessageDelay(int64_t upTimeMill, const std::shared_ptr<Message> &message);
 private:
     std::string mName;
     int mWakeEventFd;
     int mEpollFd;
     int64_t mNextMsgTimeNano;
-    //todo use link to implement message queue;
-    std::deque<MessageEnvelope> mMessageEnvelopes;
     // this filed is guarded by mMutex
     bool mSendingMessage;
     std::atomic<bool> mRunning;
     std::atomic<bool> mPolling;
+    // mHead is only used as place a holder
+    Message mHead;//todo use link to implement message queue;
 
     std::mutex mMutex;
 
@@ -77,7 +46,7 @@ private:
     void createEpoll();
     int pollOnce(int64_t timeoutMill);
     void release();
-    void sendMessageAtTime(int64_t upTimeNano, const std::shared_ptr<MessageHandler> &handler, const Message &msg);
+    void sendMessageAtTime(int64_t upTimeNano, const std::shared_ptr<Message> &message);
     /**
      * Wakes the poll asynchronously.
      *

@@ -50,7 +50,7 @@ class RendererHandler : public MessageHandler {
 public:
     RendererHandler(RendererContext *ctx, uint32_t arg0 = 0, uint32_t arg1 = 0, const char* argStr = nullptr);
     ~RendererHandler();
-    virtual void handleMessage(const Message &message) override;
+    virtual void handleMessage(uint8_t what) override;
 
     RendererContext *mCtx;
     uint32_t mIntArg0;

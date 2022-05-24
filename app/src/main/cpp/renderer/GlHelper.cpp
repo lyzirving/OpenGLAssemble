@@ -112,8 +112,6 @@ void GlHelper::logShaderInfo(unsigned int shader) {
         } else {
             LogE("fail to malloc memory for shader(%u) info log", shader);
         }
-    } else {
-        LogI("no info for shader(%u)", shader);
     }
 }
 

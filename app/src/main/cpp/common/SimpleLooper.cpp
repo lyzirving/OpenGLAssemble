@@ -3,7 +3,7 @@
 //
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
-#include <sys/time.h>
+#include <ctime>
 #include <bits/epoll_event.h>
 #include <linux/eventpoll.h>
 
@@ -23,52 +23,13 @@
 static const int EPOLL_SIZE_HINT = 8;
 static const int EPOLL_MAX_EVENTS = 16;
 
-MessageHandler::MessageHandler() = default;
-
-MessageHandler::~MessageHandler() = default;
-
-MessageEnvelope::MessageEnvelope() : mUpTimeNano(0), mHandler(nullptr), mMessage() {}
-
-MessageEnvelope::MessageEnvelope(int64_t u, const std::shared_ptr<MessageHandler> &h,
-                                 const Message &m) : mUpTimeNano(u), mHandler(h), mMessage(m) {}
-
-MessageEnvelope::MessageEnvelope(MessageEnvelope &&envelope) noexcept : mUpTimeNano(envelope.mUpTimeNano),
-                                                               mHandler(std::move(envelope.mHandler)),
-                                                               mMessage(envelope.mMessage)  {}
-
-MessageEnvelope::MessageEnvelope(const MessageEnvelope &envelope) noexcept
-        : mUpTimeNano(envelope.mUpTimeNano),
-          mHandler(envelope.mHandler),
-          mMessage(envelope.mMessage) {}
-
-MessageEnvelope &MessageEnvelope::operator=(MessageEnvelope &&envelope) noexcept {
-    if(this != &envelope) {
-        this->mUpTimeNano = envelope.mUpTimeNano;
-        this->mHandler = envelope.mHandler;
-        this->mMessage = envelope.mMessage;
-        envelope.mHandler.reset();
-    }
-    return *this;
-}
-
-MessageEnvelope &MessageEnvelope::operator=(const MessageEnvelope &envelope) noexcept {
-    if(this != &envelope) {
-        this->mUpTimeNano = envelope.mUpTimeNano;
-        this->mHandler = envelope.mHandler;
-        this->mMessage = envelope.mMessage;
-    }
-    return *this;
-}
-
-MessageEnvelope::~MessageEnvelope() {
-    if(mHandler)
-        mHandler.reset();
-}
-
 SimpleLooper::SimpleLooper(const char *name) :  mName(name), mWakeEventFd(-1), mEpollFd(-1),
-                                                mNextMsgTimeNano(LLONG_MAX), mMessageEnvelopes(),
-                                                mSendingMessage(false), mRunning(true),
-                                                mPolling(false), mMutex(){
+                                                mNextMsgTimeNano(LLONG_MAX),
+                                                mSendingMessage(false),
+                                                mRunning(true),
+                                                mPolling(false),
+                                                mHead(),
+                                                mMutex(){
     mWakeEventFd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if (mWakeEventFd < 0)
         LogE("looper(%s) fail to create wake event fd", mName.c_str());
@@ -201,30 +162,30 @@ int SimpleLooper::pollOnce(int64_t timeoutMill) {
     done:
 
     mNextMsgTimeNano = LLONG_MAX;
-    if(!mMessageEnvelopes.empty()) {
-        auto it = mMessageEnvelopes.begin();
-        while(it != mMessageEnvelopes.end()) {
-            int64_t now = currentTimeNano();
-            if(it->mUpTimeNano <= now) {
-                std::shared_ptr<MessageHandler> handler = it->mHandler;
-                Message msg = it->mMessage;
-                it = mMessageEnvelopes.erase(it);
-                mSendingMessage = true;
+    std::shared_ptr<Message> current = mHead.mNext;
+    std::shared_ptr<Message> last(nullptr);
+    int64_t now = currentTimeNano();
+    while(current != nullptr) {
+        if(current->mUptimeNano <= now) {
+            std::shared_ptr<MessageHandler> handler = current->mHandler;
 
-                mMutex.unlock();
-                handler->handleMessage(msg);
-                mMutex.lock();
+            mSendingMessage = true;
+            mMutex.unlock();
+            handler->handleMessage(current->mWhat);
+            mMutex.lock();
+            mSendingMessage = false;
 
-                mSendingMessage = false;
-                result = POLL_CALLBACK;
-            } else {
-                mNextMsgTimeNano = it->mUpTimeNano;
-                break;
-            }
+            result = POLL_CALLBACK;
+            //only poll from head
+            mHead.mNext = current->mNext;
+            current = mHead.mNext;
+        } else {
+            mNextMsgTimeNano = current->mUptimeNano;
+            break;
         }
     }
-    mMutex.unlock();
 
+    mMutex.unlock();
     return result;
 }
 
@@ -259,45 +220,54 @@ void SimpleLooper::release() {
     mEpollFd = -1;
 }
 
-void SimpleLooper::sendMessage(const std::shared_ptr<MessageHandler> &handler,
-                               const Message &msg) {
+void SimpleLooper::sendMessage(const std::shared_ptr<Message> &message) {
     int64_t now = currentTimeNano();
-    sendMessageAtTime(now, handler, msg);
+    sendMessageAtTime(now, message);
 }
 
-void SimpleLooper::sendMessageDelay(int64_t upTimeMill,
-                                    const std::shared_ptr<MessageHandler> &handler,
-                                    const Message &msg) {
+void SimpleLooper::sendMessageDelay(int64_t upTimeMill, const std::shared_ptr<Message> &message) {
     int64_t now = currentTimeNano();
-    sendMessageAtTime(upTimeMill * 1000000L + now, handler, msg);
+    sendMessageAtTime(upTimeMill * 1000000L + now, message);
 }
 
-void SimpleLooper::sendMessageAtTime(int64_t upTimeNano,
-                                     const std::shared_ptr<MessageHandler> &handler,
-                                     const Message &msg) {
-    int insertPos = 0;
+void SimpleLooper::sendMessageAtTime(int64_t upTimeNano, const std::shared_ptr<Message> &message) {
+    bool insertAtFirst{false};
     {
         std::lock_guard<std::mutex> lock(mMutex);
-        auto it = mMessageEnvelopes.begin();
-        auto end = mMessageEnvelopes.end();
-        while(it != end && upTimeNano >= it->mUpTimeNano) {
-            insertPos++;
-            it++;
-        }
-        MessageEnvelope envelope(upTimeNano, handler, msg);
-        if(mMessageEnvelopes.empty()) {
-            mMessageEnvelopes.push_back(std::move(envelope));
+        message->mUptimeNano = upTimeNano;
+        if (mHead.mNext == nullptr) {
+            insertAtFirst = true;
+            mHead.mNext = message;
+            goto inserted;
         } else {
-            if(it == end)
-                it--;
-            mMessageEnvelopes.insert(it, std::move(envelope));
+            std::shared_ptr<Message> current = mHead.mNext;
+            std::shared_ptr<Message> last(nullptr);
+            while (current != nullptr) {
+                if (upTimeNano >= current->mUptimeNano) {
+                    last = current;
+                    current = current->mNext;
+                } else {
+                    if (last == nullptr) {
+                        insertAtFirst = true;//insert at head
+                        last = mHead.mNext;
+                        mHead.mNext = message;
+                        mHead.mNext->mNext = last;
+                    } else {
+                        last->mNext = message;
+                        last->mNext->mNext = current;
+                    }
+                    goto inserted;
+                }
+            }
+            last->mNext = message;//insert the message at tail
         }
+        inserted:
         // if the looper is sending message to its handlers, we should not produce a wake event;
-        if(mSendingMessage)
+        if (mSendingMessage)
             return;
     }
     // Wake the poll loop only when we enqueue a new message at the head.
-    if(insertPos == 0)
+    if(insertAtFirst)
         wake();
 }
 
