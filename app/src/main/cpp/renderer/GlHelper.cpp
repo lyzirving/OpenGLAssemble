@@ -67,12 +67,12 @@ unsigned int GlHelper::buildProgram(const char *vertexShaderSource, const char *
     return 0;
 }
 
-bool GlHelper::checkGlError(const char *msg) {
+bool GlHelper::checkGlError(const char *msg, const char *tag) {
     GLenum ret = glGetError();
     if (ret == GL_NO_ERROR) {
         return true;
     } else {
-        LogE("err: %s, err code(0x%x)", msg, ret);
+        LogE("[%s]err: %s, err code(0x%x)", tag, msg, ret);
         return false;
     }
 }

@@ -7,7 +7,7 @@
 class GlHelper {
 public:
     static unsigned int buildProgram(const char *vertexShaderSource, const char *fragmentShaderSource);
-    static bool checkGlError(const char *msg);
+    static bool checkGlError(const char *msg, const char* tag = "");
 private:
     GlHelper();
     ~GlHelper();

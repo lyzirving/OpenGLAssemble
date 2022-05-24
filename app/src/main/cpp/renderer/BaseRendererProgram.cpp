@@ -50,17 +50,17 @@ bool BaseRendererProgram::init() {
         goto done;
 
     initHandler();
-    success = GlHelper::checkGlError("fail to get handler");;
+    success = GlHelper::checkGlError("fail to get handler", mName.c_str());
     if(!success)
         goto done;
 
     initCoordinate();
-    success = GlHelper::checkGlError("fail to init coordinate");
+    success = GlHelper::checkGlError("fail to init coordinate", mName.c_str());
     if(!success)
         goto done;
 
     initBuffer();
-    success = GlHelper::checkGlError("fail to init buffer");
+    success = GlHelper::checkGlError("fail to init buffer", mName.c_str());
     if(!success)
         goto done;
 
