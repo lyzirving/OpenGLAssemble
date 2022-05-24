@@ -50,6 +50,7 @@ void TwoDimensRenderer::draw(unsigned int textureId) {
     glUniform1i(mTwoDimenSampler, 0);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, vertex::TWO_DIMENS_VERTEX_COUNT);
+    GlHelper::checkGlError("draw err");
 
     glDisableVertexAttribArray(mVertexHandler);
     glDisableVertexAttribArray(mTexCoordHandler);

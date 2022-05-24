@@ -76,6 +76,7 @@ void GraphicRenderer::drawGradientLines(float *vertex, uint32_t vertexCnt, uint3
     glLineWidth(lineWidth);
 
     glDrawArrays(GL_LINE_STRIP, 0, vertexCnt);
+    GlHelper::checkGlError("draw err");
 
     glDisableVertexAttribArray(mVertexHandler);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
