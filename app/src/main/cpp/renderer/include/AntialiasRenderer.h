@@ -1,17 +1,17 @@
 //
 // Created by lyzirving on 2022/5/24.
 //
-#ifndef OPENGLASSEMBLE_ANTIALIASINGLINERENDERER_H
-#define OPENGLASSEMBLE_ANTIALIASINGLINERENDERER_H
+#ifndef OPENGLASSEMBLE_ANTIALIASRENDERER_H
+#define OPENGLASSEMBLE_ANTIALIASRENDERER_H
 
 #include "BaseRendererProgram.h"
 
-class AntialiasingLineRenderer : public BaseRendererProgram {
+class AntialiasRenderer : public BaseRendererProgram {
 public:
-    AntialiasingLineRenderer(const char *name);
-    ~AntialiasingLineRenderer();
+    AntialiasRenderer(const char *name);
+    ~AntialiasRenderer();
 
-    void drawSegment(uint32_t *start, uint32_t *end, float lineWidth, uint32_t color = 0xffffffff);
+    void drawSegment(uint32_t *point1, uint32_t *point2, float lineWidth, uint32_t color = 0xffffffff);
     virtual void release() override;
 protected:
     virtual bool initProgram() override;
@@ -28,4 +28,4 @@ protected:
     unsigned int mVbo[1];
 };
 
-#endif //OPENGLASSEMBLE_ANTIALIASINGLINERENDERER_H
+#endif //OPENGLASSEMBLE_ANTIALIASRENDERER_H

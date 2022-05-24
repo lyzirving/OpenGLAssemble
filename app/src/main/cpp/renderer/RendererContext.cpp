@@ -9,7 +9,7 @@
 #include "WindowSurface.h"
 #include "TwoDimensRenderer.h"
 #include "GraphicRenderer.h"
-#include "AntialiasingLineRenderer.h"
+#include "AntialiasRenderer.h"
 #include "RendererMetadata.h"
 #include "LogUtil.h"
 
@@ -32,7 +32,7 @@ RendererContext::RendererContext(const char *name) : mThreadId(0), mLooper(name)
                                                      mEglCore(new EglCore),
                                                      mTwoDimensRenderer(new TwoDimensRenderer(renderer::TWO_DIMEN_RENDERER)),
                                                      mGraphicRenderer(new GraphicRenderer(renderer::GRAPHIC_RENDERER)),
-                                                     mAntialiasRenderer(new AntialiasingLineRenderer(renderer::ANTI_ALIAS_RENDERER)),
+                                                     mAntialiasRenderer(new AntialiasRenderer(renderer::ANTI_ALIAS_RENDERER)),
                                                      mWindows() {
     pthread_create(&mThreadId, nullptr, threadStart, this);
 }
@@ -91,22 +91,22 @@ void RendererContext::draw() {
         mAntialiasRenderer->updateViewport(0, 0, width, height);
         uint32_t start[2];
         uint32_t end[2];
-        start[0] = width / 5;
-        start[1] = height / 6;
-        end[0] = width / 2 + width / 3;
-        end[1] = height / 3;
+
+        float pt1X = float(width) / 2.f + float(width) / 6.f;
+        float pt1Y = float(height) / 5.f;
+        float pt2X = float(width) / 4.f;
+        float pt2Y = float(height) / 3.f;
+
+        start[0] = pt1X;
+        start[1] = pt1Y;
+        end[0] = pt2X;
+        end[1] = pt2Y;
         mAntialiasRenderer->drawSegment(start, end, 0.05, 0xf26522ff);
 
         mGraphicRenderer->updateViewport(0, 0, width, height);
         float vArray[4];
-        mGraphicRenderer->calculateVertex(
-                vArray,
-                float(width) / 5.f,
-                float(height) / 6.f);
-        mGraphicRenderer->calculateVertex(
-                vArray + 2,
-                float(width) / 2.f + float(width) / 3.f,
-                float(height) / 3.f);
+        mGraphicRenderer->calculateVertex(vArray, pt1X, pt1Y);
+        mGraphicRenderer->calculateVertex(vArray + 2, pt2X, pt2Y);
         mGraphicRenderer->drawGradientLines(vArray, 2, 2,
                                             0x6950a1ff, 0xf26522ff, 10);
         window->swapBuffer();

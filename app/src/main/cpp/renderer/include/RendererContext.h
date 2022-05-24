@@ -14,7 +14,7 @@ class EglCore;
 class WindowSurface;
 class TwoDimensRenderer;
 class GraphicRenderer;
-class AntialiasingLineRenderer;
+class AntialiasRenderer;
 
 enum MessageId : uint8_t {
     MESSAGE_QUIT = 0x00,
@@ -44,7 +44,7 @@ private:
     std::shared_ptr<EglCore> mEglCore;
     std::shared_ptr<TwoDimensRenderer> mTwoDimensRenderer;
     std::shared_ptr<GraphicRenderer> mGraphicRenderer;
-    std::shared_ptr<AntialiasingLineRenderer> mAntialiasRenderer;
+    std::shared_ptr<AntialiasRenderer> mAntialiasRenderer;
     std::unordered_map<std::string, std::shared_ptr<WindowSurface>> mWindows;
 };
 
