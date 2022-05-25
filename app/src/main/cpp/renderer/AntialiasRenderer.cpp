@@ -30,10 +30,11 @@ void AntialiasRenderer::drawSegment(uint32_t *point1, uint32_t *point2, float li
         LogI("(%s) invalid view port", mName.c_str());
         return;
     }
+    float viewDiagonal = std::sqrt(mViewport.mWidth * mViewport.mWidth + mViewport.mHeight * mViewport.mHeight);
     float start[2], end[2], polygon[8];
     VectorHelper::vertex2d(start, point1[0], point1[1], mViewport);
     VectorHelper::vertex2d(end, point2[0], point2[1], mViewport);
-    VectorHelper::segmentToPolygon(polygon, start, end, lineWidth);
+    VectorHelper::segmentToPolygon(polygon, start, end, lineWidth / viewDiagonal);
 
     glUseProgram(mProgram);
 

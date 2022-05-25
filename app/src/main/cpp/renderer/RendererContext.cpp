@@ -102,7 +102,7 @@ void RendererContext::draw() {
         start[1] = pt1Y;
         end[0] = pt2X;
         end[1] = pt2Y;
-        mAntialiasRenderer->drawSegment(start, end, 0.05, 0xf26522ff);
+        mAntialiasRenderer->drawSegment(start, end, 50, 0xf26522ff);
 
         mGraphicRenderer->updateViewport(0, 0, width, height);
         float vArray[4];
