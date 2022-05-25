@@ -8,17 +8,13 @@
 #include "RendererMetadata.h"
 #include "MatrixUtil.h"
 #include "GlHelper.h"
+#include "VectorHelper.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
 #define LOCAL_TAG "GraphicRenderer"
-
-#define CHANNEL_R(_COLOR) (((float)(((_COLOR) & 0xFF000000) >> 24) / (float)255))
-#define CHANNEL_G(_COLOR) (((float)(((_COLOR) & 0x00FF0000) >> 16) / (float)255))
-#define CHANNEL_B(_COLOR) (((float)(((_COLOR) & 0x0000FF00) >> 8) / (float)255))
-#define CHANNEL_A(_COLOR) (((float)(((_COLOR) & 0x000000FF)) / (float)255))
 
 GraphicRenderer::GraphicRenderer(const char *name)
         : BaseRendererProgram(name),

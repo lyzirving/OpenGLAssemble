@@ -55,16 +55,16 @@ void VectorHelper::segmentToPolygon(float *polygon, const float *segStartPt, con
             end[0] = segStartPt[0];
             end[1] = segStartPt[1];
         }
-        polygon[0] = start[0] - lineWidth;
+        polygon[0] = start[0] - lineWidth / 2.f;
         polygon[1] = start[1];
 
-        polygon[2] = start[0] + lineWidth;
+        polygon[2] = start[0] + lineWidth / 2.f;
         polygon[3] = start[1];
 
-        polygon[4] = end[0] - lineWidth;
+        polygon[4] = end[0] - lineWidth / 2.f;
         polygon[5] = end[1];
 
-        polygon[6] = end[0] + lineWidth;
+        polygon[6] = end[0] + lineWidth / 2.f;
         polygon[7] = end[1];
     } else if (perpendicularSlope == MAXFLOAT) {// normal is parallel to y axis
         if (segStartPt[0] < segEndPt[0]) {
@@ -79,16 +79,16 @@ void VectorHelper::segmentToPolygon(float *polygon, const float *segStartPt, con
             end[1] = segStartPt[1];
         }
         polygon[0] = start[0];
-        polygon[1] = start[1] + lineWidth;
+        polygon[1] = start[1] + lineWidth / 2.f;
 
         polygon[2] = start[0];
-        polygon[3] = start[1] - lineWidth;
+        polygon[3] = start[1] - lineWidth / 2.f;
 
         polygon[4] = end[0];
-        polygon[5] = end[1] + lineWidth;
+        polygon[5] = end[1] + lineWidth / 2.f;
 
         polygon[6] = end[0];
-        polygon[7] = end[1] - lineWidth;
+        polygon[7] = end[1] - lineWidth / 2.f;
     } else if (perpendicularSlope < 0) {
         if (segStartPt[0] < segEndPt[0]) {
             start[0] = segStartPt[0];
@@ -102,17 +102,17 @@ void VectorHelper::segmentToPolygon(float *polygon, const float *segStartPt, con
             end[1] = segStartPt[1];
         }
         float angle = std::atan(-perpendicularSlope);
-        polygon[0] = start[0] - lineWidth * std::cos(angle);
-        polygon[1] = start[1] + lineWidth * std::sin(angle);
+        polygon[0] = start[0] - lineWidth / 2.f * std::cos(angle);
+        polygon[1] = start[1] + lineWidth / 2.f * std::sin(angle);
 
-        polygon[2] = start[0] + lineWidth * std::cos(angle);
-        polygon[3] = start[1] - lineWidth * std::sin(angle);
+        polygon[2] = start[0] + lineWidth / 2.f * std::cos(angle);
+        polygon[3] = start[1] - lineWidth / 2.f * std::sin(angle);
 
-        polygon[4] = end[0] - lineWidth * std::cos(angle);
-        polygon[5] = end[1] + lineWidth * std::sin(angle);
+        polygon[4] = end[0] - lineWidth / 2.f * std::cos(angle);
+        polygon[5] = end[1] + lineWidth / 2.f * std::sin(angle);
 
-        polygon[6] = end[0] + lineWidth * std::cos(angle);
-        polygon[7] = end[1] - lineWidth * std::sin(angle);
+        polygon[6] = end[0] + lineWidth / 2.f * std::cos(angle);
+        polygon[7] = end[1] - lineWidth / 2.f * std::sin(angle);
     } else {
         if (segStartPt[0] < segEndPt[0]) {
             start[0] = segStartPt[0];
@@ -126,17 +126,17 @@ void VectorHelper::segmentToPolygon(float *polygon, const float *segStartPt, con
             end[1] = segStartPt[1];
         }
         float angle = std::atan(perpendicularSlope);
-        polygon[0] = start[0] + lineWidth * std::cos(angle);
-        polygon[1] = start[1] + lineWidth * std::sin(angle);
+        polygon[0] = start[0] + lineWidth / 2.f * std::cos(angle);
+        polygon[1] = start[1] + lineWidth / 2.f * std::sin(angle);
 
-        polygon[2] = start[0] - lineWidth * std::cos(angle);
-        polygon[3] = start[1] - lineWidth * std::sin(angle);
+        polygon[2] = start[0] - lineWidth / 2.f * std::cos(angle);
+        polygon[3] = start[1] - lineWidth / 2.f * std::sin(angle);
 
-        polygon[4] = end[0] + lineWidth * std::cos(angle);
-        polygon[5] = end[1] + lineWidth * std::sin(angle);
+        polygon[4] = end[0] + lineWidth / 2.f * std::cos(angle);
+        polygon[5] = end[1] + lineWidth / 2.f * std::sin(angle);
 
-        polygon[6] = end[0] - lineWidth * std::cos(angle);
-        polygon[7] = end[1] - lineWidth * std::sin(angle);
+        polygon[6] = end[0] - lineWidth / 2.f * std::cos(angle);
+        polygon[7] = end[1] - lineWidth / 2.f * std::sin(angle);
     }
 }
 

@@ -32,7 +32,13 @@ protected:
     virtual void onPostInit(bool success) override;
 
     unsigned int mVertexHandler;
+    unsigned int mLineHandler;
+    unsigned int mThresholdHandler;
     unsigned int mColorHandler;
+    unsigned int mPortSizeHandler;
+    unsigned int mHalfLineWidthHandler;
+    float mColor[4];
+    float mLines[4];
 
     unsigned int mVbo[1];
 };

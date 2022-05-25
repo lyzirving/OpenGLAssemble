@@ -108,8 +108,7 @@ void RendererContext::draw() {
         float vArray[4];
         VectorHelper::vertex2d(vArray, pt1X, pt1Y, mGraphicRenderer->getViewport());
         VectorHelper::vertex2d(vArray + 2, pt2X, pt2Y, mGraphicRenderer->getViewport());
-        mGraphicRenderer->drawGradientLines(vArray, 2, 2,
-                                            0x6950a1ff, 0xf26522ff, 10);
+        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 3);
         window->swapBuffer();
         it++;
     }
