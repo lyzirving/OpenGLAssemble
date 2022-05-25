@@ -11,6 +11,7 @@
 #include "GraphicRenderer.h"
 #include "AntialiasRenderer.h"
 #include "RendererMetadata.h"
+#include "VectorHelper.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -105,8 +106,8 @@ void RendererContext::draw() {
 
         mGraphicRenderer->updateViewport(0, 0, width, height);
         float vArray[4];
-        mGraphicRenderer->calculateVertex(vArray, pt1X, pt1Y);
-        mGraphicRenderer->calculateVertex(vArray + 2, pt2X, pt2Y);
+        VectorHelper::vertex2d(vArray, pt1X, pt1Y, mGraphicRenderer->getViewport());
+        VectorHelper::vertex2d(vArray + 2, pt2X, pt2Y, mGraphicRenderer->getViewport());
         mGraphicRenderer->drawGradientLines(vArray, 2, 2,
                                             0x6950a1ff, 0xf26522ff, 10);
         window->swapBuffer();

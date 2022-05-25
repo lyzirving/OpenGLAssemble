@@ -23,7 +23,6 @@ public:
     BaseRendererProgram(const char *name);
     virtual ~BaseRendererProgram();
 
-    void calculateVertex(float *vertex, float x, float y);
     bool init();
     const Viewport &getViewport();
     void updateViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);

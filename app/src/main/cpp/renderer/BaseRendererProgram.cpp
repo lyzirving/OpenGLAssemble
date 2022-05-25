@@ -26,19 +26,6 @@ BaseRendererProgram::BaseRendererProgram(const char *name)
 
 BaseRendererProgram::~BaseRendererProgram() = default;
 
-void BaseRendererProgram::calculateVertex(float *vertex, float x, float y) {
-    if (mViewport.mWidth == 0 || mViewport.mHeight == 0) {
-        LogE("render(%s) invalid view port(%u, %u, %u, %u)", mName.c_str(), mViewport.mStartX,
-             mViewport.mStartY, mViewport.mWidth, mViewport.mHeight);
-        return;
-    }
-    float halfPortWidth = ((float) mViewport.mWidth) / ((float) 2);
-    float halfPortHeight = ((float) mViewport.mHeight) / ((float) 2);
-    *vertex = (x - halfPortWidth) / halfPortWidth;
-    vertex++;
-    *vertex = (halfPortHeight - y) / halfPortHeight;
-}
-
 const Viewport &BaseRendererProgram::getViewport() {
     return mViewport;
 }

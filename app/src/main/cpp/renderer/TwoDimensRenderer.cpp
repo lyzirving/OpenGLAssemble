@@ -9,6 +9,7 @@
 #include "RendererMetadata.h"
 #include "MatrixUtil.h"
 #include "GlHelper.h"
+#include "VectorHelper.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -129,13 +130,14 @@ void TwoDimensRenderer::release() {
 void TwoDimensRenderer::updateVertexCoordinate(uint32_t viewX, uint32_t viewY,
                                                uint32_t width, uint32_t height) {
     // left-top
-    BaseRendererProgram::calculateVertex(mVertex + 0, (float)viewX, (float)viewY);
+    VectorHelper::vertex2d(mVertex + 0, (float) viewX, (float) viewY, mViewport);
     // left-bottom
-    BaseRendererProgram::calculateVertex(mVertex + 2, (float)viewX, (float)(viewY + height));
+    VectorHelper::vertex2d(mVertex + 2, (float) viewX, (float) (viewY + height), mViewport);
     // right-top
-    BaseRendererProgram::calculateVertex(mVertex + 4, (float)(viewX + width), (float)viewY);
+    VectorHelper::vertex2d(mVertex + 4, (float) (viewX + width), (float) viewY, mViewport);
     // right-bottom
-    BaseRendererProgram::calculateVertex(mVertex + 6, (float)(viewX + width), (float)(viewY + height));
+    VectorHelper::vertex2d(mVertex + 6, (float) (viewX + width), (float) (viewY + height),
+                           mViewport);
     flushVertexCoordinate();
 }
 
