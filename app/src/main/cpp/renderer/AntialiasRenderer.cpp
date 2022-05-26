@@ -20,18 +20,17 @@
 AntialiasRenderer::AntialiasRenderer(const char *name)
         : BaseRendererProgram(name),
           mVertexHandler(0),
-          mLineHandler(0),
-          mThresholdHandler(0),
+          mTexCoordHandler(0),
           mColorHandler(0),
-          mPortSizeHandler(0),
-          mHalfLineWidthHandler(0),
+          mThresholdHandler(0),
+          mThreshold(0.35f),
           mColor(),
-          mLines(),
+          mTexCoordinate(),
           mVbo() {}
 
 AntialiasRenderer::~AntialiasRenderer() = default;
 
-void AntialiasRenderer::drawSegment(uint32_t *point1, uint32_t *point2, float lineWidth, uint32_t color) {
+void AntialiasRenderer::drawSegment(uint32_t *ptStart, uint32_t *ptEnd, float lineWidth, uint32_t color) {
     if(mViewport.mWidth <= 0 || mViewport.mHeight <= 0) {
         LogI("(%s) invalid view port", mName.c_str());
         return;
@@ -39,8 +38,8 @@ void AntialiasRenderer::drawSegment(uint32_t *point1, uint32_t *point2, float li
     float viewDiagonal = std::sqrt(mViewport.mWidth * mViewport.mWidth + mViewport.mHeight * mViewport.mHeight);
     float shaderLineWidth = lineWidth / viewDiagonal;
     float start[2], end[2], polygon[8];
-    VectorHelper::vertex2d(start, point1[0], point1[1], mViewport);
-    VectorHelper::vertex2d(end, point2[0], point2[1], mViewport);
+    VectorHelper::vertex2d(start, ptStart[0], ptStart[1], mViewport);
+    VectorHelper::vertex2d(end, ptEnd[0], ptEnd[1], mViewport);
     VectorHelper::segmentToPolygon(polygon, start, end, shaderLineWidth);
 
     glUseProgram(mProgram);
@@ -52,29 +51,23 @@ void AntialiasRenderer::drawSegment(uint32_t *point1, uint32_t *point2, float li
     glVertexAttribPointer(mVertexHandler, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(mVertexHandler);
 
-    glUniformMatrix4fv(mMatrixHandler, 1, false, mMatrix);
+    glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
+    glVertexAttribPointer(mTexCoordHandler, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT, GL_FLOAT, GL_FALSE, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT * sizeof(GLfloat), nullptr);
+    glEnableVertexAttribArray(mTexCoordHandler);
 
     mColor[0] = (GLfloat)CHANNEL_R(color);
     mColor[1] = (GLfloat)CHANNEL_G(color);
     mColor[2] = (GLfloat)CHANNEL_B(color);
     mColor[3] = (GLfloat)CHANNEL_A(color);
-    glUniform4fv(mColorHandler, 1, mColor);
-
-    float threshold = shaderLineWidth / 2.f * 0.45f;
-    glUniform1f(mThresholdHandler, threshold);
-
-    mLines[0] = start[0];
-    mLines[1] = start[1];
-    mLines[2] = end[0];
-    mLines[3] = end[1];
-    glUniform2fv(mLineHandler, 2, mLines);
-    glUniform1f(mHalfLineWidthHandler, shaderLineWidth / 2.f);
-    glUniform2f(mPortSizeHandler, float(mViewport.mWidth), float(mViewport.mHeight));
+    glUniform4f(mColorHandler, mColor[0], mColor[1], mColor[2], mColor[3]);
+    glUniform1f(mThresholdHandler, mThreshold);
+    glUniformMatrix4fv(mMatrixHandler, 1, false, mMatrix);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     GlHelper::checkGlError("draw err", mName.c_str());
 
     glDisableVertexAttribArray(mVertexHandler);
+    glDisableVertexAttribArray(mTexCoordHandler);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisable(GL_BLEND);
     glUseProgram(0);
@@ -87,16 +80,24 @@ bool AntialiasRenderer::initProgram() {
 
 void AntialiasRenderer::initHandler() {
     mVertexHandler = glGetAttribLocation(mProgram, "aVertexCoords");
-    mMatrixHandler = glGetUniformLocation(mProgram, "uMatrix");
+    mTexCoordHandler = glGetAttribLocation(mProgram, "aTexCoords");
     mColorHandler = glGetUniformLocation(mProgram, "uColor");
-    mLineHandler = glGetUniformLocation(mProgram, "uLines");
     mThresholdHandler = glGetUniformLocation(mProgram, "uThreshold");
-    mPortSizeHandler = glGetUniformLocation(mProgram, "uPortSize");
-    mHalfLineWidthHandler = glGetUniformLocation(mProgram, "uHalfLineWidth");
+    mMatrixHandler = glGetUniformLocation(mProgram, "uMatrix");
 }
 
 void AntialiasRenderer::initCoordinate() {
-    glGenBuffers(1, mVbo);
+    glGenBuffers(2, mVbo);
+
+    std::memcpy(mTexCoordinate, texturecoord::TWO_DIMEN_TEXTURE_COORD,
+                sizeof(GLfloat) * texturecoord::TWO_DIMENS_TEXTURE_COORD_COUNT * texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT);
+
+    glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
+    glBufferData(GL_ARRAY_BUFFER, texturecoord::TWO_DIMENS_TEXTURE_COORD_COUNT * texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT * sizeof(GLfloat),
+                 mTexCoordinate, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(mTexCoordHandler, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT, GL_FLOAT, GL_FALSE,
+                          texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT * sizeof(GLfloat), nullptr);
+    glEnableVertexAttribArray(mTexCoordHandler);
 }
 
 void AntialiasRenderer::initBuffer() {
@@ -109,7 +110,7 @@ void AntialiasRenderer::onPostInit(bool success) {}
 
 void AntialiasRenderer::release() {
     LogI("renderer(%s) release", mName.c_str());
-    glDeleteBuffers(1, mVbo);
+    glDeleteBuffers(2, mVbo);
     BaseRendererProgram::release();
 }
 

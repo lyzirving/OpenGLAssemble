@@ -14,12 +14,12 @@ public:
     /**
      * create a polygon for OpenGL ES to draw smooth line
      * two points for a line will generate four vertex to be renderer as a rectangle
-     * @param point1     start point(x, y) of the line in screen coordinate
-     * @param point2     end point(x, y) of the line in screen coordinate
+     * @param ptStart     start point(x, y) of the line in screen coordinate
+     * @param ptEnd     end point(x, y) of the line in screen coordinate
      * @param lineWidth  line width in screen coordinate unit, this param will be divided by the length of screen diagonal
      * @param color      color to be fill into the line, it should be a form like 0xffffffff which represents for RGBA
      */
-    void drawSegment(uint32_t *point1, uint32_t *point2, float lineWidth, uint32_t color = 0xffffffff);
+    void drawSegment(uint32_t *ptStart, uint32_t *ptEnd, float lineWidth, uint32_t color = 0xffffffff);
     virtual void release() override;
 
 protected:
@@ -32,15 +32,14 @@ protected:
     virtual void onPostInit(bool success) override;
 
     unsigned int mVertexHandler;
-    unsigned int mLineHandler;
-    unsigned int mThresholdHandler;
+    unsigned int mTexCoordHandler;
     unsigned int mColorHandler;
-    unsigned int mPortSizeHandler;
-    unsigned int mHalfLineWidthHandler;
-    float mColor[4];
-    float mLines[4];
+    unsigned int mThresholdHandler;
 
-    unsigned int mVbo[1];
+    float mThreshold;
+    float mColor[4];
+    float mTexCoordinate[8];
+    unsigned int mVbo[2];
 };
 
 #endif //OPENGLASSEMBLE_ANTIALIASRENDERER_H
