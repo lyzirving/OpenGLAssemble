@@ -25,8 +25,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         mRenderer = RendererContext.createContext("test");
 
-        findViewById(R.id.btn_start).setOnClickListener(this);
-        findViewById(R.id.btn_stop).setOnClickListener(this);
         SurfaceView surfaceView = findViewById(R.id.view_surface);
         surfaceView.getHolder().addCallback(this);
     }
