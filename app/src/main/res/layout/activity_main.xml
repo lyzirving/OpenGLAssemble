@@ -28,8 +28,8 @@
         android:text="start"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view_surface"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginStart="100px"
+        android:layout_marginTop="10px"/>
 
     <Button
         android:id="@+id/btn_stop"

@@ -6,6 +6,8 @@
 
 #include "BaseRendererProgram.h"
 
+class Point2d;
+
 class AntialiasRenderer : public BaseRendererProgram {
 public:
     AntialiasRenderer(const char *name);
@@ -20,6 +22,7 @@ public:
      * @param color      color to be fill into the line, it should be a form like 0xffffffff which represents for RGBA
      */
     void drawSegment(uint32_t *ptStart, uint32_t *ptEnd, float lineWidth, uint32_t color = 0xffffffff);
+    void drawSegment(const Point2d &startPt, const Point2d &endPt, uint32_t lineWidth, uint32_t color = 0xffffffff);
     virtual void release() override;
 
 protected:

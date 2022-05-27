@@ -93,8 +93,8 @@ void RendererContext::draw() {
         uint32_t start[2];
         uint32_t end[2];
 
-        float pt1X = float(width) / 2.f;
-        float pt1Y = float(height) / 5.f;
+        float pt1X = float(width) / 2.f - float(width) / 3.f;
+        float pt1Y = float(height) / 4.f;
         float pt2X = float(width) / 2.f + float(width) / 4.f;
         float pt2Y = float(height) / 3.f;
 
@@ -102,6 +102,10 @@ void RendererContext::draw() {
         start[1] = pt1Y;
         end[0] = pt2X;
         end[1] = pt2Y;
+
+        Point2d stPt(pt1X, pt1Y);
+        Point2d endPt(pt2X, pt2Y);
+        //mAntialiasRenderer->drawSegment(stPt, endPt, 50, 0xf26522ff);
         mAntialiasRenderer->drawSegment(start, end, 100, 0xf26522ff);
 
         mGraphicRenderer->updateViewport(0, 0, width, height);
