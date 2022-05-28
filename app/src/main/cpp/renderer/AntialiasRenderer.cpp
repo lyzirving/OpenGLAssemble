@@ -64,7 +64,8 @@ void AntialiasRenderer::drawSegment(const Point2d &startPt, const Point2d &endPt
     mColor[3] = (GLfloat)CHANNEL_A(color);
     glUniform4f(mColorHandler, mColor[0], mColor[1], mColor[2], mColor[3]);
     glUniform1f(mThresholdHandler, mThreshold);
-    glUniform2f(mViewportHandler, mViewport.mWidth, mViewport.mHeight);
+    //notice the viewport we send to fragment shader is the total rectangle's width and height
+    glUniform2f(mViewportHandler, polygon.width(), polygon.height());
     glUniformMatrix4fv(mMatrixHandler, 1, false, mMatrix);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

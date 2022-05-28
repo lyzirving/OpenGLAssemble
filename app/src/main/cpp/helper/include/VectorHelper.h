@@ -50,6 +50,8 @@ public:
     Point2d mRightBottom;
 
     Polygon2d() : mLeftTop(), mLeftBottom(), mRightTop(), mRightBottom() {}
+    float width();
+    float height();
 };
 
 class VectorHelper {

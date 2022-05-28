@@ -37,6 +37,16 @@ float Vector2d::slope() {
         return -float(yDiff) / float(xDiff);
 }
 
+float Polygon2d::width() {
+    return (float) std::sqrt(std::pow(mLeftTop.mX - mRightTop.mX, 2) +
+                             std::pow(mLeftTop.mY - mRightTop.mY, 2));
+}
+
+float Polygon2d::height() {
+    return (float) std::sqrt(std::pow(mLeftTop.mX - mLeftBottom.mX, 2) +
+                             std::pow(mLeftTop.mY - mLeftBottom.mY, 2));
+}
+
 VectorHelper::VectorHelper() = default;
 
 VectorHelper::~VectorHelper() = default;
