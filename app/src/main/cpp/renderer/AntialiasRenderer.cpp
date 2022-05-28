@@ -79,7 +79,9 @@ void AntialiasRenderer::drawSegment(const Point2d &startPt, const Point2d &endPt
 }
 
 bool AntialiasRenderer::initProgram() {
-    mProgram = GlHelper::buildProgram(shader::ANTI_ALIS_LINE_VERTEX_SHADER, shader::ANTI_ALIS_LINE_FRAGMENT_SHADER);
+    mProgram = GlHelper::buildProgram(
+            GlHelper::readAssets("shader/anti_alias_line_vertex_shader.glsl"),
+            GlHelper::readAssets("shader/anti_alias_line_fragment_shader.glsl"));
     return mProgram != 0;
 }
 

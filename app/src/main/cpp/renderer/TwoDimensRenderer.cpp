@@ -77,7 +77,9 @@ void TwoDimensRenderer::flushTextureCoordinate() {
 }
 
 bool TwoDimensRenderer::initProgram() {
-    mProgram = GlHelper::buildProgram(shader::TWO_DIMEN_VERTEX_SHADER, shader::TWO_DIMEN_FRAGMENT_SHADER);
+    mProgram = GlHelper::buildProgram(
+            GlHelper::readAssets("shader/two_dimen_vertex_shader.glsl"),
+            GlHelper::readAssets("shader/two_dimen_fragment_shader.glsl"));
     return mProgram != 0;
 }
 

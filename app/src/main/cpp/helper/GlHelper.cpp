@@ -5,6 +5,8 @@
 #include <GLES2/gl2ext.h>
 #include <cstdlib>
 #include <cstring>
+#include <jni.h>
+#include <android/asset_manager_jni.h>
 
 #include "GlHelper.h"
 #include "LogUtil.h"
@@ -13,6 +15,10 @@
 #undef LOCAL_TAG
 #endif
 #define LOCAL_TAG "GlHelper"
+
+#define NO_TEXTURE 0
+
+static AAssetManager *gManager{nullptr};
 
 GlHelper::GlHelper() = default;
 
@@ -113,5 +119,36 @@ void GlHelper::logShaderInfo(unsigned int shader) {
             LogE("fail to malloc memory for shader(%u) info log", shader);
         }
     }
+}
+
+char * GlHelper::readAssets(const char *path) {
+    char *res{nullptr};
+    AAsset *asset{nullptr};
+    off_t len;
+    if (gManager == nullptr) {
+        LogE("assets manager is null");
+        goto done;
+    }
+    if (path == nullptr || std::strlen(path) == 0) {
+        LogE("input path is invalid");
+        goto done;
+    }
+    asset = AAssetManager_open(gManager, path, AASSET_MODE_BUFFER);
+    if (asset == nullptr) {
+        LogE("fail to open assets, path: %s", path);
+        goto done;
+    }
+    len = AAsset_getLength(asset);
+    res = static_cast<char *>(std::malloc(len + 1));
+    res[len] = 0;
+    AAsset_read(asset, res, len);
+    AAsset_close(asset);
+
+    done:
+    return res;
+}
+
+void GlHelper::setAssetsManager(_JNIEnv *env, _jobject *manager) {
+    gManager = AAssetManager_fromJava(env, manager);
 }
 

@@ -1,5 +1,7 @@
 package com.lyzirving.opengl.assemble.renderer;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.view.Surface;
 
 /**
@@ -18,8 +20,8 @@ public class RendererContext {
         mName = name;
     }
 
-    public static RendererContext createContext(String name) {
-        return new RendererContext(nCreateContext(name), name);
+    public static RendererContext createContext(Context context, String name) {
+        return new RendererContext(nCreateContext(name, context.getAssets()), name);
     }
 
     public static void releaseContext(RendererContext context) {
@@ -47,7 +49,7 @@ public class RendererContext {
         }
     }
 
-    private static native long nCreateContext(String name);
+    private static native long nCreateContext(String name, AssetManager assetManager);
     private static native void nSendMessage(long address, int what, int arg0, int agr1);
     private static native void nRelease(long address);
     private static native void nRegisterWindow(long address, String name, Surface window);

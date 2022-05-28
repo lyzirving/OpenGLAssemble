@@ -81,7 +81,9 @@ void GraphicRenderer::drawGradientLines(float *vertex, uint32_t vertexCnt, uint3
 }
 
 bool GraphicRenderer::initProgram() {
-    mProgram = GlHelper::buildProgram(shader::GRAPHIC_VERTEX_SHADER, shader::GRAPHIC_FRAGMENT_SHADER);
+    mProgram = GlHelper::buildProgram(
+            GlHelper::readAssets("shader/graphic_vertex_shader.glsl"),
+            GlHelper::readAssets("shader/graphic_fragment_shader.glsl"));
     return mProgram != 0;
 }
 

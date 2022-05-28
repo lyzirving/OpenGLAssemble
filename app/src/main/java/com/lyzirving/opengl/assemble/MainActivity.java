@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mRenderer = RendererContext.createContext("test");
+        mRenderer = RendererContext.createContext(getApplicationContext(), "test");
 
         SurfaceView surfaceView = findViewById(R.id.view_surface);
         surfaceView.getHolder().addCallback(this);

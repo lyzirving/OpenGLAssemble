@@ -4,6 +4,7 @@
 #include <android/native_window_jni.h>
 
 #include "RendererContext.h"
+#include "GlHelper.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -18,10 +19,12 @@ static struct {
     jmethodID mMethodOnThreadQuit;
 } gRendererContextClassInfo;
 
-static jlong nativeCreateContext(JNIEnv *env, jclass clazz, jstring jName) {
-    const char* name = env->GetStringUTFChars(jName, nullptr);
+static jlong nativeCreateContext(JNIEnv *env, jclass clazz, jstring jName,
+                                 jobject assetsManager) {
+    const char *name = env->GetStringUTFChars(jName, nullptr);
     auto *context = new RendererContext(name);
     env->ReleaseStringUTFChars(jName, name);
+    GlHelper::setAssetsManager(env, assetsManager);
     return reinterpret_cast<jlong>(context);
 }
 
@@ -64,7 +67,7 @@ static void nativeRemoveWindow(JNIEnv *env, jclass clazz, jlong address, jstring
 static JNINativeMethod methods[] = {
         {
                 "nCreateContext",
-                "(Ljava/lang/String;)J",
+                "(Ljava/lang/String;Landroid/content/res/AssetManager;)J",
                 (void *) nativeCreateContext
         },
         {
