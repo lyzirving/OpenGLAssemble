@@ -23,6 +23,7 @@ AntialiasRenderer::AntialiasRenderer(const char *name)
           mTexCoordHandler(0),
           mColorHandler(0),
           mThresholdHandler(0),
+          mViewportHandler(0),
           mThreshold(0.4f),
           mColor(),
           mTexCoordinate(),
@@ -36,7 +37,7 @@ void AntialiasRenderer::drawSegment(const Point2d &startPt, const Point2d &endPt
         return;
     }
     Polygon2d polygon{};
-    VectorHelper::segmentToPolygonOnScreen(&polygon, startPt, endPt, lineWidth);
+    VectorHelper::segmentToPolygon(&polygon, startPt, endPt, lineWidth);
     float polygonVertex[8];
 
     VectorHelper::vertex2d(polygonVertex, polygon.mLeftTop, mViewport);
@@ -63,6 +64,7 @@ void AntialiasRenderer::drawSegment(const Point2d &startPt, const Point2d &endPt
     mColor[3] = (GLfloat)CHANNEL_A(color);
     glUniform4f(mColorHandler, mColor[0], mColor[1], mColor[2], mColor[3]);
     glUniform1f(mThresholdHandler, mThreshold);
+    glUniform2f(mViewportHandler, mViewport.mWidth, mViewport.mHeight);
     glUniformMatrix4fv(mMatrixHandler, 1, false, mMatrix);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -81,11 +83,12 @@ bool AntialiasRenderer::initProgram() {
 }
 
 void AntialiasRenderer::initHandler() {
+    mMatrixHandler = glGetUniformLocation(mProgram, "uMatrix");
     mVertexHandler = glGetAttribLocation(mProgram, "aVertexCoords");
     mTexCoordHandler = glGetAttribLocation(mProgram, "aTexCoords");
     mColorHandler = glGetUniformLocation(mProgram, "uColor");
     mThresholdHandler = glGetUniformLocation(mProgram, "uThreshold");
-    mMatrixHandler = glGetUniformLocation(mProgram, "uMatrix");
+    mViewportHandler = glGetUniformLocation(mProgram, "uViewport");
 }
 
 void AntialiasRenderer::initCoordinate() {

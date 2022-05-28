@@ -55,14 +55,19 @@ public:
 class VectorHelper {
 public:
 
-    static float perpendicularSlop2d(const float *vector);
-    static void segmentToPolygon(float *polygon, const float *segStartPt, const float *segEndPt, const float lineWidth);
-    static void segmentToPolygonOnScreen(Polygon2d *polygon, const Point2d &startPt, const Point2d &endPt,
-                                         const uint32_t lineWidth);
-    static float slop2d(const float *vector);
+    /**
+     * create four points to transfer a two-point line to a rectangle which is formed by two triangle
+     * notice these points are all measured in screen coordinate system whose origin is the left-top point
+     *
+     * @param polygon[out] pointer for the result rectangle
+     * @param startPt[in]  start point for the line
+     * @param endPt[in]    end point for the line
+     * @param lineWidth    line width
+     */
+    static void segmentToPolygon(Polygon2d *polygon, const Point2d &startPt, const Point2d &endPt,
+                                 const uint32_t lineWidth);
     static void vertex2d(float *vertex, float x, float y, const Viewport &viewport);
     static void vertex2d(float *vertex, const Point2d &pt, const Viewport &viewport);
-    static void vector2d(/*out*/float *vector, const float *startPt, const float *endPt);
 private:
     VectorHelper();
     ~VectorHelper();
