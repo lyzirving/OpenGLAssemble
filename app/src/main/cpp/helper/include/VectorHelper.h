@@ -24,6 +24,10 @@ public:
     void set(float x, float y);
 };
 
+/**
+ * Vector2d represents vector on screen coordinate whose origin is (0, 0),
+ * x axis is from left to right, y axis is from up to down
+ */
 struct Vector2d {
 public:
     Point2d mStart;

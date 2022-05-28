@@ -16,12 +16,11 @@ public:
     /**
      * create a polygon for OpenGL ES to draw smooth line
      * two points for a line will generate four vertex to be renderer as a rectangle
-     * @param ptStart     start point(x, y) of the line in screen coordinate
-     * @param ptEnd     end point(x, y) of the line in screen coordinate
-     * @param lineWidth  line width in screen coordinate unit, this param will be divided by the length of screen diagonal
+     * @param startPt     start point(x, y) of the line in screen coordinate
+     * @param endPt     end point(x, y) of the line in screen coordinate
+     * @param lineWidth  line width in screen coordinate unit
      * @param color      color to be fill into the line, it should be a form like 0xffffffff which represents for RGBA
      */
-    void drawSegment(uint32_t *ptStart, uint32_t *ptEnd, float lineWidth, uint32_t color = 0xffffffff);
     void drawSegment(const Point2d &startPt, const Point2d &endPt, uint32_t lineWidth, uint32_t color = 0xffffffff);
     virtual void release() override;
 

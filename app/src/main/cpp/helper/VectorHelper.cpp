@@ -23,7 +23,7 @@ float Vector2d::perpendicularSlope() {
     else if(yDiff == 0)
         return MAXFLOAT;
     else
-        return -1.f * float(xDiff) / float(yDiff);
+        return -1.f / slope();
 }
 
 float Vector2d::slope() {
@@ -34,7 +34,7 @@ float Vector2d::slope() {
     else if(yDiff == 0)
         return 0;
     else
-        return float(yDiff) / float(xDiff);
+        return -float(yDiff) / float(xDiff);
 }
 
 VectorHelper::VectorHelper() = default;
@@ -170,6 +170,7 @@ void VectorHelper::segmentToPolygonOnScreen(Polygon2d *polygon, const Point2d &s
                                             const uint32_t lineWidth) {
     Vector2d vector(startPt, endPt);
     float slope = vector.slope();
+    float pSlope = vector.perpendicularSlope();
 
     Point2d realStart{};
     Point2d realEnd{};
@@ -220,10 +221,8 @@ void VectorHelper::segmentToPolygonOnScreen(Polygon2d *polygon, const Point2d &s
             realStart.set(endPt.mX, endPt.mY);
             realEnd.set(startPt.mX, startPt.mY);
         }
-        float perpendicularSlope = vector.perpendicularSlope();
-        float angle = std::atan(perpendicularSlope);
-        if (perpendicularSlope < 0) {
-            angle += M_PI / 2.f;
+        if(pSlope < 0) {
+            float angle = std::atan(-pSlope);
             polygon->mLeftTop.mX = realStart.mX - lineWidth / 2.f * std::cos(angle);
             polygon->mLeftTop.mY = realStart.mY - lineWidth / 2.f * std::sin(angle);
 
@@ -236,6 +235,7 @@ void VectorHelper::segmentToPolygonOnScreen(Polygon2d *polygon, const Point2d &s
             polygon->mRightBottom.mX = realEnd.mX + lineWidth / 2.f * std::cos(angle);
             polygon->mRightBottom.mY = realEnd.mY + lineWidth / 2.f * std::sin(angle);
         } else {
+            float angle = std::atan(pSlope);
             polygon->mLeftTop.mX = realStart.mX + lineWidth / 2.f * std::cos(angle);
             polygon->mLeftTop.mY = realStart.mY - lineWidth / 2.f * std::sin(angle);
 
