@@ -12,6 +12,7 @@ public:
     static unsigned int buildProgram(const char *vertexShaderSource, const char *fragmentShaderSource);
     static bool checkGlError(const char *msg, const char* tag = "");
     static char *readAssets(const char *path);
+    static void release();
     static void setAssetsManager(_JNIEnv *env, _jobject *manager);
 private:
     GlHelper();

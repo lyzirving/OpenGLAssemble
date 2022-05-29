@@ -38,6 +38,7 @@ protected:
     unsigned int mColorHandler;
     unsigned int mThresholdHandler;
     unsigned int mViewportHandler;
+    unsigned int mLeftEndPtPosHandler;
 
     float mThreshold;
     float mColor[4];

@@ -2,6 +2,7 @@ precision highp float;
 uniform vec4 uColor;
 uniform vec2 uViewport;
 uniform float uThreshold;
+uniform float uLeftEndPtPos;
 varying vec2 vTexCoords;
 
 vec2 transform(vec2 origin, vec2 viewport) {
@@ -46,8 +47,12 @@ void main() {
         float factor = diff / (0.5 - threshold);
         gl_FragColor = vec4(uColor.r, uColor.g, uColor.b, smoothstep(0.0, 1.0, 1.0 - factor));
     }
-    vec2 center = transform(vec2(threshold, 0.5), uViewport);
-    if (inCircle(pos, center, 0.2)) {
+    vec2 leftEndPt = transform(vec2(uLeftEndPtPos, 0.5), uViewport);
+    if (inCircle(pos, leftEndPt, threshold)) {
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+    vec2 rightEndPt = transform(vec2(1.0 - uLeftEndPtPos, 0.5), uViewport);
+    if (inCircle(pos, rightEndPt, threshold)) {
         gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     }
 }

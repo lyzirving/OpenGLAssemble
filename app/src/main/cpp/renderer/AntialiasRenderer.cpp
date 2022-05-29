@@ -24,6 +24,7 @@ AntialiasRenderer::AntialiasRenderer(const char *name)
           mColorHandler(0),
           mThresholdHandler(0),
           mViewportHandler(0),
+          mLeftEndPtPosHandler(0),
           mThreshold(0.4f),
           mColor(),
           mTexCoordinate(),
@@ -58,6 +59,7 @@ void AntialiasRenderer::drawSegment(const Point2d &startPt, const Point2d &endPt
     glVertexAttribPointer(mTexCoordHandler, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT, GL_FLOAT, GL_FALSE, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(mTexCoordHandler);
 
+    glUniformMatrix4fv(mMatrixHandler, 1, false, mMatrix);
     mColor[0] = (GLfloat)CHANNEL_R(color);
     mColor[1] = (GLfloat)CHANNEL_G(color);
     mColor[2] = (GLfloat)CHANNEL_B(color);
@@ -66,7 +68,7 @@ void AntialiasRenderer::drawSegment(const Point2d &startPt, const Point2d &endPt
     glUniform1f(mThresholdHandler, mThreshold);
     //notice the viewport we send to fragment shader is the total rectangle's width and height
     glUniform2f(mViewportHandler, polygon.width(), polygon.height());
-    glUniformMatrix4fv(mMatrixHandler, 1, false, mMatrix);
+    glUniform1f(mLeftEndPtPosHandler, (polygon.height() * 0.5f * mThreshold + 5) / (polygon.width() * 0.5f));
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     GlHelper::checkGlError("draw err", mName.c_str());
@@ -92,6 +94,7 @@ void AntialiasRenderer::initHandler() {
     mColorHandler = glGetUniformLocation(mProgram, "uColor");
     mThresholdHandler = glGetUniformLocation(mProgram, "uThreshold");
     mViewportHandler = glGetUniformLocation(mProgram, "uViewport");
+    mLeftEndPtPosHandler = glGetUniformLocation(mProgram, "uLeftEndPtPos");
 }
 
 void AntialiasRenderer::initCoordinate() {

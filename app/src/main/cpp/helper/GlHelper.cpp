@@ -148,7 +148,14 @@ char * GlHelper::readAssets(const char *path) {
     return res;
 }
 
+void GlHelper::release() {
+    //just set the pointer null, it will be destroyed in java
+    gManager = nullptr;
+}
+
 void GlHelper::setAssetsManager(_JNIEnv *env, _jobject *manager) {
+    //get global ptr of AssetsManger from java
+    //it's lifetime is controlled by java
     gManager = AAssetManager_fromJava(env, manager);
 }
 

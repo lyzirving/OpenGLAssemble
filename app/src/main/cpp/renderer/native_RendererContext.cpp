@@ -37,6 +37,7 @@ static void nativeSendMessage(JNIEnv *env, jclass clazz, jlong address, jint wha
 
 static void nativeRelease(JNIEnv *env, jclass clazz, jlong address) {
     auto *context = reinterpret_cast<RendererContext *>(address);
+    GlHelper::release();
     if(context) {
         context->requestQuit();
     }
