@@ -1,7 +1,7 @@
 precision highp float;
 uniform vec4 uColor;
 uniform vec2 uViewport;
-uniform float uThreshold;
+uniform float uVerticalThreshold;
 uniform float uLeftEndPtPos;
 varying vec2 vTexCoords;
 
@@ -35,24 +35,19 @@ float distToLine(vec2 pt, vec2 start, vec2 end) {
 }
 
 void main() {
-    vec2 midLeft = transform(vec2(0.0, 0.5), uViewport);
-    vec2 midRight = transform(vec2(1.0, 0.5), uViewport);
     vec2 pos = transform(vTexCoords, uViewport);
-    float dist = distToLine(pos, midLeft, midRight);
-    float threshold = clamp(uThreshold, 0.3, 0.5);
-    if (dist < threshold) {
+    vec2 horLeftPt = transform(vec2(0.0, 0.5), uViewport);
+    vec2 horRightPt = transform(vec2(1.0, 0.5), uViewport);
+
+    vec2 leftEndPos = transform(vec2(uLeftEndPtPos, 0.5), uViewport);
+    vec2 rightEndPos = transform(vec2(1.0 - uLeftEndPtPos, 0.5), uViewport);
+
+    float dist = distToLine(pos, horLeftPt, horRightPt);
+    float threshold = clamp(uVerticalThreshold, 0.3, 0.5);
+    if (dist <= threshold) {
         gl_FragColor = uColor;
     } else {
-        float diff = dist - threshold;
-        float factor = diff / (0.5 - threshold);
+        float factor = (dist - threshold) / (0.5 - threshold);
         gl_FragColor = vec4(uColor.r, uColor.g, uColor.b, smoothstep(0.0, 1.0, 1.0 - factor));
-    }
-    vec2 leftEndPt = transform(vec2(uLeftEndPtPos, 0.5), uViewport);
-    if (inCircle(pos, leftEndPt, threshold)) {
-        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-    }
-    vec2 rightEndPt = transform(vec2(1.0 - uLeftEndPtPos, 0.5), uViewport);
-    if (inCircle(pos, rightEndPt, threshold)) {
-        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     }
 }

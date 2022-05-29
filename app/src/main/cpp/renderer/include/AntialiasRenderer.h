@@ -36,11 +36,11 @@ protected:
     unsigned int mVertexHandler;
     unsigned int mTexCoordHandler;
     unsigned int mColorHandler;
-    unsigned int mThresholdHandler;
+    unsigned int mVerticalThresholdHandler;
     unsigned int mViewportHandler;
     unsigned int mLeftEndPtPosHandler;
-
-    float mThreshold;
+    //value must range from 0.35 to 0.5
+    float mVerticalThreshold;
     float mColor[4];
     float mTexCoordinate[8];
     unsigned int mVbo[2];
