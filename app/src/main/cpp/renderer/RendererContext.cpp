@@ -98,13 +98,8 @@ void RendererContext::draw() {
         Point2d startPt(pt1X, pt1Y);
         Point2d endPt(pt2X, pt2Y);
 
-        mAntialiasRenderer->drawSegment(startPt, endPt, 100, 0xf26522ff);
+        mAntialiasRenderer->drawSegment(startPt, endPt, 50, 0xf26522ff);
 
-        mGraphicRenderer->updateViewport(0, 0, width, height);
-        float vArray[4];
-        VectorHelper::vertex2d(vArray, pt1X, pt1Y, mGraphicRenderer->getViewport());
-        VectorHelper::vertex2d(vArray + 2, pt2X, pt2Y, mGraphicRenderer->getViewport());
-        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 3);
         window->swapBuffer();
         it++;
     }

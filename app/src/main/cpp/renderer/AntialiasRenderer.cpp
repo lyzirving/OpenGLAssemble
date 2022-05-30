@@ -3,6 +3,8 @@
 //
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+#include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
 #include <cmath>
 
 #include "AntialiasRenderer.h"
@@ -78,6 +80,10 @@ void AntialiasRenderer::drawSegment(const Point2d &startPt, const Point2d &endPt
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisable(GL_BLEND);
     glUseProgram(0);
+}
+
+void AntialiasRenderer::drawLines(Point2d *points, uint32_t count, uint32_t lineWidth, uint32_t color) {
+
 }
 
 bool AntialiasRenderer::initProgram() {

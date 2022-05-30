@@ -1,8 +1,9 @@
+#version 300 es
 precision highp float;
-attribute vec2 aVertexCoords;
-attribute vec2 aTexCoords;
+in vec2 aVertexCoords;
+in vec2 aTexCoords;
 uniform mat4 uMatrix;
-varying vec2 vTexCoords;
+out vec2 vTexCoords;
 
 void main() {
     vTexCoords = vec2(aTexCoords.x, aTexCoords.y);
