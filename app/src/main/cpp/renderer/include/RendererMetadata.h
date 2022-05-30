@@ -18,9 +18,6 @@ namespace vertex {
      *  @author LiuYuzhou
      *  @date 2022-02-28
      */
-    static const int TWO_DIMENS_VERTEX_COUNT = 4;
-    static const int TWO_DIMENS_VERTEX_COMPONENT = 2;
-
     static const float TWO_DIMENS_VERTEX_ARRAY[] = {
             // left - top
             -1, 1,
@@ -48,9 +45,6 @@ namespace texturecoord {
      *  @author LiuYuzhou
      *  @date 2022-02-28
      */
-    static const int TWO_DIMENS_TEXTURE_COORD_COUNT = 4;
-    static const int TWO_DIMENS_TEXTURE_COORD_COMPONENT = 2;
-
     static const float TWO_DIMEN_TEXTURE_COORD[] = {
             0, 0,
             0, 1,

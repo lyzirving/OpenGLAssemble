@@ -52,14 +52,17 @@ void AntialiasRenderer::drawSegment(const Point2d &startPt, const Point2d &endPt
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(GLfloat), polygonVertex, GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(mVertexHandler, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(mVertexHandler);
+    glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
+    glBufferData(GL_ARRAY_BUFFER, /*vertex count*/4 * /*component*/2 * sizeof(GLfloat),
+                 polygonVertex, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(mVertexHandler, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
-    glVertexAttribPointer(mTexCoordHandler, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT, GL_FLOAT, GL_FALSE, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(mTexCoordHandler);
+    glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
+    glVertexAttribPointer(mTexCoordHandler, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glUniformMatrix4fv(mMatrixHandler, 1, false, mMatrix);
     mColor[0] = (GLfloat)CHANNEL_R(color);
@@ -77,7 +80,6 @@ void AntialiasRenderer::drawSegment(const Point2d &startPt, const Point2d &endPt
 
     glDisableVertexAttribArray(mVertexHandler);
     glDisableVertexAttribArray(mTexCoordHandler);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisable(GL_BLEND);
     glUseProgram(0);
 }
@@ -104,17 +106,12 @@ void AntialiasRenderer::initHandler() {
 }
 
 void AntialiasRenderer::initCoordinate() {
+    std::memcpy(mTexCoordinate, texturecoord::TWO_DIMEN_TEXTURE_COORD, sizeof(GLfloat) * 4 * 2);
+
     glGenBuffers(2, mVbo);
-
-    std::memcpy(mTexCoordinate, texturecoord::TWO_DIMEN_TEXTURE_COORD,
-                sizeof(GLfloat) * texturecoord::TWO_DIMENS_TEXTURE_COORD_COUNT * texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT);
-
     glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, texturecoord::TWO_DIMENS_TEXTURE_COORD_COUNT * texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT * sizeof(GLfloat),
-                 mTexCoordinate, GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(mTexCoordHandler, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT, GL_FLOAT, GL_FALSE,
-                          texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT * sizeof(GLfloat), nullptr);
-    glEnableVertexAttribArray(mTexCoordHandler);
+    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(GLfloat), mTexCoordinate, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void AntialiasRenderer::initBuffer() {

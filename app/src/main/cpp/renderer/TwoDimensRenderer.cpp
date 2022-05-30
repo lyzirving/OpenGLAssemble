@@ -36,13 +36,15 @@ void TwoDimensRenderer::draw(unsigned int textureId) {
 
     glUseProgram(mProgram);
 
-    glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
-    glVertexAttribPointer(mVertexHandler, vertex::TWO_DIMENS_VERTEX_COMPONENT, GL_FLOAT, GL_FALSE, vertex::TWO_DIMENS_VERTEX_COMPONENT * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(mVertexHandler);
+    glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
+    glVertexAttribPointer(mVertexHandler, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
-    glVertexAttribPointer(mTexCoordHandler, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT, GL_FLOAT, GL_FALSE, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(mTexCoordHandler);
+    glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
+    glVertexAttribPointer(mTexCoordHandler, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glUniformMatrix4fv(mMatrixHandler, 1, false, mMatrix);
 
@@ -50,12 +52,11 @@ void TwoDimensRenderer::draw(unsigned int textureId) {
     glBindTexture(GL_TEXTURE_2D, textureId);
     glUniform1i(mTwoDimenSampler, 0);
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, vertex::TWO_DIMENS_VERTEX_COUNT);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     GlHelper::checkGlError("draw err", mName.c_str());
 
     glDisableVertexAttribArray(mVertexHandler);
     glDisableVertexAttribArray(mTexCoordHandler);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
     MatrixUtil::identity(mMatrix);
 
@@ -63,17 +64,19 @@ void TwoDimensRenderer::draw(unsigned int textureId) {
 }
 
 void TwoDimensRenderer::flushVertexCoordinate() {
-    glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, vertex::TWO_DIMENS_VERTEX_COUNT * vertex::TWO_DIMENS_VERTEX_COMPONENT * sizeof(GLfloat), mVertex);
-    glVertexAttribPointer(mVertexHandler, vertex::TWO_DIMENS_VERTEX_COMPONENT, GL_FLOAT, GL_FALSE, vertex::TWO_DIMENS_VERTEX_COMPONENT * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(mVertexHandler);
+    glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 4 * 2 * sizeof(GLfloat), mVertex);
+    glVertexAttribPointer(mVertexHandler, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void TwoDimensRenderer::flushTextureCoordinate() {
-    glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, texturecoord::TWO_DIMENS_TEXTURE_COORD_COUNT * texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT * sizeof(GLfloat), mTexCoordinate);
-    glVertexAttribPointer(mTexCoordHandler, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT, GL_FLOAT, GL_FALSE, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(mTexCoordHandler);
+    glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 4 * 2 * sizeof(GLfloat), mTexCoordinate);
+    glVertexAttribPointer(mTexCoordHandler, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 bool TwoDimensRenderer::initProgram() {
@@ -91,28 +94,20 @@ void TwoDimensRenderer::initHandler() {
 }
 
 void TwoDimensRenderer::initCoordinate() {
-    std::memcpy(mVertex, vertex::TWO_DIMENS_VERTEX_ARRAY,
-                sizeof(GLfloat) * vertex::TWO_DIMENS_VERTEX_COUNT * vertex::TWO_DIMENS_VERTEX_COMPONENT);
-    std::memcpy(mTexCoordinate, texturecoord::TWO_DIMEN_TEXTURE_COORD,
-                sizeof(GLfloat) * texturecoord::TWO_DIMENS_TEXTURE_COORD_COUNT * texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT);
+    std::memcpy(mVertex, vertex::TWO_DIMENS_VERTEX_ARRAY, sizeof(GLfloat) * 4 * 2);
+    std::memcpy(mTexCoordinate, texturecoord::TWO_DIMEN_TEXTURE_COORD, sizeof(GLfloat) * 4 * 2);
 
     glGenBuffers(2, mVbo);
 
     // bind vertex array buffer
     glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, vertex::TWO_DIMENS_VERTEX_COUNT * vertex::TWO_DIMENS_VERTEX_COMPONENT * sizeof(GLfloat),
-                 mVertex, GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(mVertexHandler, vertex::TWO_DIMENS_VERTEX_COMPONENT, GL_FLOAT, GL_FALSE,
-            vertex::TWO_DIMENS_VERTEX_COMPONENT * sizeof(GLfloat), nullptr);
-    glEnableVertexAttribArray(mVertexHandler);
+    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(GLfloat), mVertex, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // bind texture coordinate buffer
     glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, texturecoord::TWO_DIMENS_TEXTURE_COORD_COUNT * texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT * sizeof(GLfloat),
-                 mTexCoordinate, GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(mTexCoordHandler, texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT, GL_FLOAT, GL_FALSE,
-            texturecoord::TWO_DIMENS_TEXTURE_COORD_COMPONENT * sizeof(GLfloat), nullptr);
-    glEnableVertexAttribArray(mTexCoordHandler);
+    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(GLfloat), mTexCoordinate, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void TwoDimensRenderer::initBuffer() {
