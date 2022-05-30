@@ -90,10 +90,10 @@ void RendererContext::draw() {
 
         glViewport(0, 0, width, height);
         mAntialiasRenderer->updateViewport(0, 0, width, height);
-        float pt1X = float(width) / 2.f + float(width) / 3.f;
+        float pt1X = float(width) / 2.f - float(width) / 3.f;
         float pt1Y = float(height) / 2.f + float(height) / 3.f;
-        float pt2X = float(width) / 2.f - float(width) / 4.f;
-        float pt2Y = float(height) / 2.f - float(height) / 3.f;
+        float pt2X = float(width) / 2.f + float(width) / 5.f;
+        float pt2Y = float(height) / 2.f - float(height) / 6.f;
 
         Point2d startPt(pt1X, pt1Y);
         Point2d endPt(pt2X, pt2Y);

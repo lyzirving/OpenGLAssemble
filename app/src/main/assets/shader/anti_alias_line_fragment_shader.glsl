@@ -1,8 +1,8 @@
 precision highp float;
 uniform vec4 uColor;
-uniform vec2 uViewport;
-uniform float uVerticalThreshold;
-uniform float uLeftEndPtPos;
+uniform vec2 uResolution;
+uniform float uThreshold;
+uniform float uLeftAnchorPos;
 varying vec2 vTexCoords;
 
 vec2 transform(vec2 origin, vec2 viewport) {
@@ -35,19 +35,45 @@ float distToLine(vec2 pt, vec2 start, vec2 end) {
 }
 
 void main() {
-    vec2 pos = transform(vTexCoords, uViewport);
-    vec2 horLeftPt = transform(vec2(0.0, 0.5), uViewport);
-    vec2 horRightPt = transform(vec2(1.0, 0.5), uViewport);
+    vec2 pos = transform(vTexCoords, uResolution);
+    vec2 horLeftPt = transform(vec2(0.0, 0.5), uResolution);
+    vec2 horRightPt = transform(vec2(1.0, 0.5), uResolution);
 
-    vec2 leftEndPos = transform(vec2(uLeftEndPtPos, 0.5), uViewport);
-    vec2 rightEndPos = transform(vec2(1.0 - uLeftEndPtPos, 0.5), uViewport);
+    vec2 leftAnchorPos = transform(vec2(uLeftAnchorPos, 0.5), uResolution);
+    vec2 rightAnchorPos = transform(vec2(1.0 - uLeftAnchorPos, 0.5), uResolution);
 
-    float dist = distToLine(pos, horLeftPt, horRightPt);
-    float threshold = clamp(uVerticalThreshold, 0.3, 0.5);
-    if (dist <= threshold) {
+    float distToHorLine = distToLine(pos, horLeftPt, horRightPt);
+    float threshold = clamp(uThreshold, 0.3, 0.5);
+
+    //deal with left anchor
+    if(pos.x < leftAnchorPos.x) {
+        if(!inCircle(pos, leftAnchorPos, 0.5)) {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);//render nothing here
+        } else {
+            float distToLeftAnchor = distance(pos, leftAnchorPos);
+            if(distToLeftAnchor <= threshold) {
+                gl_FragColor = uColor;
+            } else {
+                float factor = (distToLeftAnchor - threshold) / (0.5 - threshold);
+                gl_FragColor = vec4(uColor.r, uColor.g, uColor.b, smoothstep(0.0, 1.0, 1.0 - factor));
+            }
+        }
+    } else if(pos.x > rightAnchorPos.x) {//deal with right anchor
+        if(!inCircle(pos, rightAnchorPos, 0.5)) {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);//render nothing here
+        } else {
+            float distToRightAnchor = distance(pos, rightAnchorPos);
+            if(distToRightAnchor <= threshold) {
+                gl_FragColor = uColor;
+            } else {
+                float factor = (distToRightAnchor - threshold) / (0.5 - threshold);
+                gl_FragColor = vec4(uColor.r, uColor.g, uColor.b, smoothstep(0.0, 1.0, 1.0 - factor));
+            }
+        }
+    } else if (distToHorLine <= threshold) {
         gl_FragColor = uColor;
     } else {
-        float factor = (dist - threshold) / (0.5 - threshold);
+        float factor = (distToHorLine - threshold) / (0.5 - threshold);
         gl_FragColor = vec4(uColor.r, uColor.g, uColor.b, smoothstep(0.0, 1.0, 1.0 - factor));
     }
 }

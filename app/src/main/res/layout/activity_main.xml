@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/guid_hor_0.5" />
 
-    <com.lyzirving.opengl.assemble.LineTestView
+    <com.lyzirving.opengl.assemble.ui.LineTestView
         android:id="@+id/view_line_test"
         android:layout_width="match_parent"
         android:layout_height="0dp"

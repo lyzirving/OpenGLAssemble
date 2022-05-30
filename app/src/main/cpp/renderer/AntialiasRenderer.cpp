@@ -22,10 +22,10 @@ AntialiasRenderer::AntialiasRenderer(const char *name)
           mVertexHandler(0),
           mTexCoordHandler(0),
           mColorHandler(0),
-          mVerticalThresholdHandler(0),
-          mViewportHandler(0),
-          mLeftEndPtPosHandler(0),
-          mVerticalThreshold(0.4f),
+          mThresholdHandler(0),
+          mResolutionHandler(0),
+          mLeftAnchorHandler(0),
+          mThreshold(0.4f),
           mColor(),
           mTexCoordinate(),
           mVbo() {}
@@ -65,10 +65,10 @@ void AntialiasRenderer::drawSegment(const Point2d &startPt, const Point2d &endPt
     mColor[2] = (GLfloat)CHANNEL_B(color);
     mColor[3] = (GLfloat)CHANNEL_A(color);
     glUniform4f(mColorHandler, mColor[0], mColor[1], mColor[2], mColor[3]);
-    glUniform1f(mVerticalThresholdHandler, mVerticalThreshold);
+    glUniform1f(mThresholdHandler, mThreshold);
     //notice the viewport we send to fragment shader is the total rectangle's width and height
-    glUniform2f(mViewportHandler, polygon.width(), polygon.height());
-    glUniform1f(mLeftEndPtPosHandler, (polygon.height() * 0.5f * (0.5 - mVerticalThreshold)) / (polygon.width() * 0.5f));
+    glUniform2f(mResolutionHandler, polygon.width(), polygon.height());
+    glUniform1f(mLeftAnchorHandler, (polygon.height() * 0.5f ) / polygon.width());
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     GlHelper::checkGlError("draw err", mName.c_str());
@@ -92,9 +92,9 @@ void AntialiasRenderer::initHandler() {
     mVertexHandler = glGetAttribLocation(mProgram, "aVertexCoords");
     mTexCoordHandler = glGetAttribLocation(mProgram, "aTexCoords");
     mColorHandler = glGetUniformLocation(mProgram, "uColor");
-    mVerticalThresholdHandler = glGetUniformLocation(mProgram, "uVerticalThreshold");
-    mViewportHandler = glGetUniformLocation(mProgram, "uViewport");
-    mLeftEndPtPosHandler = glGetUniformLocation(mProgram, "uLeftEndPtPos");
+    mThresholdHandler = glGetUniformLocation(mProgram, "uThreshold");
+    mResolutionHandler = glGetUniformLocation(mProgram, "uResolution");
+    mLeftAnchorHandler = glGetUniformLocation(mProgram, "uLeftAnchorPos");
 }
 
 void AntialiasRenderer::initCoordinate() {
