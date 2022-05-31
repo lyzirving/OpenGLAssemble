@@ -46,8 +46,8 @@ void AntialiasLineRenderer::drawSegment(const Point2d &startPt, const Point2d &e
     /**
      * We use a vec4's last two component(z and w) to store this rectangle(combined by two triangles)'s width and height.
      * The width and height will be sent to fragment shader via a flat variable, which will not be interpolated through the transmission.
-     * The situation that every vertex stores width and height value means it cost some extra memory to store useless variable, since
-     * the width and height should be stored for one time.But there is other effective solution right now.
+     * The situation that every vertex stores width and height means it cost some extra memory to store useless variable, since
+     * the width and height should be stored for one time.But there is no other effective solution right now.
      * todo: how to transfer the width and height just for one time?
      */
     VectorHelper::vertex2d(polygonVertex, polygon.mLeftTop, mViewport);
@@ -115,8 +115,8 @@ void AntialiasLineRenderer::drawLines(Point2d *points, uint32_t count, uint32_t 
         /**
          * We use a vec4's last two component(z and w) to store this rectangle(combined by two triangles)'s width and height.
          * The width and height will be sent to fragment shader via a flat variable, which will not be interpolated through the transmission.
-         * The situation that every vertex stores width and height value means it cost some extra memory to store useless variable, since
-         * the width and height should be stored for one time.But there is other effective solution right now.
+         * The situation that every vertex stores width and height means it cost some extra memory to store useless variable, since
+         * the width and height should be stored for one time.But there is no other effective solution right now.
          * todo: how to transfer the width and height just for one time?
          */
         polygonVertexArray[(i - 1) * 6 * 4 + 2] = width;
