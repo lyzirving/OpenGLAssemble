@@ -1,17 +1,17 @@
 //
 // Created by lyzirving on 2022/5/24.
 //
-#ifndef OPENGLASSEMBLE_ANTIALIASRENDERER_H
-#define OPENGLASSEMBLE_ANTIALIASRENDERER_H
+#ifndef OPENGLASSEMBLE_ANTIALIASLINERENDERER_H
+#define OPENGLASSEMBLE_ANTIALIASLINERENDERER_H
 
 #include "BaseRendererProgram.h"
 
 class Point2d;
 
-class AntialiasRenderer : public BaseRendererProgram {
+class AntialiasLineRenderer : public BaseRendererProgram {
 public:
-    AntialiasRenderer(const char *name);
-    ~AntialiasRenderer();
+    AntialiasLineRenderer(const char *name);
+    ~AntialiasLineRenderer();
 
     /**
      * create a polygon for OpenGL ES to draw smooth line
@@ -38,12 +38,10 @@ protected:
     unsigned int mTexCoordHandler;
     unsigned int mColorHandler;
     unsigned int mThresholdHandler;
-    unsigned int mResolutionHandler;
-    unsigned int mLeftAnchorHandler;
     //mThreshold will be limit from 0.35 to 0.5 in fragment shader
     float mThreshold;
     float mColor[4];
     unsigned int mVbo[2];
 };
 
-#endif //OPENGLASSEMBLE_ANTIALIASRENDERER_H
+#endif //OPENGLASSEMBLE_ANTIALIASLINERENDERER_H
