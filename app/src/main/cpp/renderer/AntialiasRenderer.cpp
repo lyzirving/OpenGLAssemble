@@ -105,18 +105,7 @@ void AntialiasRenderer::drawLines(Point2d *points, uint32_t count, uint32_t line
     }
     float textureCoordinate[(count - 1) * 6 * 2];
     for (uint32_t i = 0; i < (count - 1); ++i) {
-        textureCoordinate[i * 6 * 2 + 0] = texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL[0];
-        textureCoordinate[i * 6 * 2 + 1] = texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL[1];
-        textureCoordinate[i * 6 * 2 + 2] = texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL[2];
-        textureCoordinate[i * 6 * 2 + 3] = texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL[3];
-        textureCoordinate[i * 6 * 2 + 4] = texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL[4];
-        textureCoordinate[i * 6 * 2 + 5] = texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL[5];
-        textureCoordinate[i * 6 * 2 + 6] = texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL[6];
-        textureCoordinate[i * 6 * 2 + 7] = texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL[7];
-        textureCoordinate[i * 6 * 2 + 8] = texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL[8];
-        textureCoordinate[i * 6 * 2 + 9] = texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL[9];
-        textureCoordinate[i * 6 * 2 + 10] = texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL[10];
-        textureCoordinate[i * 6 * 2 + 11] = texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL[11];
+        std::memcpy(textureCoordinate + i * 6 * 2, texturecoord::TWO_DIMEN_TEXTURE_COORD_NORMAL, 6 * 2 * sizeof(float));
     }
 
     glUseProgram(mProgram);
