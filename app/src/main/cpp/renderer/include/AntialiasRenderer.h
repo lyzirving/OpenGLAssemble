@@ -43,7 +43,6 @@ protected:
     //mThreshold will be limit from 0.35 to 0.5 in fragment shader
     float mThreshold;
     float mColor[4];
-    float mTexCoordinate[8];
     unsigned int mVbo[2];
 };
 

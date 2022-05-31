@@ -45,10 +45,18 @@ namespace texturecoord {
      *  @author LiuYuzhou
      *  @date 2022-02-28
      */
-    static const float TWO_DIMEN_TEXTURE_COORD[] = {
+    static const float TWO_DIMEN_TEXTURE_COORD_STRIP[] = {
             0, 0,
             0, 1,
             1, 0,
+            1, 1,
+    };
+    static const float TWO_DIMEN_TEXTURE_COORD_NORMAL[] = {
+            0, 0,
+            0, 1,
+            1, 0,
+            1, 0,
+            0, 1,
             1, 1,
     };
 }

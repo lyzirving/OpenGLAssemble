@@ -16,8 +16,6 @@
 #endif
 #define LOCAL_TAG "GlHelper"
 
-#define NO_TEXTURE 0
-
 static AAssetManager *gManager{nullptr};
 
 GlHelper::GlHelper() = default;
@@ -117,6 +115,25 @@ void GlHelper::logShaderInfo(unsigned int shader) {
             std::free(info);
         } else {
             LogE("fail to malloc memory for shader(%u) info log", shader);
+        }
+    }
+}
+
+void GlHelper::logProgramInfo(unsigned int program) {
+    if (program == 0) {
+        LogE("invalid input program");
+        return;
+    }
+    GLint infoLen{0};
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLen);
+    if (infoLen) {
+        char *info = static_cast<char *>(std::malloc(sizeof(char) * infoLen));
+        if (info) {
+            glGetProgramInfoLog(program, infoLen, nullptr, info);
+            LogI("shader(%u) status: %s", program, info);
+            std::free(info);
+        } else {
+            LogE("fail to malloc memory for shader(%u) info log", program);
         }
     }
 }

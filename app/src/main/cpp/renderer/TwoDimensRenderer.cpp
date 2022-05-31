@@ -95,7 +95,7 @@ void TwoDimensRenderer::initHandler() {
 
 void TwoDimensRenderer::initCoordinate() {
     std::memcpy(mVertex, vertex::TWO_DIMENS_VERTEX_ARRAY, sizeof(GLfloat) * 4 * 2);
-    std::memcpy(mTexCoordinate, texturecoord::TWO_DIMEN_TEXTURE_COORD, sizeof(GLfloat) * 4 * 2);
+    std::memcpy(mTexCoordinate, texturecoord::TWO_DIMEN_TEXTURE_COORD_STRIP, sizeof(GLfloat) * 4 * 2);
 
     glGenBuffers(2, mVbo);
 

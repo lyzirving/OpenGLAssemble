@@ -90,15 +90,20 @@ void RendererContext::draw() {
 
         glViewport(0, 0, width, height);
         mAntialiasRenderer->updateViewport(0, 0, width, height);
-        float pt1X = float(width) / 2.f - float(width) / 3.f;
-        float pt1Y = float(height) / 2.f + float(height) / 3.f;
-        float pt2X = float(width) / 2.f + float(width) / 5.f;
-        float pt2Y = float(height) / 2.f - float(height) / 6.f;
 
-        Point2d startPt(pt1X, pt1Y);
-        Point2d endPt(pt2X, pt2Y);
+        Point2d pt1(float(width) / 2.f - float(width) / 3.f, float(height) / 2.f + float(height) / 3.f);
+        Point2d pt2(float(width) / 2.f + float(width) / 5.f, float(height) / 2.f - float(height) / 6.f);
 
-        mAntialiasRenderer->drawSegment(startPt, endPt, 50, 0xf26522ff);
+        Point2d lines[3];
+        lines[0].mX = float(width) / 2.f - float(width) / 3.f;
+        lines[0].mY = float(height) / 2.f + float(height) / 3.f;
+        lines[1].mX = float(width) / 2.f + float(width) / 5.f;
+        lines[1].mY = float(height) / 2.f - float(height) / 6.f;
+        lines[2].mX = float(width) / 2.f + float(width) / 3.f;
+        lines[2].mY = float(height) / 2.f + float(height) / 4.f;
+
+        mAntialiasRenderer->drawLines(lines, 3, 40, 0xf26522ff);
+        //mAntialiasRenderer->drawSegment(pt1, pt2, 50, 0xf26522ff);
 
         window->swapBuffer();
         it++;

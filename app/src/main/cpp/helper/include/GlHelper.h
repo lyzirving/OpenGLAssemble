@@ -20,6 +20,7 @@ private:
 
     static unsigned int createShader(unsigned int type, const char *source);
     static void logShaderInfo(unsigned int shader);
+    static void logProgramInfo(unsigned int program);
 };
 
 #endif //OPENGLASSEMBLE_GLHELPER_H
