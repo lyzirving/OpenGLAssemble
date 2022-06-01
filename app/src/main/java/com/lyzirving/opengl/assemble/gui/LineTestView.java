@@ -18,10 +18,8 @@ public class LineTestView extends View {
     private PointF mPt1;
     private PointF mPt2;
     private PointF mPt3;
+    private PointF mPtHalf;
     private Paint mPaint;
-
-    private float mPolygon1[];
-    private float mPolygon2[];
 
     private PointF mLeftTop;
     private PointF mLeftBottom;
@@ -43,10 +41,8 @@ public class LineTestView extends View {
         mPt1 = new PointF();
         mPt2 = new PointF();
         mPt3 = new PointF();
+        mPtHalf = new PointF();
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-        mPolygon1 = new float[8];
-        mPolygon2 = new float[8];
     }
 
 
@@ -56,11 +52,11 @@ public class LineTestView extends View {
         int width = getMeasuredWidth();
         int height = getMeasuredHeight();
         mPt1.x = width / 2.f - width / 3.f;
-        mPt1.y = height / 2.f + height / 3.f;
+        mPt1.y = height / 2.f;
         mPt2.x = width / 2.f - width / 3.f + width / 5.f;
-        mPt2.y = height / 2.f + height / 4.f;;
+        mPt2.y = height / 2.f - height / 4.f;;
         mPt3.x = width / 2.f + width / 4.f;
-        mPt3.y = height / 2.f - height / 3.f;
+        mPt3.y = height / 2.f + height / 3.f;
     }
 
     @Override
@@ -75,6 +71,7 @@ public class LineTestView extends View {
         canvas.drawPoint(mPt1.x, mPt1.y, mPaint);
         canvas.drawPoint(mPt2.x, mPt2.y, mPaint);
         canvas.drawPoint(mPt3.x, mPt3.y, mPaint);
+        canvas.drawPoint(mPtHalf.x, mPtHalf.y, mPaint);
 
         mPaint.setColor(Color.BLUE);
         mPaint.setStyle(Paint.Style.FILL);
@@ -89,8 +86,14 @@ public class LineTestView extends View {
         //vector dot to calculate the value of cos(2 * angle)
         double cos2Angle = (leftVec.mDx * rightVec.mDx + leftVec.mDy * rightVec.mDy) / (leftVec.length() * rightVec.length());
         double cosAngle = Math.sqrt((cos2Angle + 1) / 2f);
-        double angle = (180.f / Math.PI) * Math.acos(cosAngle);
-        Log.i("test", "half angle = " + angle);
+        double angle = Math.acos(cosAngle);
+        double len = (mLineWidth / 2f) / Math.sin(angle);
+
+        double leftAngle = Math.atan(leftVec.slope());
+        double angleDst = Math.PI - leftAngle - angle;
+        mPtHalf = new PointF();
+        mPtHalf.x = mPt2.x + (float) (len * Math.cos(angleDst));
+        mPtHalf.y = mPt2.y + (float) (len * Math.sin(angleDst));
     }
 
     private void polygon() {
