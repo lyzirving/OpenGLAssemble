@@ -54,9 +54,9 @@ public class LineTestView extends View {
         mPt1.x = width / 2.f - width / 3.f;
         mPt1.y = height / 2.f;
         mPt2.x = width / 2.f - width / 3.f + width / 5.f;
-        mPt2.y = height / 2.f - height / 4.f;;
-        mPt3.x = width / 2.f + width / 4.f;
-        mPt3.y = height / 2.f + height / 3.f;
+        mPt2.y = height / 2.f - height / 4.f;
+        mPt3.x = width / 2.f - width / 3.f - width / 5.f;
+        mPt3.y = height / 2.f - height / 4.f - height / 6.f;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class LineTestView extends View {
         canvas.drawPoint(mPt1.x, mPt1.y, mPaint);
         canvas.drawPoint(mPt2.x, mPt2.y, mPaint);
         canvas.drawPoint(mPt3.x, mPt3.y, mPaint);
-        canvas.drawPoint(mPtHalf.x, mPtHalf.y, mPaint);
+        //canvas.drawPoint(mPtHalf.x, mPtHalf.y, mPaint);
 
         mPaint.setColor(Color.BLUE);
         mPaint.setStyle(Paint.Style.FILL);
@@ -81,19 +81,35 @@ public class LineTestView extends View {
     }
 
     private void polygon2() {
-        Vector2d leftVec = new Vector2d(mPt2, mPt1);
-        Vector2d rightVec = new Vector2d(mPt2, mPt3);
-        //vector dot to calculate the value of cos(2 * angle)
-        double cos2Angle = (leftVec.mDx * rightVec.mDx + leftVec.mDy * rightVec.mDy) / (leftVec.length() * rightVec.length());
-        double cosAngle = Math.sqrt((cos2Angle + 1) / 2f);
-        double angle = Math.acos(cosAngle);
-        double len = (mLineWidth / 2f) / Math.sin(angle);
+        //todo left vector's slope equals to right vector's slope
+        Vector2d lhsVec = new Vector2d(mPt1, mPt2);
+        Vector2d rhsVec = new Vector2d(mPt2, mPt3);
+        float lhsSlope = lhsVec.slope();
+        float rhsSlope = rhsVec.slope();
+        double lhsAngle = Math.atan(lhsSlope);
+        if (lhsAngle < 0)// limit angle to 0~PI
+            lhsAngle += Math.PI;
+        double rhsAngle = Math.atan(rhsSlope);
+        if (rhsAngle < 0)// limit angle to 0~PI
+            rhsAngle += Math.PI;
+        double intersectAngle;
+        if(lhsAngle > rhsAngle)
+            intersectAngle = lhsAngle - rhsAngle;
+        else if(lhsAngle == rhsAngle)
+            intersectAngle = 0;
+        else
+            intersectAngle = rhsAngle - lhsAngle;
+        Log.i("test", "intersect angle = " + (intersectAngle / Math.PI * 180f));
 
-        double leftAngle = Math.atan(leftVec.slope());
-        double angleDst = Math.PI - leftAngle - angle;
-        mPtHalf = new PointF();
-        mPtHalf.x = mPt2.x + (float) (len * Math.cos(angleDst));
-        mPtHalf.y = mPt2.y + (float) (len * Math.sin(angleDst));
+        if (lhsSlope == 0) {
+
+        } else if (lhsSlope == Float.MAX_VALUE) {
+
+        } else if (lhsSlope > 0) {
+
+        } else {// lhsSlope < 0
+
+        }
     }
 
     private void polygon() {
