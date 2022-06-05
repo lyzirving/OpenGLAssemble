@@ -15,6 +15,20 @@ void Point2d::set(float x, float y) {
     mY = y;
 }
 
+double Vector2d::azimuth() {
+    float val = slope();
+    double angle;
+    if(val == MAXFLOAT) {
+        angle = M_PI_2;
+    } else {
+        angle = std::atan(val);
+        // limit angle to 0~PI
+        if (angle < 0)
+            angle += M_PI;
+    }
+    return angle;
+}
+
 float Vector2d::perpendicularSlope() {
     int32_t xDiff = mEnd.mX - mStart.mX;
     int32_t yDiff = mEnd.mY - mStart.mY;
@@ -50,6 +64,431 @@ float Polygon2d::height() {
 VectorHelper::VectorHelper() = default;
 
 VectorHelper::~VectorHelper() = default;
+
+void VectorHelper::fillTurningPtPolygon(Polygon2d *result, bool setForLeft,
+                                        Vector2d &mainVec, const Polygon2d &polygon,
+                                        const Point2d &innerPt, const Point2d &outerPt) {
+    float slope = mainVec.slope();
+    if(setForLeft) {
+        if(slope == 0) {
+
+        }
+        else if(slope == MAXFLOAT) {
+
+        }
+        else if(slope > 0) {
+            if(mainVec.mDy < 0) {
+                result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
+                result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
+
+                Vector2d compare(polygon.mLeftTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mRightTop.set(innerPt.mX, innerPt.mY);
+                    result->mRightBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mRightTop.set(outerPt.mX, outerPt.mY);
+                    result->mRightBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
+            else {// mDy > 0
+                result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
+                result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
+
+                Vector2d compare(polygon.mRightTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mLeftTop.set(innerPt.mX, innerPt.mY);
+                    result->mLeftBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mLeftTop.set(outerPt.mX, outerPt.mY);
+                    result->mLeftBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
+        }
+        else {//slope < 0
+            if(mainVec.mDy < 0) {
+                result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
+                result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
+
+                Vector2d compare(polygon.mRightTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mLeftTop.set(innerPt.mX, innerPt.mY);
+                    result->mLeftBottom.set(outerPt.mX, outerPt.mY);
+                }
+                else {
+                    result->mLeftTop.set(outerPt.mX, outerPt.mY);
+                    result->mLeftBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
+            else {// mDy > 0
+                result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
+                result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
+
+                Vector2d compare(polygon.mLeftTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mRightTop.set(innerPt.mX, innerPt.mY);
+                    result->mRightBottom.set(outerPt.mX, outerPt.mY);
+                }
+                else {
+                    result->mRightBottom.set(innerPt.mX, innerPt.mY);
+                    result->mRightTop.set(outerPt.mX, outerPt.mY);
+                }
+            }
+        }
+    }
+    else {
+        if(slope == 0) {
+
+        }
+        else if(slope == MAXFLOAT) {
+
+        }
+        else if(slope > 0) {
+
+        }
+        else {// slope < 0
+
+        }
+    }
+}
+
+void VectorHelper::lineTurningPt(Point2d *pt1, Point2d *pt2, const Point2d &startPt,
+                                           const Point2d &midPt, const Point2d &endPt,
+                                           const uint32_t lineWidth) {
+    Vector2d lhsVec(startPt, midPt);
+    float lhsSlope = lhsVec.slope();
+    double lhsAngle = lhsVec.azimuth();
+
+    Vector2d rhsVec(midPt, endPt);
+    double rhsAngle = rhsVec.azimuth();
+
+    double intersectAngle, dstAngle;
+    double len;
+
+    if (lhsSlope == 0) {
+        if(lhsVec.mDx > 0) {
+            if(rhsVec.mDy < 0) {
+                intersectAngle = M_PI - rhsAngle;
+                len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                dstAngle = intersectAngle * 0.5f;
+                pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+            }
+            else {
+                intersectAngle = rhsAngle;
+                len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                dstAngle = intersectAngle * 0.5f;
+                pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                pt1->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+
+                pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                pt2->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+            }
+        }
+        else {
+            if(rhsVec.mDy < 0) {
+                intersectAngle = rhsAngle;
+                len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                dstAngle = intersectAngle * 0.5f;
+                pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+            }
+            else {
+                intersectAngle = M_PI - rhsAngle;
+                len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                dstAngle = intersectAngle * 0.5f;
+                pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                pt1->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+
+                pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                pt2->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+            }
+        }
+    }
+    else if (lhsSlope == MAXFLOAT) {
+        if(lhsVec.mDy < 0) {
+            if(rhsVec.mDy < 0) {
+                intersectAngle = rhsAngle > M_PI * 0.5f ?
+                                 (rhsAngle - M_PI * 0.5f) : (M_PI * 0.5f - rhsAngle);
+                len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                dstAngle = rhsAngle > M_PI * 0.5f ?
+                           (intersectAngle * 0.5f) : (intersectAngle * 0.5f + rhsAngle);
+                if(rhsAngle > M_PI * 0.5f) {
+                    pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+                else {
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+            }
+            else {
+                intersectAngle = rhsAngle > M_PI * 0.5f ?
+                                 (M_PI * 1.5f - rhsAngle) : (M_PI * 0.5f + rhsAngle);
+                len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                dstAngle = M_PI * 0.5f - intersectAngle * 0.5f;
+                if(rhsAngle > M_PI * 0.5f) {
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+                else {
+                    pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+                }
+            }
+        }
+        else {
+            if(rhsVec.mDy < 0) {
+                intersectAngle = rhsAngle > M_PI * 0.5f ?
+                                 (rhsAngle - M_PI * 0.5f) : (M_PI * 0.5f - rhsAngle);
+                len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                dstAngle = rhsAngle > M_PI * 0.5f ?
+                           (M_PI - rhsAngle + intersectAngle * 0.5f) : (intersectAngle * 0.5f + rhsAngle);
+                if(rhsAngle > M_PI * 0.5f) {
+                    pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+                else {
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+            }
+            else {
+                intersectAngle = rhsAngle > M_PI * 0.5f ?
+                                 (M_PI * 1.5f - rhsAngle) : (rhsAngle + M_PI * 0.5f);
+                len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                dstAngle = M_PI * 0.5f - intersectAngle * 0.5f;
+                if(rhsAngle > M_PI * 0.5f) {
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+                else {
+                    pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+            }
+        }
+    }
+    else if (lhsSlope > 0) {
+        //in this condition, lhs angle ranges from 0 to Pi / 2
+        if (lhsVec.mDy < 0) {
+            if (lhsAngle > rhsAngle) {
+                if (rhsVec.mDy < 0) {
+                    intersectAngle = M_PI - (lhsAngle - rhsAngle);
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = M_PI - lhsAngle - intersectAngle * 0.5f;
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+                }
+                else {
+                    intersectAngle = lhsAngle - rhsAngle;
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = rhsAngle + intersectAngle * 0.5f;
+                    pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+                }
+            }
+            else {
+                if (rhsVec.mDy < 0) {
+                    intersectAngle = M_PI - (rhsAngle - lhsAngle);
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = M_PI - rhsAngle - intersectAngle * 0.5f;
+                    pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+                else {
+                    intersectAngle = rhsAngle - lhsAngle;
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = M_PI - intersectAngle;
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+                }
+            }
+        }
+        else {
+            if (lhsAngle > rhsAngle) {
+                if (rhsVec.mDy < 0) {
+                    intersectAngle = lhsAngle - rhsAngle;
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = rhsAngle + intersectAngle * 0.5f;
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+                else {
+                    intersectAngle = M_PI - (lhsAngle - rhsAngle);
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = M_PI - lhsAngle - intersectAngle * 0.5f;
+                    pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+            }
+            else {
+                if (rhsVec.mDy < 0) {
+                    intersectAngle = rhsAngle - lhsAngle;
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = rhsAngle - intersectAngle * 0.5f;
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+                else {
+                    intersectAngle = M_PI - (rhsAngle - lhsAngle);
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = intersectAngle * 0.5f - lhsAngle;
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+                }
+            }
+        }
+    }
+    else {// lhsSlope < 0
+        if(lhsVec.mDy < 0) {
+            if (lhsAngle > rhsAngle) {
+                if(rhsVec.mDy < 0) {
+                    intersectAngle = M_PI - (lhsAngle - rhsAngle);
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = intersectAngle * 0.5f - (M_PI - lhsAngle);
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+                else {
+                    intersectAngle = lhsAngle - rhsAngle;
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = intersectAngle * 0.5f + (M_PI - lhsAngle);
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+                }
+            }
+            else {
+                if(rhsVec.mDy < 0) {
+                    intersectAngle = M_PI - (rhsAngle - lhsAngle);
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = lhsAngle - intersectAngle * 0.5f;
+                    pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+                }
+                else {
+                    intersectAngle = rhsAngle - lhsAngle;
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = M_PI - rhsAngle + intersectAngle * 0.5f;
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+                }
+            }
+        }
+        else {
+            if (lhsAngle > rhsAngle) {
+                if(rhsVec.mDy < 0) {
+                    intersectAngle = lhsAngle - rhsAngle;
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = rhsAngle + intersectAngle * 0.5f;
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+                else {
+                    intersectAngle = M_PI - (lhsAngle - rhsAngle);
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle =  intersectAngle * 0.5f - (M_PI - lhsAngle);
+                    pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+                }
+            }
+            else {
+                if(rhsVec.mDy < 0) {
+                    intersectAngle = rhsAngle - lhsAngle;
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = M_PI - rhsAngle + intersectAngle * 0.5f;
+                    pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+                else {
+                    intersectAngle = M_PI - (rhsAngle - lhsAngle);
+                    len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
+                    dstAngle = intersectAngle * 0.5f - (M_PI - rhsAngle);
+                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    pt1->mY = midPt.mY - (float) (len * std::sin(dstAngle));
+
+                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mY = midPt.mY + (float) (len * std::sin(dstAngle));
+                }
+            }
+        }
+    }
+
+}
 
 void VectorHelper::segmentToPolygon(Polygon2d *polygon, const Point2d &startPt,
                                     const Point2d &endPt,
@@ -141,17 +580,33 @@ void VectorHelper::segToContinuousPolygon(Polygon2d *polygon, const Point2d *ptO
                                           uint32_t start, uint32_t count, const uint32_t lineWidth) {
     uint32_t end =  start + 1;
     if(end > count - 1) {
-        LogE("invalid start position %u", start);
+        LogE("invalid input, start(%u), count(%u)", start, count);
         return;
     }
     if (count == 2) {
         segmentToPolygon(polygon, ptOnScreen[0], ptOnScreen[1], lineWidth);
     } else if (start == 0) {
+        Polygon2d tmp;
+        segmentToPolygon(&tmp, ptOnScreen[start], ptOnScreen[end], lineWidth);
 
-    } else if (end == count - 1) {
+        Point2d innerPt, outerPt;
+        lineTurningPt(&innerPt, &outerPt, ptOnScreen[start], ptOnScreen[end], ptOnScreen[end + 1], lineWidth);
 
+        Vector2d mainVec(ptOnScreen[start], ptOnScreen[end]);
+        fillTurningPtPolygon(polygon, true, mainVec, tmp, innerPt, outerPt);
+    } else if (start == count - 2) {
+        Polygon2d tmp;
+        segmentToPolygon(&tmp, ptOnScreen[start], ptOnScreen[end], lineWidth);
+
+        Point2d innerPt, outerPt;
+        lineTurningPt(&innerPt, &outerPt, ptOnScreen[start - 1], ptOnScreen[start], ptOnScreen[end], lineWidth);
+
+        Vector2d mainVec(ptOnScreen[start], ptOnScreen[end]);
+        fillTurningPtPolygon(polygon, false, mainVec, tmp, innerPt, outerPt);
     } else {
-
+        Point2d innerPt1, outerPt1, innerPt2, outerPt2;
+        lineTurningPt(&innerPt1, &outerPt1, ptOnScreen[start - 1], ptOnScreen[start], ptOnScreen[end], lineWidth);
+        lineTurningPt(&innerPt2, &outerPt2, ptOnScreen[start], ptOnScreen[end], ptOnScreen[end + 1], lineWidth);
     }
 }
 

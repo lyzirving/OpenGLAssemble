@@ -30,14 +30,23 @@ public:
  */
 struct Vector2d {
 public:
-    Point2d mStart;
-    Point2d mEnd;
+    Point2d mStart, mEnd;
+    float mDx, mDy;
 
-    Vector2d() : mStart(), mEnd() {}
+    Vector2d() : mStart(), mEnd(), mDx(0.f), mDy(0.f) {}
     Vector2d(int32_t startX, int32_t startY, int32_t endX, int32_t endY) : mStart(startX, startY),
-                                                                           mEnd(endX, endY) {}
+                                                                           mEnd(endX, endY),
+                                                                           mDx(endX - startX),
+                                                                           mDy(endY - startY) {}
     Vector2d(const Point2d &startPt, const Point2d &endPt) : mStart(startPt.mX, startPt.mY),
-                                                             mEnd(endPt.mX, endPt.mY) {}
+                                                             mEnd(endPt.mX, endPt.mY),
+                                                             mDx(endPt.mX - startPt.mX),
+                                                             mDy(endPt.mY - startPt.mY) {}
+    /**
+     * calculate the azimuth of this vector.
+     * @return azimuth of vector, the result is limited from 0 to Pi.
+     */
+    double azimuth();
     float perpendicularSlope();
     float slope();
 };
@@ -75,6 +84,13 @@ public:
 private:
     VectorHelper();
     ~VectorHelper();
+
+    static void fillTurningPtPolygon(Polygon2d *result, bool setForLeft, Vector2d &mainVec, const Polygon2d &polygon,
+                                const Point2d &innerPt, const Point2d &outerPt);
+    static void lineTurningPt(Point2d *pt1, Point2d *pt2,
+                              const Point2d &startPt, const Point2d &midPt,
+                              const Point2d &endPt,
+                              const uint32_t lineWidth);
 };
 
 #endif //OPENGLASSEMBLE_VECTORHELPER_H
