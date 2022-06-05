@@ -137,6 +137,24 @@ void VectorHelper::segmentToPolygon(Polygon2d *polygon, const Point2d &startPt,
     }
 }
 
+void VectorHelper::segToContinuousPolygon(Polygon2d *polygon, const Point2d *ptOnScreen,
+                                          uint32_t start, uint32_t count, const uint32_t lineWidth) {
+    uint32_t end =  start + 1;
+    if(end > count - 1) {
+        LogE("invalid start position %u", start);
+        return;
+    }
+    if (count == 2) {
+        segmentToPolygon(polygon, ptOnScreen[0], ptOnScreen[1], lineWidth);
+    } else if (start == 0) {
+
+    } else if (end == count - 1) {
+
+    } else {
+
+    }
+}
+
 void VectorHelper::vertex2d(float *vertex, float x, float y, const Viewport &viewport) {
     if (viewport.mWidth == 0 || viewport.mHeight == 0) {
         LogE("invalid view port(%u, %u, %u, %u)", viewport.mStartX, viewport.mStartY,

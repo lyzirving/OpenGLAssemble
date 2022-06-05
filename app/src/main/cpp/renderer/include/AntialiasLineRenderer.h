@@ -23,6 +23,7 @@ public:
      */
     void drawSegment(const Point2d &startPt, const Point2d &endPt, uint32_t lineWidth, uint32_t color = 0xffffffff);
     void drawLines(Point2d *points, uint32_t count, uint32_t lineWidth, uint32_t color = 0xffffffff);
+    void drawContinuousLines(Point2d *points, uint32_t count, uint32_t lineWidth, uint32_t color = 0xffffffff);
     virtual void release() override;
 
 protected:

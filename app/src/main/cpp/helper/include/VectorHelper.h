@@ -68,6 +68,8 @@ public:
      */
     static void segmentToPolygon(Polygon2d *polygon, const Point2d &startPt, const Point2d &endPt,
                                  const uint32_t lineWidth);
+    static void segToContinuousPolygon(Polygon2d *polygon, const Point2d *ptOnScreen, uint32_t start,
+            uint32_t count, const uint32_t lineWidth);
     static void vertex2d(float *vertex, float x, float y, const Viewport &viewport);
     static void vertex2d(float *vertex, const Point2d &pt, const Viewport &viewport);
 private:
