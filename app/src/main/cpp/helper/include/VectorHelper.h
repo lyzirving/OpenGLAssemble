@@ -85,8 +85,13 @@ private:
     VectorHelper();
     ~VectorHelper();
 
-    static void fillTurningPtPolygon(Polygon2d *result, bool setForLeft, Vector2d &mainVec, const Polygon2d &polygon,
-                                const Point2d &innerPt, const Point2d &outerPt);
+    static void fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft, Vector2d &mainVec,
+                                        const Polygon2d &polygon,
+                                        const Point2d &innerPt, const Point2d &outerPt);
+    static void fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &preStart,
+                                        const Point2d &start, const Point2d &end,
+                                        const Point2d &startInnerPt, const Point2d &startOuterPt,
+                                        const Point2d &endInnerPt, const Point2d &endOuterPt);
     static void lineTurningPt(Point2d *pt1, Point2d *pt2,
                               const Point2d &startPt, const Point2d &midPt,
                               const Point2d &endPt,

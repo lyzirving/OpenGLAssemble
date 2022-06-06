@@ -65,16 +65,66 @@ VectorHelper::VectorHelper() = default;
 
 VectorHelper::~VectorHelper() = default;
 
-void VectorHelper::fillTurningPtPolygon(Polygon2d *result, bool setForLeft,
+void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                                         Vector2d &mainVec, const Polygon2d &polygon,
                                         const Point2d &innerPt, const Point2d &outerPt) {
     float slope = mainVec.slope();
     if(setForLeft) {
         if(slope == 0) {
+            if(mainVec.mDx < 0) {
+                result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
+                result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
 
+                Vector2d compare(polygon.mRightTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mLeftTop.set(innerPt.mX, innerPt.mY);
+                    result->mLeftBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mLeftTop.set(outerPt.mX, outerPt.mY);
+                    result->mLeftBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
+            else {
+                result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
+                result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
+
+                Vector2d compare(polygon.mLeftTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mRightTop.set(innerPt.mX, innerPt.mY);
+                    result->mRightBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mRightTop.set(outerPt.mX, outerPt.mY);
+                    result->mRightBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
         }
         else if(slope == MAXFLOAT) {
+            if(mainVec.mDy < 0) {
+                result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
+                result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
 
+                Vector2d compare(polygon.mLeftTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mRightTop.set(innerPt.mX, innerPt.mY);
+                    result->mRightBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mRightTop.set(outerPt.mX, outerPt.mY);
+                    result->mRightBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
+            else {
+                result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
+                result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
+
+                Vector2d compare(polygon.mRightTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mLeftTop.set(innerPt.mX, innerPt.mY);
+                    result->mLeftBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mLeftTop.set(outerPt.mX, outerPt.mY);
+                    result->mLeftTop.set(innerPt.mX, innerPt.mY);
+                }
+            }
         }
         else if(slope > 0) {
             if(mainVec.mDy < 0) {
@@ -135,18 +185,533 @@ void VectorHelper::fillTurningPtPolygon(Polygon2d *result, bool setForLeft,
             }
         }
     }
-    else {
+    else {// set for right handed side vector
         if(slope == 0) {
+            if(mainVec.mDx < 0) {
+                result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
+                result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
 
+                Vector2d compare(polygon.mLeftTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mRightTop.set(innerPt.mX, innerPt.mY);
+                    result->mRightBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mRightTop.set(outerPt.mX, outerPt.mY);
+                    result->mRightBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
+            else {
+                result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
+                result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
+
+                Vector2d compare(polygon.mRightTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mLeftTop.set(innerPt.mX, innerPt.mY);
+                    result->mLeftBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mLeftTop.set(outerPt.mX, outerPt.mY);
+                    result->mLeftBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
         }
         else if(slope == MAXFLOAT) {
+            if(mainVec.mDy < 0) {
+                result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
+                result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
 
+                Vector2d compare(polygon.mRightTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mLeftTop.set(innerPt.mX, innerPt.mY);
+                    result->mLeftBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mLeftTop.set(outerPt.mX, outerPt.mY);
+                    result->mLeftBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
+            else {
+                result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
+                result->mLeftBottom.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
+
+                Vector2d compare(polygon.mLeftTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mRightTop.set(innerPt.mX, innerPt.mY);
+                    result->mRightBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mRightTop.set(outerPt.mX, outerPt.mY);
+                    result->mRightBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
         }
         else if(slope > 0) {
+            if(mainVec.mDy < 0) {
+                result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
+                result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
 
+                Vector2d compare(polygon.mRightTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mLeftTop.set(innerPt.mX, innerPt.mY);
+                    result->mLeftBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mLeftTop.set(outerPt.mX, outerPt.mY);
+                    result->mLeftBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
+            else {
+                result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
+                result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
+
+                Vector2d compare(polygon.mLeftTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mRightTop.set(innerPt.mX, innerPt.mY);
+                    result->mRightBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mRightTop.set(outerPt.mX, outerPt.mY);
+                    result->mRightBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
         }
         else {// slope < 0
+            if (mainVec.mDy < 0) {
+                result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
+                result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
 
+                Vector2d compare(polygon.mLeftTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mRightTop.set(innerPt.mX, innerPt.mY);
+                    result->mRightBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mRightTop.set(outerPt.mX, outerPt.mY);
+                    result->mRightBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
+            else {
+                result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
+                result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
+
+                Vector2d compare(polygon.mRightTop, innerPt);
+                if(std::abs(slope - compare.slope()) < 0.05) {
+                    result->mLeftTop.set(innerPt.mX, innerPt.mY);
+                    result->mLeftBottom.set(outerPt.mX, outerPt.mY);
+                } else {
+                    result->mLeftTop.set(outerPt.mX, outerPt.mY);
+                    result->mLeftBottom.set(innerPt.mX, innerPt.mY);
+                }
+            }
+        }
+    }
+}
+
+void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &preStart,
+                                           const Point2d &start, const Point2d &end,
+                                           const Point2d &startInnerPt, const Point2d &startOuterPt,
+                                           const Point2d &endInnerPt, const Point2d &endOuterPt) {
+    Vector2d mainVec(start, end);
+    float slope = mainVec.slope();
+    double azimuth = mainVec.azimuth();
+
+    Vector2d preVec(preStart, start);
+    double preVecAzi = mainVec.azimuth();
+
+    Vector2d cmp(startInnerPt, endInnerPt);
+
+    if(slope == 0) {
+        if(mainVec.mDx < 0) {
+            if(preVec.mDy >= 0) {
+                result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
+                result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
+                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                    result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                } else {
+                    result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                    result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                }
+            }
+            else {
+                result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
+                result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
+                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                    result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                } else {
+                    result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                    result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                }
+            }
+        }
+        else {
+            if(preVec.mDy >= 0) {
+                result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
+                result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
+                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                    result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                } else {
+                    result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                    result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                }
+            }
+            else {
+                result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
+                result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
+                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                    result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                } else {
+                    result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                    result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                }
+            }
+        }
+    }
+    else if(slope == MAXFLOAT) {
+        if(mainVec.mDy < 0) {
+            if((preVec.mDy > 0 && preVecAzi < M_PI_2) || (preVec.mDy < 0 && preVecAzi > M_PI_2)) {
+                result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
+                result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
+                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                    result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                } else {
+                    result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                    result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                }
+            }
+            else if((preVec.mDy > 0 && preVecAzi > M_PI_2) || (preVec.mDy < 0 && preVecAzi < M_PI_2)) {
+                result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
+                result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
+                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                    result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                } else {
+                    result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                    result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                }
+            }
+        }
+        else {
+            if((preVec.mDy > 0 && preVecAzi < M_PI_2) || (preVec.mDy < 0 && preVecAzi > M_PI_2)) {
+                result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
+                result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
+                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                    result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                } else {
+                    result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                    result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                }
+            }
+            else if((preVec.mDy > 0 && preVecAzi > M_PI_2) || (preVec.mDy < 0 && preVecAzi < M_PI_2)) {
+                result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
+                result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
+                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                    result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                } else {
+                    result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                    result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                }
+            }
+        }
+    }
+    else if(slope > 0) {
+        if(mainVec.mDy < 0) {
+            if(preVec.mDy > 0) {
+                if(preVecAzi > azimuth) {
+                    result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
+                    result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    } else {
+                        result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    }
+                }
+                else {
+                    result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
+                    result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    } else {
+                        result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    }
+                }
+            }
+            else if(preVec.mDy < 0) {
+                if(preVecAzi > azimuth) {
+                    result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
+                    result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    } else {
+                        result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    }
+                }
+                else {
+                    result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
+                    result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    } else {
+                        result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    }
+                }
+            }
+            else {
+                if (preStart.mX < start.mX) {
+                    result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
+                    result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    } else {
+                        result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    }
+                }
+                else {
+                    result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
+                    result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    } else {
+                        result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    }
+                }
+            }
+        }
+        else {//mDy > 0
+            if(preVec.mDy > 0) {
+                if(preVecAzi > azimuth) {
+                    result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
+                    result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    } else {
+                        result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    }
+                }
+                else {
+                    result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
+                    result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    } else {
+                        result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    }
+                }
+            }
+            else if(preVec.mDy < 0){//preVec.mDy < 0
+                if(preVecAzi > azimuth) {
+                    result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
+                    result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    } else {
+                        result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    }
+                }
+                else {
+                    result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
+                    result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    } else {
+                        result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    }
+                }
+            }
+            else { //preVec.mDy == 0
+                if(preStart.mX > start.mX) {
+                    result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
+                    result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    } else {
+                        result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    }
+                }
+                else {
+                    result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
+                    result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    } else {
+                        result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    }
+                }
+            }
+        }
+    }
+    else {//slope < 0
+        if(mainVec.mDy < 0) {
+            if(preVec.mDy > 0) {
+                if(preVecAzi > azimuth) {
+                    result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
+                    result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    } else {
+                        result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    }
+                }
+                else {
+                    result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
+                    result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    } else {
+                        result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    }
+                }
+            }
+            else if(preVec.mDy < 0) {
+                if(preVecAzi > azimuth) {
+                    result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
+                    result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    } else {
+                        result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    }
+                }
+                else {
+                    result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
+                    result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    } else {
+                        result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    }
+                }
+            }
+            else {
+                if(preStart.mX < start.mX) {
+                    result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
+                    result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    } else {
+                        result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    }
+                }
+                else {
+                    result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
+                    result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    } else {
+                        result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    }
+                }
+            }
+        }
+        else {
+            if(preVec.mDy > 0) {
+                if(preVecAzi > azimuth) {
+                    result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
+                    result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    } else {
+                        result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    }
+                }
+                else {
+                    result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
+                    result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    } else {
+                        result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    }
+                }
+            }
+            else if(preVec.mDy < 0) {
+                if(preVecAzi > azimuth) {
+                    result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
+                    result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    } else {
+                        result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    }
+                }
+                else {
+                    result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
+                    result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    } else {
+                        result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    }
+                }
+            }
+            else {
+                if(preStart.mX < start.mX) {
+                    result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
+                    result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    } else {
+                        result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    }
+                }
+                else {
+                    result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
+                    result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
+                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                        result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
+                        result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
+                    } else {
+                        result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
+                        result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
+                    }
+                }
+            }
         }
     }
 }
@@ -593,7 +1158,7 @@ void VectorHelper::segToContinuousPolygon(Polygon2d *polygon, const Point2d *ptO
         lineTurningPt(&innerPt, &outerPt, ptOnScreen[start], ptOnScreen[end], ptOnScreen[end + 1], lineWidth);
 
         Vector2d mainVec(ptOnScreen[start], ptOnScreen[end]);
-        fillTurningPtPolygon(polygon, true, mainVec, tmp, innerPt, outerPt);
+        fillTurningPtPolygon_v1(polygon, true, mainVec, tmp, innerPt, outerPt);
     } else if (start == count - 2) {
         Polygon2d tmp;
         segmentToPolygon(&tmp, ptOnScreen[start], ptOnScreen[end], lineWidth);
@@ -602,11 +1167,13 @@ void VectorHelper::segToContinuousPolygon(Polygon2d *polygon, const Point2d *ptO
         lineTurningPt(&innerPt, &outerPt, ptOnScreen[start - 1], ptOnScreen[start], ptOnScreen[end], lineWidth);
 
         Vector2d mainVec(ptOnScreen[start], ptOnScreen[end]);
-        fillTurningPtPolygon(polygon, false, mainVec, tmp, innerPt, outerPt);
+        fillTurningPtPolygon_v1(polygon, false, mainVec, tmp, innerPt, outerPt);
     } else {
         Point2d innerPt1, outerPt1, innerPt2, outerPt2;
         lineTurningPt(&innerPt1, &outerPt1, ptOnScreen[start - 1], ptOnScreen[start], ptOnScreen[end], lineWidth);
         lineTurningPt(&innerPt2, &outerPt2, ptOnScreen[start], ptOnScreen[end], ptOnScreen[end + 1], lineWidth);
+
+        fillTurningPtPolygon_v2(polygon, ptOnScreen[start - 1], ptOnScreen[start], ptOnScreen[end], innerPt1, outerPt1, innerPt2, outerPt2);
     }
 }
 
