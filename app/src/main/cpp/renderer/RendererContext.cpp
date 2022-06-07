@@ -10,6 +10,7 @@
 #include "TwoDimensRenderer.h"
 #include "GraphicRenderer.h"
 #include "AntialiasLineRenderer.h"
+#include "ContinuousLineRenderer.h"
 #include "RendererMetadata.h"
 #include "VectorHelper.h"
 #include "LogUtil.h"
@@ -34,6 +35,7 @@ RendererContext::RendererContext(const char *name) : mThreadId(0), mLooper(name)
                                                      mTwoDimensRenderer(new TwoDimensRenderer(renderer::TWO_DIMEN_RENDERER)),
                                                      mGraphicRenderer(new GraphicRenderer(renderer::GRAPHIC_RENDERER)),
                                                      mAntialiasLineRenderer(new AntialiasLineRenderer(renderer::ANTI_ALIAS_RENDERER)),
+                                                     mContinuousLineRenderer(new ContinuousLineRenderer(renderer::CONTINUOUS_LINE_RENDERER)),
                                                      mWindows() {
     pthread_create(&mThreadId, nullptr, threadStart, this);
 }
@@ -42,6 +44,7 @@ RendererContext::~RendererContext() {
     mTwoDimensRenderer.reset();
     mGraphicRenderer.reset();
     mAntialiasLineRenderer.reset();
+    mContinuousLineRenderer.reset();
     mEglCore.reset();
 }
 
@@ -89,25 +92,27 @@ void RendererContext::draw() {
         uint32_t height = window->getHeight();
 
         glViewport(0, 0, width, height);
-        mAntialiasLineRenderer->updateViewport(0, 0, width, height);
+        mContinuousLineRenderer->updateViewport(0, 0, width, height);
+        //mAntialiasLineRenderer->updateViewport(0, 0, width, height);
 
-        Point2d pt1(float(width) / 2.f - float(width) / 3.f, float(height) / 2.f + float(height) / 3.f);
-        Point2d pt2(float(width) / 2.f + float(width) / 5.f, float(height) / 2.f - float(height) / 6.f);
-
-        Point2d lines[4];
+        Point2d lines[3];
         lines[0].mX = float(width) / 2.f - float(width) / 3.f - float(width) / 9.f;
         lines[0].mY = float(height) / 2.f + float(height) / 3.f;
         lines[1].mX = float(width) / 2.f + float(width) / 5.f;
         lines[1].mY = float(height) / 2.f - float(height) / 6.f;
         lines[2].mX = float(width) / 2.f + float(width) / 3.f;
         lines[2].mY = float(height) / 2.f + float(height) / 4.f;
-        lines[3].mX = float(width) / 2.f + float(width) / 3.f - float(width) / 7.f;
-        lines[3].mY = float(height) / 2.f + float(height) / 4.f + float(height) / 8.f;
+//        lines[3].mX = float(width) / 2.f + float(width) / 3.f - float(width) / 7.f;
+//        lines[3].mY = float(height) / 2.f + float(height) / 4.f + float(height) / 8.f;
 
-        mAntialiasLineRenderer->drawLines(lines, 4, 40, 0xf26522ff);
-        /*mAntialiasLineRenderer->drawSegment(lines[0], lines[1], 40, 0xf26522ff);
-        mAntialiasLineRenderer->drawSegment(lines[1], lines[2], 40, 0xf26522ff);
-        mAntialiasLineRenderer->drawSegment(lines[2], lines[3], 40, 0xf26522ff);*/
+        mContinuousLineRenderer->drawLines(lines, 3, 40, 0xf26522ff);
+//        lines[3].mX = float(width) / 2.f + float(width) / 3.f - float(width) / 7.f;
+//        lines[3].mY = float(height) / 2.f + float(height) / 4.f + float(height) / 8.f;
+
+//        mAntialiasLineRenderer->drawLines(lines, 4, 40, 0xf26522ff);
+//        mAntialiasLineRenderer->drawSegment(lines[0], lines[1], 40, 0xf26522ff);
+//        mAntialiasLineRenderer->drawSegment(lines[1], lines[2], 40, 0xf26522ff);
+//        mAntialiasLineRenderer->drawSegment(lines[2], lines[3], 40, 0xf26522ff);
 
         float vArray[4];
         mGraphicRenderer->updateViewport(0, 0, width, height);
@@ -119,9 +124,9 @@ void RendererContext::draw() {
         VectorHelper::vertex2d(vArray + 2, lines[2].mX, lines[2].mY, mGraphicRenderer->getViewport());
         mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 3);
 
-        VectorHelper::vertex2d(vArray, lines[2].mX, lines[2].mY, mGraphicRenderer->getViewport());
-        VectorHelper::vertex2d(vArray + 2, lines[3].mX, lines[3].mY, mGraphicRenderer->getViewport());
-        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 3);
+//        VectorHelper::vertex2d(vArray, lines[2].mX, lines[2].mY, mGraphicRenderer->getViewport());
+//        VectorHelper::vertex2d(vArray + 2, lines[3].mX, lines[3].mY, mGraphicRenderer->getViewport());
+//        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 3);
 
         window->swapBuffer();
         it++;
@@ -153,6 +158,9 @@ void RendererContext::prepareAndLoop() {
     if(!mAntialiasLineRenderer->init())
         goto done;
 
+    if(!mContinuousLineRenderer->init())
+        goto done;
+
     mLooper.loop();
 
     done:
@@ -169,6 +177,7 @@ void RendererContext::quitLoop() {
     mTwoDimensRenderer->release();
     mGraphicRenderer->release();
     mAntialiasLineRenderer->release();
+    mContinuousLineRenderer->release();
 }
 
 void RendererContext::sendMessage(uint32_t what, uint32_t arg0, uint32_t arg1, const char* argStr) {

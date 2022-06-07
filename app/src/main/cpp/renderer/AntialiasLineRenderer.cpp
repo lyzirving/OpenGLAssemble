@@ -181,13 +181,6 @@ void AntialiasLineRenderer::drawLines(Point2d *points, uint32_t count, uint32_t 
     glUseProgram(0);
 }
 
-void AntialiasLineRenderer::drawContinuousLines(Point2d *points, uint32_t count, uint32_t lineWidth, uint32_t color) {
-    if(mViewport.mWidth <= 0 || mViewport.mHeight <= 0) {
-        LogI("(%s) invalid view port", mName.c_str());
-        return;
-    }
-}
-
 bool AntialiasLineRenderer::initProgram() {
     mProgram = GlHelper::buildProgram(
             GlHelper::readAssets("shader/anti_alias_line_vertex_shader.glsl"),

@@ -66,6 +66,7 @@ namespace renderer
     static const char TWO_DIMEN_RENDERER[] = "2d renderer";
     static const char GRAPHIC_RENDERER[] = "graphic renderer";
     static const char ANTI_ALIAS_RENDERER[] = "antialias renderer";
+    static const char CONTINUOUS_LINE_RENDERER[] = "continuous line renderer";
 };
 
 #endif //OPENGLASSEMBLE_RENDERERMETADATA_H

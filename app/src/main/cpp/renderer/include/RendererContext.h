@@ -15,6 +15,7 @@ class WindowSurface;
 class TwoDimensRenderer;
 class GraphicRenderer;
 class AntialiasLineRenderer;
+class ContinuousLineRenderer;
 
 enum MessageId : uint8_t {
     MESSAGE_QUIT = 0x00,
@@ -45,6 +46,7 @@ private:
     std::shared_ptr<TwoDimensRenderer> mTwoDimensRenderer;
     std::shared_ptr<GraphicRenderer> mGraphicRenderer;
     std::shared_ptr<AntialiasLineRenderer> mAntialiasLineRenderer;
+    std::shared_ptr<ContinuousLineRenderer> mContinuousLineRenderer;
     std::unordered_map<std::string, std::shared_ptr<WindowSurface>> mWindows;
 };
 
