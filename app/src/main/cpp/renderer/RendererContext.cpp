@@ -95,17 +95,17 @@ void RendererContext::draw() {
         mContinuousLineRenderer->updateViewport(0, 0, width, height);
         //mAntialiasLineRenderer->updateViewport(0, 0, width, height);
 
-        Point2d lines[3];
+        Point2d lines[4];
         lines[0].mX = float(width) / 2.f - float(width) / 3.f - float(width) / 9.f;
         lines[0].mY = float(height) / 2.f + float(height) / 3.f;
         lines[1].mX = float(width) / 2.f + float(width) / 5.f;
         lines[1].mY = float(height) / 2.f - float(height) / 6.f;
         lines[2].mX = float(width) / 2.f + float(width) / 3.f;
         lines[2].mY = float(height) / 2.f + float(height) / 4.f;
-//        lines[3].mX = float(width) / 2.f + float(width) / 3.f - float(width) / 7.f;
-//        lines[3].mY = float(height) / 2.f + float(height) / 4.f + float(height) / 8.f;
+        lines[3].mX = float(width) / 2.f + float(width) / 3.f - float(width) / 7.f;
+        lines[3].mY = float(height) / 2.f + float(height) / 4.f + float(height) / 8.f;
 
-        mContinuousLineRenderer->drawLines(lines, 3, 40, 0xf26522ff);
+        mContinuousLineRenderer->drawLines(lines, 4, 40, 0xf26522ff);
 //        lines[3].mX = float(width) / 2.f + float(width) / 3.f - float(width) / 7.f;
 //        lines[3].mY = float(height) / 2.f + float(height) / 4.f + float(height) / 8.f;
 
@@ -124,9 +124,9 @@ void RendererContext::draw() {
         VectorHelper::vertex2d(vArray + 2, lines[2].mX, lines[2].mY, mGraphicRenderer->getViewport());
         mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 3);
 
-//        VectorHelper::vertex2d(vArray, lines[2].mX, lines[2].mY, mGraphicRenderer->getViewport());
-//        VectorHelper::vertex2d(vArray + 2, lines[3].mX, lines[3].mY, mGraphicRenderer->getViewport());
-//        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 3);
+        VectorHelper::vertex2d(vArray, lines[2].mX, lines[2].mY, mGraphicRenderer->getViewport());
+        VectorHelper::vertex2d(vArray + 2, lines[3].mX, lines[3].mY, mGraphicRenderer->getViewport());
+        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 3);
 
         window->swapBuffer();
         it++;

@@ -56,12 +56,12 @@ public class LineTestView extends View {
         super.onLayout(changed, left, top, right, bottom);
         int width = getMeasuredWidth();
         int height = getMeasuredHeight();
-        mPt1.x = width / 2.f + width / 5.f;
-        mPt1.y = height / 2.f - height / 3.f;
-        mPt2.x = width / 2.f;
-        mPt2.y = height / 2.f;
-        mPt3.x = width / 2.f - width / 3.f;
-        mPt3.y = height / 2.f - height / 10.f;
+        mPt1.x = (width) / 2.f + (width) / 5.f;;
+        mPt1.y = (height) / 2.f - (height) / 6.f;
+        mPt2.x = (width) / 2.f + (width) / 3.f;
+        mPt2.y = (height) / 2.f + (height) / 4.f;
+        mPt3.x = (width) / 2.f + (width) / 3.f - (width) / 7.f;
+        mPt3.y = (height) / 2.f + (height) / 4.f + (height) / 8.f;
     }
 
     @Override
@@ -249,7 +249,6 @@ public class LineTestView extends View {
     }
 
     private void polygon2() {
-        //todo left vector's slope equals to right vector's slope
         Vector2d lhsVec = new Vector2d(mPt1, mPt2);
         Vector2d rhsVec = new Vector2d(mPt2, mPt3);
         float lhsSlope = lhsVec.slope();

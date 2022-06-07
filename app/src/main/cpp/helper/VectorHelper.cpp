@@ -301,6 +301,7 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
     }
 }
 
+//todo how to judge two points are on the same side of a line
 void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &preStart,
                                            const Point2d &start, const Point2d &end,
                                            const Point2d &startInnerPt, const Point2d &startOuterPt,

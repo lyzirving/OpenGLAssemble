@@ -37,7 +37,7 @@ private:
     std::atomic<bool> mRunning;
     std::atomic<bool> mPolling;
     // mHead is only used as place a holder
-    Message mHead;//todo use link to implement message queue;
+    Message mHead;
 
     std::mutex mMutex;
 
