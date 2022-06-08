@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.4.1)
 include_directories(${CMAKE_SOURCE_DIR}/common/include)
 include_directories(${CMAKE_SOURCE_DIR}/renderer/include)
 include_directories(${CMAKE_SOURCE_DIR}/helper/include)
+include_directories(${CMAKE_SOURCE_DIR}/third/include)
 
 aux_source_directory(${CMAKE_SOURCE_DIR}/common CPP_COMMON)
 aux_source_directory(${CMAKE_SOURCE_DIR}/renderer CPP_RENDERER)
