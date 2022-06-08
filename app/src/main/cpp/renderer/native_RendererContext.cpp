@@ -3,7 +3,7 @@
 //
 #include <android/native_window_jni.h>
 
-#include "RendererContext.h"
+#include "CurveRendererContext.h"
 #include "GlHelper.h"
 #include "LogUtil.h"
 
@@ -14,18 +14,36 @@
 
 #define JAVA_CLASS "com/lyzirving/opengl/assemble/renderer/RendererContext"
 
+enum RendererType : uint8_t {
+    BASE = 0x01,
+    CURVE
+};
+
 static struct {
     jclass mClazz;
     jmethodID mMethodOnThreadQuit;
 } gRendererContextClassInfo;
 
 static jlong nativeCreateContext(JNIEnv *env, jclass clazz, jstring jName,
-                                 jobject assetsManager) {
+                                 jobject assetsManager, jint type) {
     const char *name = env->GetStringUTFChars(jName, nullptr);
-    auto *context = new RendererContext(name);
+    RendererContext *ptr{nullptr};
+    switch (type) {
+        case RendererType::BASE: {
+            ptr = new RendererContext(name);
+            break;
+        }
+        case RendererType::CURVE: {
+            ptr = new CurveRendererContext(name);
+            break;
+        }
+        default: {
+            break;
+        }
+    }
     env->ReleaseStringUTFChars(jName, name);
     GlHelper::setAssetsManager(env, assetsManager);
-    return reinterpret_cast<jlong>(context);
+    return reinterpret_cast<jlong>(ptr);
 }
 
 static void nativeSendMessage(JNIEnv *env, jclass clazz, jlong address, jint what, jint arg0, jint arg1) {
@@ -68,7 +86,7 @@ static void nativeRemoveWindow(JNIEnv *env, jclass clazz, jlong address, jstring
 static JNINativeMethod methods[] = {
         {
                 "nCreateContext",
-                "(Ljava/lang/String;Landroid/content/res/AssetManager;)J",
+                "(Ljava/lang/String;Landroid/content/res/AssetManager;I)J",
                 (void *) nativeCreateContext
         },
         {

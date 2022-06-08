@@ -27,9 +27,10 @@ enum MessageId : uint8_t {
 class RendererContext {
 public:
     RendererContext(const char* name);
-    ~RendererContext();
 
-    void draw();
+    virtual ~RendererContext();
+    virtual void draw();
+
     void handleRegisterWindow(const char *name);
     void prepareAndLoop();
     void quitLoop();
@@ -38,16 +39,20 @@ public:
     void removeWindow(const char* name);
     void sendMessage(uint32_t what, uint32_t arg0 = 0, uint32_t arg1 = 0, const char* argStr = nullptr);
 
-private:
+protected:
+    virtual bool onPrepare();
+    virtual void onQuit();
 
     pthread_t mThreadId;
     SimpleLooper mLooper;
     std::shared_ptr<EglCore> mEglCore;
+    std::unordered_map<std::string, std::shared_ptr<WindowSurface>> mWindows;
+
+private:
     std::shared_ptr<TwoDimensRenderer> mTwoDimensRenderer;
     std::shared_ptr<GraphicRenderer> mGraphicRenderer;
     std::shared_ptr<AntialiasLineRenderer> mAntialiasLineRenderer;
     std::shared_ptr<ContinuousLineRenderer> mContinuousLineRenderer;
-    std::unordered_map<std::string, std::shared_ptr<WindowSurface>> mWindows;
 };
 
 class RendererHandler : public MessageHandler {

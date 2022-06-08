@@ -173,6 +173,8 @@ void GlHelper::release() {
 void GlHelper::setAssetsManager(_JNIEnv *env, _jobject *manager) {
     //get global ptr of AssetsManger from java
     //it's lifetime is controlled by java
-    gManager = AAssetManager_fromJava(env, manager);
+    if(gManager == nullptr) {
+        gManager = AAssetManager_fromJava(env, manager);
+    }
 }
 

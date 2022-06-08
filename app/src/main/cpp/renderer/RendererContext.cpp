@@ -32,11 +32,11 @@ void *threadStart(void *arg) {
 
 RendererContext::RendererContext(const char *name) : mThreadId(0), mLooper(name),
                                                      mEglCore(new EglCore),
+                                                     mWindows(),
                                                      mTwoDimensRenderer(new TwoDimensRenderer(renderer::TWO_DIMEN_RENDERER)),
                                                      mGraphicRenderer(new GraphicRenderer(renderer::GRAPHIC_RENDERER)),
                                                      mAntialiasLineRenderer(new AntialiasLineRenderer(renderer::ANTI_ALIAS_RENDERER)),
-                                                     mContinuousLineRenderer(new ContinuousLineRenderer(renderer::CONTINUOUS_LINE_RENDERER)),
-                                                     mWindows() {
+                                                     mContinuousLineRenderer(new ContinuousLineRenderer(renderer::CONTINUOUS_LINE_RENDERER)) {
     pthread_create(&mThreadId, nullptr, threadStart, this);
 }
 
@@ -96,13 +96,13 @@ void RendererContext::draw() {
         //mAntialiasLineRenderer->updateViewport(0, 0, width, height);
 
         Point2d lines[4];
-        lines[0].mX = float(width) / 2.f;
+        lines[0].mX = float(width) / 9.f;
         lines[0].mY = float(height) / 7.f;
-        lines[1].mX = float(width) / 2.f + float(width) / 3.f;
+        lines[1].mX = float(width) / 2.f - float(width) / 3.f;
         lines[1].mY = float(height) / 2.f - float(height) / 6.f;
-        lines[2].mX = float(width) / 2.f - float(width) / 5.f;
+        lines[2].mX = float(width) / 2.f + float(width) / 8.f;
         lines[2].mY = float(height) / 2.f + float(height) / 7.f;
-        lines[3].mX = float(width) / 2.f + float(width) / 10.f;
+        lines[3].mX = float(width) / 2.f + float(width) / 4.f;
         lines[3].mY = float(height) / 2.f + float(height) / 9.f;
 
         mContinuousLineRenderer->drawLines(lines, 4, 40, 0xf26522ff);
@@ -141,6 +141,32 @@ void RendererContext::handleRegisterWindow(const char *name) {
     }
 }
 
+bool RendererContext::onPrepare() {
+    if (!mTwoDimensRenderer->init())
+        goto fail;
+
+    if (!mGraphicRenderer->init())
+        goto fail;
+
+    if (!mAntialiasLineRenderer->init())
+        goto fail;
+
+    if (!mContinuousLineRenderer->init())
+        goto fail;
+
+    return true;
+
+    fail:
+    return false;
+}
+
+void RendererContext::onQuit() {
+    mTwoDimensRenderer->release();
+    mGraphicRenderer->release();
+    mAntialiasLineRenderer->release();
+    mContinuousLineRenderer->release();
+}
+
 void RendererContext::prepareAndLoop() {
     if (!mLooper.isValid()) {
         LogE("looper(%s) is not valid", mLooper.getName().c_str());
@@ -149,16 +175,7 @@ void RendererContext::prepareAndLoop() {
     if(!mEglCore->prepare())
         goto done;
 
-    if(!mTwoDimensRenderer->init())
-        goto done;
-
-    if(!mGraphicRenderer->init())
-        goto done;
-
-    if(!mAntialiasLineRenderer->init())
-        goto done;
-
-    if(!mContinuousLineRenderer->init())
+    if(!onPrepare())
         goto done;
 
     mLooper.loop();
@@ -174,10 +191,7 @@ void RendererContext::quitLoop() {
         it = mWindows.erase(it);
         window.reset();
     }
-    mTwoDimensRenderer->release();
-    mGraphicRenderer->release();
-    mAntialiasLineRenderer->release();
-    mContinuousLineRenderer->release();
+    onQuit();
 }
 
 void RendererContext::sendMessage(uint32_t what, uint32_t arg0, uint32_t arg1, const char* argStr) {
