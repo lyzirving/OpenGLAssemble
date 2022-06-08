@@ -56,12 +56,12 @@ public class LineTestView extends View {
         super.onLayout(changed, left, top, right, bottom);
         int width = getMeasuredWidth();
         int height = getMeasuredHeight();
-        mPt1.x = (width) / 2.f + (width) / 5.f;;
-        mPt1.y = (height) / 2.f - (height) / 6.f;
-        mPt2.x = (width) / 2.f + (width) / 3.f;
-        mPt2.y = (height) / 2.f + (height) / 4.f;
-        mPt3.x = (width) / 2.f + (width) / 3.f - (width) / 7.f;
-        mPt3.y = (height) / 2.f + (height) / 4.f + (height) / 8.f;
+        mPt1.x = (width) / 2.f;
+        mPt1.y = (height) / 2.f - (height) / 9.f;
+        mPt2.x = (width) / 2.f - (width) / 5.f;
+        mPt2.y = (height) / 2.f - (height) / 6.f;
+        mPt3.x = (width) / 2.f + (width) / 3.f;
+        mPt3.y = (height) / 2.f + (height) / 4.f;
     }
 
     @Override
@@ -240,12 +240,6 @@ public class LineTestView extends View {
                 }
             }
         }
-    }
-
-    private double distance(PointF pt1, PointF pt2) {
-        double xDiff = Math.pow(pt1.x - pt2.x, 2);
-        double yDiff = Math.pow(pt1.y - pt2.y, 2);
-        return Math.sqrt(xDiff + yDiff);
     }
 
     private void polygon2() {
@@ -438,11 +432,11 @@ public class LineTestView extends View {
                     } else {
                         intersectAngle = rhsAngle - lhsAngle;
                         len = mLineWidth * 0.5f / Math.sin(intersectAngle / 2);
-                        dstAngle = Math.PI - intersectAngle;
-                        mPtHalf1.x = mPt2.x + (float) (len * Math.cos(dstAngle));
+                        dstAngle = lhsAngle + intersectAngle * 0.5f;
+                        mPtHalf1.x = mPt2.x - (float) (len * Math.cos(dstAngle));
                         mPtHalf1.y = mPt2.y + (float) (len * Math.sin(dstAngle));
 
-                        mPtHalf2.x = mPt2.x - (float) (len * Math.cos(dstAngle));
+                        mPtHalf2.x = mPt2.x + (float) (len * Math.cos(dstAngle));
                         mPtHalf2.y = mPt2.y - (float) (len * Math.sin(dstAngle));
                     }
                 }

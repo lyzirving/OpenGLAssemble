@@ -66,8 +66,10 @@ VectorHelper::VectorHelper() = default;
 VectorHelper::~VectorHelper() = default;
 
 void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
-                                        Vector2d &mainVec, const Polygon2d &polygon,
-                                        const Point2d &innerPt, const Point2d &outerPt) {
+                                           const Point2d &centerLineStart, const Point2d &centerLineEnd,
+                                           const Polygon2d &polygon,
+                                           const Point2d &innerPt, const Point2d &outerPt) {
+    Vector2d mainVec(centerLineStart, centerLineEnd);
     float slope = mainVec.slope();
     if(setForLeft) {
         if(slope == 0) {
@@ -75,8 +77,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
                 result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
 
-                Vector2d compare(polygon.mRightTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mRightTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mLeftTop.set(innerPt.mX, innerPt.mY);
                     result->mLeftBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -88,8 +90,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
                 result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
 
-                Vector2d compare(polygon.mLeftTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mLeftTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mRightTop.set(innerPt.mX, innerPt.mY);
                     result->mRightBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -103,8 +105,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
                 result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
 
-                Vector2d compare(polygon.mLeftTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mLeftTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mRightTop.set(innerPt.mX, innerPt.mY);
                     result->mRightBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -116,8 +118,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
                 result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
 
-                Vector2d compare(polygon.mRightTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mRightTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mLeftTop.set(innerPt.mX, innerPt.mY);
                     result->mLeftBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -131,8 +133,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
                 result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
 
-                Vector2d compare(polygon.mLeftTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mLeftTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mRightTop.set(innerPt.mX, innerPt.mY);
                     result->mRightBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -144,8 +146,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
                 result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
 
-                Vector2d compare(polygon.mRightTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mRightTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mLeftTop.set(innerPt.mX, innerPt.mY);
                     result->mLeftBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -159,8 +161,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
                 result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
 
-                Vector2d compare(polygon.mRightTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mRightTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mLeftTop.set(innerPt.mX, innerPt.mY);
                     result->mLeftBottom.set(outerPt.mX, outerPt.mY);
                 }
@@ -173,8 +175,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
                 result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
 
-                Vector2d compare(polygon.mLeftTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mLeftTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mRightTop.set(innerPt.mX, innerPt.mY);
                     result->mRightBottom.set(outerPt.mX, outerPt.mY);
                 }
@@ -191,8 +193,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
                 result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
 
-                Vector2d compare(polygon.mLeftTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mLeftTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mRightTop.set(innerPt.mX, innerPt.mY);
                     result->mRightBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -204,8 +206,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
                 result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
 
-                Vector2d compare(polygon.mRightTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mRightTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mLeftTop.set(innerPt.mX, innerPt.mY);
                     result->mLeftBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -219,8 +221,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
                 result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
 
-                Vector2d compare(polygon.mRightTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mRightTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mLeftTop.set(innerPt.mX, innerPt.mY);
                     result->mLeftBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -232,8 +234,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
                 result->mLeftBottom.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
 
-                Vector2d compare(polygon.mLeftTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mLeftTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mRightTop.set(innerPt.mX, innerPt.mY);
                     result->mRightBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -247,8 +249,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
                 result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
 
-                Vector2d compare(polygon.mRightTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mRightTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mLeftTop.set(innerPt.mX, innerPt.mY);
                     result->mLeftBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -260,8 +262,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
                 result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
 
-                Vector2d compare(polygon.mLeftTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mLeftTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mRightTop.set(innerPt.mX, innerPt.mY);
                     result->mRightBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -275,8 +277,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mLeftTop.set(polygon.mLeftTop.mX, polygon.mLeftTop.mY);
                 result->mLeftBottom.set(polygon.mLeftBottom.mX, polygon.mLeftBottom.mY);
 
-                Vector2d compare(polygon.mLeftTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mLeftTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mRightTop.set(innerPt.mX, innerPt.mY);
                     result->mRightBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -288,8 +290,8 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
                 result->mRightTop.set(polygon.mRightTop.mX, polygon.mRightTop.mY);
                 result->mRightBottom.set(polygon.mRightBottom.mX, polygon.mRightBottom.mY);
 
-                Vector2d compare(polygon.mRightTop, innerPt);
-                if(std::abs(slope - compare.slope()) < 0.05) {
+                bool sameSide = ptsSameSide(polygon.mRightTop, innerPt, centerLineStart, centerLineEnd);
+                if(sameSide) {
                     result->mLeftTop.set(innerPt.mX, innerPt.mY);
                     result->mLeftBottom.set(outerPt.mX, outerPt.mY);
                 } else {
@@ -301,7 +303,6 @@ void VectorHelper::fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
     }
 }
 
-//todo how to judge two points are on the same side of a line
 void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &preStart,
                                            const Point2d &start, const Point2d &end,
                                            const Point2d &startInnerPt, const Point2d &startOuterPt,
@@ -313,14 +314,14 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
     Vector2d preVec(preStart, start);
     double preVecAzi = mainVec.azimuth();
 
-    Vector2d cmp(startInnerPt, endInnerPt);
+    bool sameSide = ptsSameSide(startInnerPt, endInnerPt, start, end);
 
     if(slope == 0) {
         if(mainVec.mDx < 0) {
             if(preVec.mDy >= 0) {
                 result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
                 result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
-                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                if(sameSide) {
                     result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
                     result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
                 } else {
@@ -331,7 +332,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
             else {
                 result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
                 result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
-                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                if(sameSide) {
                     result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
                     result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
                 } else {
@@ -344,7 +345,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
             if(preVec.mDy >= 0) {
                 result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
                 result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
-                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                if(sameSide) {
                     result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
                     result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
                 } else {
@@ -355,7 +356,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
             else {
                 result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
                 result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
-                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                if(sameSide) {
                     result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
                     result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
                 } else {
@@ -370,7 +371,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
             if((preVec.mDy > 0 && preVecAzi < M_PI_2) || (preVec.mDy < 0 && preVecAzi > M_PI_2)) {
                 result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
                 result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
-                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                if(sameSide) {
                     result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
                     result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
                 } else {
@@ -381,7 +382,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
             else if((preVec.mDy > 0 && preVecAzi > M_PI_2) || (preVec.mDy < 0 && preVecAzi < M_PI_2)) {
                 result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
                 result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
-                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                if(sameSide) {
                     result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
                     result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
                 } else {
@@ -394,7 +395,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
             if((preVec.mDy > 0 && preVecAzi < M_PI_2) || (preVec.mDy < 0 && preVecAzi > M_PI_2)) {
                 result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
                 result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
-                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                if(sameSide) {
                     result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
                     result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
                 } else {
@@ -405,7 +406,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
             else if((preVec.mDy > 0 && preVecAzi > M_PI_2) || (preVec.mDy < 0 && preVecAzi < M_PI_2)) {
                 result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
                 result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
-                if(std::abs(cmp.slope() - slope) < 0.05f) {
+                if(sameSide) {
                     result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
                     result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
                 } else {
@@ -421,7 +422,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 if(preVecAzi > azimuth) {
                     result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
                     result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
                         result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
                     } else {
@@ -432,7 +433,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 else {
                     result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
                     result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
                         result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
                     } else {
@@ -445,7 +446,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 if(preVecAzi > azimuth) {
                     result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
                     result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
                         result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
                     } else {
@@ -456,7 +457,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 else {
                     result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
                     result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
                         result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
                     } else {
@@ -469,7 +470,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 if (preStart.mX < start.mX) {
                     result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
                     result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
                         result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
                     } else {
@@ -480,7 +481,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 else {
                     result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
                     result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
                         result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
                     } else {
@@ -495,7 +496,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 if(preVecAzi > azimuth) {
                     result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
                     result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
                         result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
                     } else {
@@ -506,7 +507,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 else {
                     result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
                     result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
                         result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
                     } else {
@@ -519,7 +520,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 if(preVecAzi > azimuth) {
                     result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
                     result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
                         result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
                     } else {
@@ -530,7 +531,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 else {
                     result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
                     result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
                         result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
                     } else {
@@ -543,7 +544,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 if(preStart.mX > start.mX) {
                     result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
                     result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
                         result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
                     } else {
@@ -554,7 +555,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 else {
                     result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
                     result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
                         result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
                     } else {
@@ -571,7 +572,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 if(preVecAzi > azimuth) {
                     result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
                     result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
                         result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
                     } else {
@@ -582,7 +583,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 else {
                     result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
                     result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
                         result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
                     } else {
@@ -595,7 +596,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 if(preVecAzi > azimuth) {
                     result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
                     result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
                         result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
                     } else {
@@ -606,7 +607,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 else {
                     result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
                     result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
                         result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
                     } else {
@@ -619,7 +620,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 if(preStart.mX < start.mX) {
                     result->mRightTop.set(startOuterPt.mX, startOuterPt.mY);
                     result->mRightBottom.set(startInnerPt.mX, startInnerPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mLeftTop.set(endOuterPt.mX, endOuterPt.mY);
                         result->mLeftBottom.set(endInnerPt.mX, endInnerPt.mY);
                     } else {
@@ -630,7 +631,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 else {
                     result->mRightTop.set(startInnerPt.mX, startInnerPt.mY);
                     result->mRightBottom.set(startOuterPt.mX, startOuterPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mLeftTop.set(endInnerPt.mX, endInnerPt.mY);
                         result->mLeftBottom.set(endOuterPt.mX, endOuterPt.mY);
                     } else {
@@ -645,7 +646,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 if(preVecAzi > azimuth) {
                     result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
                     result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
                         result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
                     } else {
@@ -656,7 +657,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 else {
                     result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
                     result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
                         result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
                     } else {
@@ -669,7 +670,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 if(preVecAzi > azimuth) {
                     result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
                     result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
                         result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
                     } else {
@@ -680,7 +681,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 else {
                     result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
                     result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
                         result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
                     } else {
@@ -693,7 +694,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 if(preStart.mX < start.mX) {
                     result->mLeftTop.set(startOuterPt.mX, startOuterPt.mY);
                     result->mLeftBottom.set(startInnerPt.mX, startInnerPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mRightTop.set(endOuterPt.mX, endOuterPt.mY);
                         result->mRightBottom.set(endInnerPt.mX, endInnerPt.mY);
                     } else {
@@ -704,7 +705,7 @@ void VectorHelper::fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &pre
                 else {
                     result->mLeftTop.set(startInnerPt.mX, startInnerPt.mY);
                     result->mLeftBottom.set(startOuterPt.mX, startOuterPt.mY);
-                    if(std::abs(cmp.slope() - slope) < 0.05f) {
+                    if(sameSide) {
                         result->mRightTop.set(endInnerPt.mX, endInnerPt.mY);
                         result->mRightBottom.set(endOuterPt.mX, endOuterPt.mY);
                     } else {
@@ -903,11 +904,11 @@ void VectorHelper::lineTurningPt(Point2d *pt1, Point2d *pt2, const Point2d &star
                 else {
                     intersectAngle = rhsAngle - lhsAngle;
                     len = lineWidth * 0.5f / std::sin(intersectAngle * 0.5f);
-                    dstAngle = M_PI - intersectAngle;
-                    pt1->mX = midPt.mX + (float) (len * std::cos(dstAngle));
+                    dstAngle = lhsAngle + intersectAngle * 0.5f;
+                    pt1->mX = midPt.mX - (float) (len * std::cos(dstAngle));
                     pt1->mY = midPt.mY + (float) (len * std::sin(dstAngle));
 
-                    pt2->mX = midPt.mX - (float) (len * std::cos(dstAngle));
+                    pt2->mX = midPt.mX + (float) (len * std::cos(dstAngle));
                     pt2->mY = midPt.mY - (float) (len * std::sin(dstAngle));
                 }
             }
@@ -1053,7 +1054,19 @@ void VectorHelper::lineTurningPt(Point2d *pt1, Point2d *pt2, const Point2d &star
             }
         }
     }
+}
 
+bool VectorHelper::ptsSameSide(const Point2d &pt1, const Point2d &pt2, const Point2d &lineStart,
+                               const Point2d &lineEnd) {
+    Vector2d pt1lhs(lineStart, pt1);
+    Vector2d pt1rhs(lineEnd, pt1);
+    float crossVal1 = pt1lhs.mDx * pt1rhs.mDy - pt1rhs.mDx * pt1lhs.mDy;
+
+    Vector2d pt2lhs(lineStart, pt2);
+    Vector2d pt2rhs(lineEnd, pt2);
+    float crossVal2 = pt2lhs.mDx * pt2rhs.mDy - pt2rhs.mDx * pt2lhs.mDy;
+
+    return crossVal1 * crossVal2 >= 0;
 }
 
 void VectorHelper::segmentToPolygon(Polygon2d *polygon, const Point2d &startPt,
@@ -1158,8 +1171,7 @@ void VectorHelper::segToContinuousPolygon(Polygon2d *polygon, const Point2d *ptO
         Point2d innerPt, outerPt;
         lineTurningPt(&innerPt, &outerPt, ptOnScreen[start], ptOnScreen[end], ptOnScreen[end + 1], lineWidth);
 
-        Vector2d mainVec(ptOnScreen[start], ptOnScreen[end]);
-        fillTurningPtPolygon_v1(polygon, true, mainVec, tmp, innerPt, outerPt);
+        fillTurningPtPolygon_v1(polygon, true, ptOnScreen[start], ptOnScreen[end], tmp, innerPt, outerPt);
     } else if (start == count - 2) {
         Polygon2d tmp;
         segmentToPolygon(&tmp, ptOnScreen[start], ptOnScreen[end], lineWidth);
@@ -1167,8 +1179,7 @@ void VectorHelper::segToContinuousPolygon(Polygon2d *polygon, const Point2d *ptO
         Point2d innerPt, outerPt;
         lineTurningPt(&innerPt, &outerPt, ptOnScreen[start - 1], ptOnScreen[start], ptOnScreen[end], lineWidth);
 
-        Vector2d mainVec(ptOnScreen[start], ptOnScreen[end]);
-        fillTurningPtPolygon_v1(polygon, false, mainVec, tmp, innerPt, outerPt);
+        fillTurningPtPolygon_v1(polygon, false, ptOnScreen[start], ptOnScreen[end], tmp, innerPt, outerPt);
     } else {
         Point2d innerPt1, outerPt1, innerPt2, outerPt2;
         lineTurningPt(&innerPt1, &outerPt1, ptOnScreen[start - 1], ptOnScreen[start], ptOnScreen[end], lineWidth);

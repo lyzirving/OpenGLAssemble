@@ -96,14 +96,14 @@ void RendererContext::draw() {
         //mAntialiasLineRenderer->updateViewport(0, 0, width, height);
 
         Point2d lines[4];
-        lines[0].mX = float(width) / 2.f - float(width) / 3.f - float(width) / 9.f;
-        lines[0].mY = float(height) / 2.f + float(height) / 3.f;
-        lines[1].mX = float(width) / 2.f + float(width) / 5.f;
+        lines[0].mX = float(width) / 2.f;
+        lines[0].mY = float(height) / 7.f;
+        lines[1].mX = float(width) / 2.f + float(width) / 3.f;
         lines[1].mY = float(height) / 2.f - float(height) / 6.f;
-        lines[2].mX = float(width) / 2.f + float(width) / 3.f;
-        lines[2].mY = float(height) / 2.f + float(height) / 4.f;
-        lines[3].mX = float(width) / 2.f + float(width) / 3.f - float(width) / 7.f;
-        lines[3].mY = float(height) / 2.f + float(height) / 4.f + float(height) / 8.f;
+        lines[2].mX = float(width) / 2.f - float(width) / 5.f;
+        lines[2].mY = float(height) / 2.f + float(height) / 7.f;
+        lines[3].mX = float(width) / 2.f + float(width) / 10.f;
+        lines[3].mY = float(height) / 2.f + float(height) / 9.f;
 
         mContinuousLineRenderer->drawLines(lines, 4, 40, 0xf26522ff);
 //        lines[3].mX = float(width) / 2.f + float(width) / 3.f - float(width) / 7.f;

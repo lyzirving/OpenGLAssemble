@@ -85,7 +85,8 @@ private:
     VectorHelper();
     ~VectorHelper();
 
-    static void fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft, Vector2d &mainVec,
+    static void fillTurningPtPolygon_v1(Polygon2d *result, bool setForLeft,
+                                        const Point2d &centerLineStart, const Point2d &centerLineEnd,
                                         const Polygon2d &polygon,
                                         const Point2d &innerPt, const Point2d &outerPt);
     static void fillTurningPtPolygon_v2(Polygon2d *result, const Point2d &preStart,
@@ -96,6 +97,17 @@ private:
                               const Point2d &startPt, const Point2d &midPt,
                               const Point2d &endPt,
                               const uint32_t lineWidth);
+
+    /**
+     * judge whether pt1 and pt2 are on the same side of the line formed by lineStart and lineEnd.
+     * the main algorithm is the result of vector's cross value.
+     * @param pt1
+     * @param pt2
+     * @param lineStart
+     * @param lineEnd
+     * @return true if the two pts are on the same side; false otherwise.
+     */
+    static bool ptsSameSide(const Point2d &pt1, const Point2d &pt2, const Point2d &lineStart, const Point2d &lineEnd);
 };
 
 #endif //OPENGLASSEMBLE_VECTORHELPER_H
