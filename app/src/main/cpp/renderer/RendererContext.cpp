@@ -2,6 +2,7 @@
 // Created by lyzirving on 2022/5/19.
 //
 #include <cstring>
+#include <memory>
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
@@ -33,10 +34,10 @@ void *threadStart(void *arg) {
 RendererContext::RendererContext(const char *name) : mThreadId(0), mLooper(name),
                                                      mEglCore(new EglCore),
                                                      mWindows(),
-                                                     mTwoDimensRenderer(new TwoDimensRenderer(renderer::TWO_DIMEN_RENDERER)),
-                                                     mGraphicRenderer(new GraphicRenderer(renderer::GRAPHIC_RENDERER)),
-                                                     mAntialiasLineRenderer(new AntialiasLineRenderer(renderer::ANTI_ALIAS_RENDERER)),
-                                                     mContinuousLineRenderer(new ContinuousLineRenderer(renderer::CONTINUOUS_LINE_RENDERER)) {
+                                                     mTwoDimensRenderer(nullptr),
+                                                     mGraphicRenderer(nullptr),
+                                                     mAntialiasLineRenderer(nullptr),
+                                                     mContinuousLineRenderer(nullptr) {
     pthread_create(&mThreadId, nullptr, threadStart, this);
 }
 
@@ -142,15 +143,19 @@ void RendererContext::handleRegisterWindow(const char *name) {
 }
 
 bool RendererContext::onPrepare() {
+    mTwoDimensRenderer = std::make_shared<TwoDimensRenderer>(renderer::TWO_DIMEN_RENDERER);
     if (!mTwoDimensRenderer->init())
         goto fail;
 
+    mGraphicRenderer = std::make_shared<GraphicRenderer>(renderer::GRAPHIC_RENDERER);
     if (!mGraphicRenderer->init())
         goto fail;
 
+    mAntialiasLineRenderer = std::make_shared<AntialiasLineRenderer>(renderer::ANTI_ALIAS_RENDERER);
     if (!mAntialiasLineRenderer->init())
         goto fail;
 
+    mContinuousLineRenderer = std::make_shared<ContinuousLineRenderer>(renderer::CONTINUOUS_LINE_RENDERER);
     if (!mContinuousLineRenderer->init())
         goto fail;
 
@@ -161,10 +166,14 @@ bool RendererContext::onPrepare() {
 }
 
 void RendererContext::onQuit() {
-    mTwoDimensRenderer->release();
-    mGraphicRenderer->release();
-    mAntialiasLineRenderer->release();
-    mContinuousLineRenderer->release();
+    if(mTwoDimensRenderer)
+        mTwoDimensRenderer->release();
+    if (mGraphicRenderer)
+        mGraphicRenderer->release();
+    if(mAntialiasLineRenderer)
+        mAntialiasLineRenderer->release();
+    if (mContinuousLineRenderer)
+        mContinuousLineRenderer->release();
 }
 
 void RendererContext::prepareAndLoop() {

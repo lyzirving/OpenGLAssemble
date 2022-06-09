@@ -67,6 +67,7 @@ namespace renderer
     static const char GRAPHIC_RENDERER[] = "graphic renderer";
     static const char ANTI_ALIAS_RENDERER[] = "antialias renderer";
     static const char CONTINUOUS_LINE_RENDERER[] = "continuous line renderer";
+    static const char CURVE_RENDERER[] = "curve renderer";
 };
 
 #endif //OPENGLASSEMBLE_RENDERERMETADATA_H

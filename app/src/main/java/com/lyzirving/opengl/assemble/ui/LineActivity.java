@@ -15,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * @author lyzirving
  */
-public class LineActivity extends AppCompatActivity implements SurfaceHolder.Callback  {
+public class LineActivity extends AppCompatActivity implements SurfaceHolder.Callback {
     private RendererContext mRenderer;
 
     @Override

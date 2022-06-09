@@ -20,6 +20,9 @@
         <activity android:name=".ui.LineActivity"
             android:launchMode="singleTask" />
 
+        <activity android:name=".ui.CurveActivity"
+            android:launchMode="singleTask" />
+
     </application>
 
 </manifest>
