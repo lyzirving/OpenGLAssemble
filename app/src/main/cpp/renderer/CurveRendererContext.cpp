@@ -8,6 +8,7 @@
 #include "CurveRenderer.h"
 #include "CurveRendererContext.h"
 #include "WindowSurface.h"
+#include "VectorHelper.h"
 #include "RendererMetadata.h"
 #include "LogUtil.h"
 
@@ -34,6 +35,12 @@ void CurveRendererContext::draw() {
         uint32_t width = window->getWidth();
         uint32_t height = window->getHeight();
         glViewport(0, 0, width, height);
+        mCurveRenderer->updateViewport(0, 0, width, height);
+
+        Point2d start(width / 4.f, height / 4.f);
+        Point2d mid(width / 2.f + width / 4.f, height / 2.f);
+        Point2d end(width / 4.f, height / 2.f + height / 4.f);
+        mCurveRenderer->drawQuadraticCurve(start, mid, end, 30);
 
         window->swapBuffer();
         it++;
