@@ -20,9 +20,8 @@ public class RendererContext {
     static { System.loadLibrary("lib-assembler"); }
 
     private static final int BASE = 1;
-    private static final int CURVE = 2;
 
-    @IntDef({BASE, CURVE})
+    @IntDef({BASE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ContextType {}
 
@@ -43,8 +42,6 @@ public class RendererContext {
         LogUtil.logI(TAG, "createContext: class " + className);
         if(RendererContext.class.getName().equals(className)) {
             return new RendererContext(nCreateContext(name, context.getAssets(), BASE), name);
-        } else if(CurveRendererContext.class.getName().equals(className)) {
-            return new CurveRendererContext(nCreateContext(name, context.getAssets(), CURVE), name);
         } else {
             return null;
         }

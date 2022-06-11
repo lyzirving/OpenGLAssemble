@@ -3,7 +3,7 @@
 //
 #include <android/native_window_jni.h>
 
-#include "CurveRendererContext.h"
+#include "RendererContext.h"
 #include "GlHelper.h"
 #include "LogUtil.h"
 
@@ -16,7 +16,6 @@
 
 enum RendererType : uint8_t {
     BASE = 0x01,
-    CURVE
 };
 
 static struct {
@@ -31,10 +30,6 @@ static jlong nativeCreateContext(JNIEnv *env, jclass clazz, jstring jName,
     switch (type) {
         case RendererType::BASE: {
             ptr = new RendererContext(name);
-            break;
-        }
-        case RendererType::CURVE: {
-            ptr = new CurveRendererContext(name);
             break;
         }
         default: {
