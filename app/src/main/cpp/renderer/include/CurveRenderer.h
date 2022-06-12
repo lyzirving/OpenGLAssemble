@@ -7,6 +7,7 @@
 #include "BaseRendererProgram.h"
 
 class Point2d;
+class DotRenderer;
 
 class CurveRenderer : public BaseRendererProgram {
 public:
@@ -39,6 +40,7 @@ protected:
     unsigned int mLineWidthHandler;
 
     unsigned int mVbo[1];
+    DotRenderer *mDotRenderer;
 };
 
 #endif //OPENGLASSEMBLE_CURVERENDERER_H

@@ -118,16 +118,16 @@ void RendererContext::draw() {
 //        mAntialiasLineRenderer->drawSegment(lines[1], lines[2], 40, 0xf26522ff);
 //        mAntialiasLineRenderer->drawSegment(lines[2], lines[3], 40, 0xf26522ff);
 
-        float vArray[4];
-        mGraphicRenderer->updateViewport(0, 0, width, height);
-        VectorHelper::vertex2d(vArray, lines[0].mX, lines[0].mY, mGraphicRenderer->getViewport());
-        VectorHelper::vertex2d(vArray + 2, lines[1].mX, lines[1].mY, mGraphicRenderer->getViewport());
-        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 10);
-
-        mGraphicRenderer->updateViewport(0, 0, width, height);
-        VectorHelper::vertex2d(vArray, lines[1].mX, lines[1].mY, mGraphicRenderer->getViewport());
-        VectorHelper::vertex2d(vArray + 2, lines[2].mX, lines[2].mY, mGraphicRenderer->getViewport());
-        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 10);
+//        float vArray[4];
+//        mGraphicRenderer->updateViewport(0, 0, width, height);
+//        VectorHelper::vertex2d(vArray, lines[0].mX, lines[0].mY, mGraphicRenderer->getViewport());
+//        VectorHelper::vertex2d(vArray + 2, lines[1].mX, lines[1].mY, mGraphicRenderer->getViewport());
+//        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 10);
+//
+//        mGraphicRenderer->updateViewport(0, 0, width, height);
+//        VectorHelper::vertex2d(vArray, lines[1].mX, lines[1].mY, mGraphicRenderer->getViewport());
+//        VectorHelper::vertex2d(vArray + 2, lines[2].mX, lines[2].mY, mGraphicRenderer->getViewport());
+//        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 10);
 
         window->swapBuffer();
         it++;

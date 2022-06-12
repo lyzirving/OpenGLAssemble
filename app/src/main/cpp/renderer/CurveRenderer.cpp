@@ -3,10 +3,10 @@
 //
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-#include <Eigen/Dense>
-#include <math.h>
+#include <cmath>
 
 #include "CurveRenderer.h"
+#include "DotRenderer.h"
 #include "RendererMetadata.h"
 #include "MatrixUtil.h"
 #include "GlHelper.h"
@@ -27,9 +27,12 @@ CurveRenderer::CurveRenderer(const char *name)
           mControlHandler(0),
           mEndHandler(0),
           mLineWidthHandler(0),
-          mVbo() {}
+          mVbo(),
+          mDotRenderer(new DotRenderer(renderer::DOT_RENDERER)) {}
 
-CurveRenderer::~CurveRenderer() = default;
+CurveRenderer::~CurveRenderer() {
+    delete mDotRenderer;
+}
 
 void CurveRenderer::drawCurve(const Point2d &startPt, const Point2d &controlPt,
                               const Point2d &endPt, uint32_t lineWidth) {
@@ -69,13 +72,30 @@ void CurveRenderer::drawCurve(const Point2d &startPt, const Point2d &controlPt,
 
     glDisableVertexAttribArray(mVaHandler);
     glUseProgram(0);
+
+    Point2d dots[3];
+    dots[0].mX = startPt.mX;
+    dots[0].mY = startPt.mY;
+    dots[1].mX = endPt.mX;
+    dots[1].mY = endPt.mY;
+    dots[2].mX = controlPt.mX;
+    dots[2].mY = controlPt.mY;
+    mDotRenderer->updateViewport(mViewport.mStartX, mViewport.mStartY, mViewport.mWidth, mViewport.mHeight);
+    mDotRenderer->drawDot(dots, 3, 20);
 }
 
 bool CurveRenderer::initProgram() {
     mProgram = GlHelper::buildProgram(
             GlHelper::readAssets("shader/curve_vertex_shader.glsl"),
             GlHelper::readAssets("shader/curve_fragment_shader.glsl"));
-    return mProgram != 0;
+    if(mProgram == 0)
+        goto fail;
+    if(!mDotRenderer->init())
+        goto fail;
+
+    return true;
+    fail:
+    return false;
 }
 
 void CurveRenderer::initHandler() {
@@ -103,6 +123,8 @@ void CurveRenderer::onPostInit(bool success) {}
 
 void CurveRenderer::release() {
     LogI("renderer(%s) release", mName.c_str());
+    if(mDotRenderer)
+        mDotRenderer->release();
     glDeleteBuffers(1, mVbo);
     BaseRendererProgram::release();
 }
