@@ -16,6 +16,7 @@ class TwoDimensRenderer;
 class GraphicRenderer;
 class AntialiasLineRenderer;
 class ContinuousLineRenderer;
+class CurveRenderer;
 
 enum MessageId : uint8_t {
     MESSAGE_QUIT = 0x00,
@@ -53,6 +54,7 @@ private:
     std::shared_ptr<GraphicRenderer> mGraphicRenderer;
     std::shared_ptr<AntialiasLineRenderer> mAntialiasLineRenderer;
     std::shared_ptr<ContinuousLineRenderer> mContinuousLineRenderer;
+    std::shared_ptr<CurveRenderer> mCurveRenderer;
 };
 
 class RendererHandler : public MessageHandler {

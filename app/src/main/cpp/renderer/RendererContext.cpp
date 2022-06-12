@@ -12,6 +12,7 @@
 #include "GraphicRenderer.h"
 #include "AntialiasLineRenderer.h"
 #include "ContinuousLineRenderer.h"
+#include "CurveRenderer.h"
 #include "RendererMetadata.h"
 #include "VectorHelper.h"
 #include "LogUtil.h"
@@ -37,7 +38,8 @@ RendererContext::RendererContext(const char *name) : mThreadId(0), mLooper(name)
                                                      mTwoDimensRenderer(nullptr),
                                                      mGraphicRenderer(nullptr),
                                                      mAntialiasLineRenderer(nullptr),
-                                                     mContinuousLineRenderer(nullptr) {
+                                                     mContinuousLineRenderer(nullptr),
+                                                     mCurveRenderer(nullptr) {
     pthread_create(&mThreadId, nullptr, threadStart, this);
 }
 
@@ -46,6 +48,7 @@ RendererContext::~RendererContext() {
     mGraphicRenderer.reset();
     mAntialiasLineRenderer.reset();
     mContinuousLineRenderer.reset();
+    mCurveRenderer.reset();
     mEglCore.reset();
 }
 
@@ -93,20 +96,20 @@ void RendererContext::draw() {
         uint32_t height = window->getHeight();
 
         glViewport(0, 0, width, height);
-        mContinuousLineRenderer->updateViewport(0, 0, width, height);
+        mCurveRenderer->updateViewport(0, 0, width, height);
+        //mContinuousLineRenderer->updateViewport(0, 0, width, height);
         //mAntialiasLineRenderer->updateViewport(0, 0, width, height);
 
-        Point2d lines[4];
-        lines[0].mX = float(width) / 9.f;
-        lines[0].mY = float(height) / 7.f;
-        lines[1].mX = float(width) / 2.f - float(width) / 3.f;
-        lines[1].mY = float(height) / 2.f - float(height) / 6.f;
-        lines[2].mX = float(width) / 2.f + float(width) / 8.f;
-        lines[2].mY = float(height) / 2.f + float(height) / 7.f;
-        lines[3].mX = float(width) / 2.f + float(width) / 4.f;
-        lines[3].mY = float(height) / 2.f + float(height) / 9.f;
+        Point2d lines[3];
+        lines[0].mX = float(width) / 2.f - float(width) / 3.f;
+        lines[0].mY = float(height) / 2.f - float(height) / 6.f;
+        lines[1].mX = float(width) / 2.f - float(width) / 8.f;
+        lines[1].mY = float(height) / 2.f - float(height) / 8.f;
+        lines[2].mX = float(width) / 2.f - float(width) / 3.f;
+        lines[2].mY = float(height) / 2.f + float(height) / 6.f;;
 
-        mContinuousLineRenderer->drawLines(lines, 4, 40, 0xf26522ff);
+        mCurveRenderer->drawCurve(lines[0], lines[1], lines[2], 20);
+//        mContinuousLineRenderer->drawLines(lines, 4, 40, 0xf26522ff);
 //        lines[3].mX = float(width) / 2.f + float(width) / 3.f - float(width) / 7.f;
 //        lines[3].mY = float(height) / 2.f + float(height) / 4.f + float(height) / 8.f;
 
@@ -119,15 +122,12 @@ void RendererContext::draw() {
         mGraphicRenderer->updateViewport(0, 0, width, height);
         VectorHelper::vertex2d(vArray, lines[0].mX, lines[0].mY, mGraphicRenderer->getViewport());
         VectorHelper::vertex2d(vArray + 2, lines[1].mX, lines[1].mY, mGraphicRenderer->getViewport());
-        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 3);
+        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 10);
 
+        mGraphicRenderer->updateViewport(0, 0, width, height);
         VectorHelper::vertex2d(vArray, lines[1].mX, lines[1].mY, mGraphicRenderer->getViewport());
         VectorHelper::vertex2d(vArray + 2, lines[2].mX, lines[2].mY, mGraphicRenderer->getViewport());
-        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 3);
-
-        VectorHelper::vertex2d(vArray, lines[2].mX, lines[2].mY, mGraphicRenderer->getViewport());
-        VectorHelper::vertex2d(vArray + 2, lines[3].mX, lines[3].mY, mGraphicRenderer->getViewport());
-        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 3);
+        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 10);
 
         window->swapBuffer();
         it++;
@@ -159,6 +159,10 @@ bool RendererContext::onPrepare() {
     if (!mContinuousLineRenderer->init())
         goto fail;
 
+    mCurveRenderer = std::make_shared<CurveRenderer>(renderer::CURVE_RENDERER);
+    if (!mCurveRenderer->init())
+        goto fail;
+
     return true;
 
     fail:
@@ -174,6 +178,8 @@ void RendererContext::onQuit() {
         mAntialiasLineRenderer->release();
     if (mContinuousLineRenderer)
         mContinuousLineRenderer->release();
+    if (mCurveRenderer)
+        mCurveRenderer->release();
 }
 
 void RendererContext::prepareAndLoop() {
