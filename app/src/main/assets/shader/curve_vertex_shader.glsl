@@ -38,12 +38,6 @@ float quadraticBessel(float t, vec2 start, vec2 control, vec2 end, bool measureX
 }
 
 void main() {
-    vResolution = uResolution;
-    vStart = vec2(uStart.x, uResolution.y - uStart.y);
-    vControl = vec2(uControl.x, uResolution.y - uControl.y);
-    vEnd = vec2(uEnd.x, uResolution.y - uEnd.y);
-    vLineWidth = uLineWidth;
-
     float t0 = aVertexAttribute.x;
     float t1 = aVertexAttribute.y;
     float side = aVertexAttribute.z;
@@ -68,4 +62,11 @@ void main() {
     dst.y = dst.y / (uResolution.y * 0.5);
 
     gl_Position = uMatrix * vec4(dst.x, dst.y, 0.0, 1.0);
+
+    // send these variables to fragment shader
+    vResolution = uResolution;
+    vStart = vec2(uStart.x, uResolution.y - uStart.y);
+    vControl = vec2(uControl.x, uResolution.y - uControl.y);
+    vEnd = vec2(uEnd.x, uResolution.y - uEnd.y);
+    vLineWidth = uLineWidth;
 }
