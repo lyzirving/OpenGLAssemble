@@ -48,6 +48,7 @@ private:
     float mStep;
     // store vertex attribute, its length is decided on mStep
     float *mVa;
+    uint32_t mSegmentCnt;
 };
 
 #endif //OPENGLASSEMBLE_CURVERENDERER_H

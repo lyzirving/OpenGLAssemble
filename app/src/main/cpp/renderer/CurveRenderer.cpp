@@ -32,7 +32,8 @@ CurveRenderer::CurveRenderer(const char *name)
           mVbo(),
           mDotRenderer(new DotRenderer(renderer::DOT_RENDERER)),
           mStep(0.025f),
-          mVa(nullptr) {}
+          mVa(nullptr),
+          mSegmentCnt(0) {}
 
 CurveRenderer::~CurveRenderer() {
     delete mDotRenderer;
@@ -46,12 +47,11 @@ void CurveRenderer::drawCurve(const Point2d &startPt, const Point2d &controlPt, 
         LogI("(%s) invalid view port", mName.c_str());
         return;
     }
-    uint32_t segCnt = 1.f / mStep;
 
     glUseProgram(mProgram);
     glEnableVertexAttribArray(mVaHandler);
     glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, segCnt * 2 * 3 * sizeof(GLfloat), mVa, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mSegmentCnt * 2 * 3 * sizeof(GLfloat), mVa, GL_DYNAMIC_DRAW);
     glVertexAttribPointer(mVaHandler, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -63,7 +63,7 @@ void CurveRenderer::drawCurve(const Point2d &startPt, const Point2d &controlPt, 
     glUniform2f(mEndHandler, endPt.mX, endPt.mY);
     glUniform1f(mLineWidthHandler, lineWidth);
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, segCnt * 2);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, mSegmentCnt * 2);
     GlHelper::checkGlError("draw err", mName.c_str());
 
     glDisableVertexAttribArray(mVaHandler);
@@ -78,7 +78,7 @@ void CurveRenderer::drawCurve(const Point2d &startPt, const Point2d &controlPt, 
     dots[2].mX = controlPt.mX;
     dots[2].mY = controlPt.mY;
     mDotRenderer->updateViewport(mViewport.mStartX, mViewport.mStartY, mViewport.mWidth, mViewport.mHeight);
-    mDotRenderer->drawDot(dots, 3, 20);
+    mDotRenderer->drawDot(dots, 3, 10);
 #endif
 }
 
@@ -120,7 +120,8 @@ void CurveRenderer::initCoordinate() {
 
 void CurveRenderer::initBuffer() {
     uint32_t segCnt = 1.f / mStep;
-    mVa = static_cast<float *>(std::calloc(segCnt * 2 * 3, sizeof(float)));
+    mSegmentCnt = segCnt + 1;
+    mVa = static_cast<float *>(std::calloc(mSegmentCnt * 2 * 3, sizeof(float)));
     for(uint32_t i = 0; i < segCnt; i++) {
         mVa[i * 6 + 0] = i * mStep;
         mVa[i * 6 + 1] = i * mStep + mStep;
@@ -129,6 +130,13 @@ void CurveRenderer::initBuffer() {
         mVa[i * 6 + 4] = i * mStep + mStep;
         mVa[i * 6 + 5] = -1.f;
     }
+    // set for the last segment
+    mVa[segCnt * 6 + 0] = 1.f;
+    mVa[segCnt * 6 + 1] = 1.f + mStep;
+    mVa[segCnt * 6 + 2] = 1.f;
+    mVa[segCnt * 6 + 3] = 1.f;
+    mVa[segCnt * 6 + 4] = 1.f + mStep;
+    mVa[segCnt * 6 + 5] = -1.f;
 }
 
 void CurveRenderer::onBeforeInit() {}
