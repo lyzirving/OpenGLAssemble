@@ -39,6 +39,7 @@ protected:
     unsigned int mControlHandler;
     unsigned int mEndHandler;
     unsigned int mLineWidthHandler;
+    unsigned int mThresholdHandler;
 
     unsigned int mVbo[1];
     DotRenderer *mDotRenderer;
@@ -49,6 +50,7 @@ private:
     // store vertex attribute, its length is decided on mStep
     float *mVa;
     uint32_t mSegmentCnt;
+    float mThreshold;
 };
 
 #endif //OPENGLASSEMBLE_CURVERENDERER_H

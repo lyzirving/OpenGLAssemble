@@ -29,11 +29,13 @@ CurveRenderer::CurveRenderer(const char *name)
           mControlHandler(0),
           mEndHandler(0),
           mLineWidthHandler(0),
+          mThresholdHandler(0),
           mVbo(),
           mDotRenderer(new DotRenderer(renderer::DOT_RENDERER)),
           mStep(0.025f),
           mVa(nullptr),
-          mSegmentCnt(0) {}
+          mSegmentCnt(0),
+          mThreshold(0.8f) {}
 
 CurveRenderer::~CurveRenderer() {
     delete mDotRenderer;
@@ -49,6 +51,9 @@ void CurveRenderer::drawCurve(const Point2d &startPt, const Point2d &controlPt, 
     }
 
     glUseProgram(mProgram);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glEnableVertexAttribArray(mVaHandler);
     glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
     glBufferData(GL_ARRAY_BUFFER, mSegmentCnt * 2 * 3 * sizeof(GLfloat), mVa, GL_DYNAMIC_DRAW);
@@ -62,11 +67,13 @@ void CurveRenderer::drawCurve(const Point2d &startPt, const Point2d &controlPt, 
     glUniform2f(mControlHandler, controlPt.mX, controlPt.mY);
     glUniform2f(mEndHandler, endPt.mX, endPt.mY);
     glUniform1f(mLineWidthHandler, lineWidth);
+    glUniform1f(mThresholdHandler, mThreshold);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, mSegmentCnt * 2);
     GlHelper::checkGlError("draw err", mName.c_str());
 
     glDisableVertexAttribArray(mVaHandler);
+    glDisable(GL_BLEND);
     glUseProgram(0);
 
 #if DEBUG_POINT
@@ -111,6 +118,7 @@ void CurveRenderer::initHandler() {
     mControlHandler = glGetUniformLocation(mProgram, "uControl");
     mEndHandler = glGetUniformLocation(mProgram, "uEnd");
     mLineWidthHandler = glGetUniformLocation(mProgram, "uLineWidth");
+    mThresholdHandler = glGetUniformLocation(mProgram, "uThreshold");
     mMatrixHandler = glGetUniformLocation(mProgram, "uMatrix");
 }
 

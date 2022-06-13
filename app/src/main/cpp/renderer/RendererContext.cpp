@@ -109,7 +109,7 @@ void RendererContext::draw() {
         lines[2].mY = float(height) / 2.f + float(height) / 4.f;
 
         //mCurveRenderer->drawLine(lines[0], lines[2], 20, 0xff0000ff);
-        mCurveRenderer->drawCurve(lines[0], lines[1], lines[2], 20, 0xff0000ff);
+        mCurveRenderer->drawCurve(lines[0], lines[1], lines[2], 30, 0xff0000ff);
 //        mContinuousLineRenderer->drawLines(lines, 4, 40, 0xf26522ff);
 //        lines[3].mX = float(width) / 2.f + float(width) / 3.f - float(width) / 7.f;
 //        lines[3].mY = float(height) / 2.f + float(height) / 4.f + float(height) / 8.f;

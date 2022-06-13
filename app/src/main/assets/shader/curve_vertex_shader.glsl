@@ -9,6 +9,12 @@ uniform vec2 uEnd;
 uniform float uLineWidth;
 uniform mat4 uMatrix;
 
+flat out vec2 vResolution;
+flat out vec2 vStart;
+flat out vec2 vControl;
+flat out vec2 vEnd;
+flat out float vLineWidth;
+
 /*
  * transform the screen coordinate into a coordinate whose origin is the center of screen,
  * the dst coordinate' x axis directs to right, and y axis directs to up
@@ -32,6 +38,12 @@ float quadraticBessel(float t, vec2 start, vec2 control, vec2 end, bool measureX
 }
 
 void main() {
+    vResolution = uResolution;
+    vStart = vec2(uStart.x, uResolution.y - uStart.y);
+    vControl = vec2(uControl.x, uResolution.y - uControl.y);
+    vEnd = vec2(uEnd.x, uResolution.y - uEnd.y);
+    vLineWidth = uLineWidth;
+
     float t0 = aVertexAttribute.x;
     float t1 = aVertexAttribute.y;
     float side = aVertexAttribute.z;
