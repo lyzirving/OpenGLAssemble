@@ -18,6 +18,8 @@
 #endif
 #define LOCAL_TAG "CurveRenderer"
 
+#define DEBUG_POINT 1
+
 CurveRenderer::CurveRenderer(const char *name)
         : BaseRendererProgram(name),
           mVaHandler(0),
@@ -28,39 +30,33 @@ CurveRenderer::CurveRenderer(const char *name)
           mEndHandler(0),
           mLineWidthHandler(0),
           mVbo(),
-          mDotRenderer(new DotRenderer(renderer::DOT_RENDERER)) {}
+          mDotRenderer(new DotRenderer(renderer::DOT_RENDERER)),
+          mStep(0.025f),
+          mVa(nullptr) {}
 
 CurveRenderer::~CurveRenderer() {
     delete mDotRenderer;
+    if (mVa)
+        std::free(mVa);
 }
 
-void CurveRenderer::drawCurve(const Point2d &startPt, const Point2d &controlPt,
-                              const Point2d &endPt, uint32_t lineWidth) {
+void CurveRenderer::drawCurve(const Point2d &startPt, const Point2d &controlPt, const Point2d &endPt,
+        uint32_t lineWidth, uint32_t color) {
     if(mViewport.mWidth <= 0 || mViewport.mHeight <= 0) {
         LogI("(%s) invalid view port", mName.c_str());
         return;
     }
-    float step = 0.025;
-    uint32_t segCnt = 1.f / step;
-    float va[segCnt * 2 * 3];
-    for(uint32_t i = 0; i < segCnt; i++) {
-        va[i * 6 + 0] = i * step;
-        va[i * 6 + 1] = i * step + step;
-        va[i * 6 + 2] = 1.f;
-        va[i * 6 + 3] = i * step;
-        va[i * 6 + 4] = i * step + step;
-        va[i * 6 + 5] = -1.f;
-    }
+    uint32_t segCnt = 1.f / mStep;
 
     glUseProgram(mProgram);
     glEnableVertexAttribArray(mVaHandler);
     glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, segCnt * 2 * 3 * sizeof(GLfloat), va, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, segCnt * 2 * 3 * sizeof(GLfloat), mVa, GL_DYNAMIC_DRAW);
     glVertexAttribPointer(mVaHandler, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glUniformMatrix4fv(mMatrixHandler, 1, false, mMatrix);
-    glUniform4f(mColorHandler, 1.f, 0.f, 0.f, 1.f);
+    glUniform4f(mColorHandler, CHANNEL_R(color), CHANNEL_G(color), CHANNEL_B(color), CHANNEL_A(color));
     glUniform2f(mResolutionHandler, mViewport.mWidth, mViewport.mHeight);
     glUniform2f(mStartHandler, startPt.mX, startPt.mY);
     glUniform2f(mControlHandler, controlPt.mX, controlPt.mY);
@@ -73,6 +69,7 @@ void CurveRenderer::drawCurve(const Point2d &startPt, const Point2d &controlPt,
     glDisableVertexAttribArray(mVaHandler);
     glUseProgram(0);
 
+#if DEBUG_POINT
     Point2d dots[3];
     dots[0].mX = startPt.mX;
     dots[0].mY = startPt.mY;
@@ -82,6 +79,12 @@ void CurveRenderer::drawCurve(const Point2d &startPt, const Point2d &controlPt,
     dots[2].mY = controlPt.mY;
     mDotRenderer->updateViewport(mViewport.mStartX, mViewport.mStartY, mViewport.mWidth, mViewport.mHeight);
     mDotRenderer->drawDot(dots, 3, 20);
+#endif
+}
+
+void CurveRenderer::drawLine(const Point2d &startPt, const Point2d &endPt, uint32_t lineWidth, uint32_t color) {
+    Point2d control((startPt.mX + endPt.mX) * 0.5, (startPt.mY + endPt.mY) * 0.5);
+    drawCurve(startPt, control, endPt, lineWidth, color);
 }
 
 bool CurveRenderer::initProgram() {
@@ -90,8 +93,10 @@ bool CurveRenderer::initProgram() {
             GlHelper::readAssets("shader/curve_fragment_shader.glsl"));
     if(mProgram == 0)
         goto fail;
+#if DEBUG_POINT
     if(!mDotRenderer->init())
         goto fail;
+#endif
 
     return true;
     fail:
@@ -114,7 +119,16 @@ void CurveRenderer::initCoordinate() {
 }
 
 void CurveRenderer::initBuffer() {
-    //empty implementation for this case
+    uint32_t segCnt = 1.f / mStep;
+    mVa = static_cast<float *>(std::calloc(segCnt * 2 * 3, sizeof(float)));
+    for(uint32_t i = 0; i < segCnt; i++) {
+        mVa[i * 6 + 0] = i * mStep;
+        mVa[i * 6 + 1] = i * mStep + mStep;
+        mVa[i * 6 + 2] = 1.f;
+        mVa[i * 6 + 3] = i * mStep;
+        mVa[i * 6 + 4] = i * mStep + mStep;
+        mVa[i * 6 + 5] = -1.f;
+    }
 }
 
 void CurveRenderer::onBeforeInit() {}
@@ -123,8 +137,10 @@ void CurveRenderer::onPostInit(bool success) {}
 
 void CurveRenderer::release() {
     LogI("renderer(%s) release", mName.c_str());
+#if DEBUG_POINT
     if(mDotRenderer)
         mDotRenderer->release();
+#endif
     glDeleteBuffers(1, mVbo);
     BaseRendererProgram::release();
 }

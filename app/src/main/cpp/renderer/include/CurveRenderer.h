@@ -19,7 +19,8 @@ public:
      * @param controlPt control point of bessel
      * @param endPt end point of bessel
      */
-    void drawCurve(const Point2d &startPt, const Point2d &controlPt, const Point2d &endPt, uint32_t lineWidth);
+    void drawCurve(const Point2d &startPt, const Point2d &controlPt, const Point2d &endPt, uint32_t lineWidth, uint32_t color = 0x000000ff);
+    void drawLine(const Point2d &startPt, const Point2d &endPt, uint32_t lineWidth, uint32_t color = 0x000000ff);
     virtual void release() override;
 
 protected:
@@ -41,6 +42,12 @@ protected:
 
     unsigned int mVbo[1];
     DotRenderer *mDotRenderer;
+
+private:
+    // default is 0.025
+    float mStep;
+    // store vertex attribute, its length is decided on mStep
+    float *mVa;
 };
 
 #endif //OPENGLASSEMBLE_CURVERENDERER_H
