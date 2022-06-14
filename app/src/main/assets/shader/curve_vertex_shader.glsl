@@ -1,6 +1,6 @@
 #version 300 es
 precision highp float;
-in vec3 aVertexAttribute;
+in vec4 aVertexAttribute;
 
 uniform vec2 uResolution;
 uniform vec2 uStart;
@@ -41,6 +41,7 @@ void main() {
     float t0 = aVertexAttribute.x;
     float t1 = aVertexAttribute.y;
     float side = aVertexAttribute.z;
+    float edge = aVertexAttribute.w;
 
     vec2 a = vec2(0.0, 0.0);
     vec2 b = vec2(0.0, 0.0);
@@ -56,7 +57,9 @@ void main() {
     vec2 nAB = vec2(-dirAB.y, dirAB.x);
     nAB = nAB * uLineWidth / 2.0 * side;
 
-    vec2 dst = stdA + nAB;
+    vec2 cap = dirAB * edge * uLineWidth / 2.0;
+
+    vec2 dst = stdA + cap + nAB;
     // transform the value to [-1, 1]
     dst.x = dst.x / (uResolution.x * 0.5);
     dst.y = dst.y / (uResolution.y * 0.5);

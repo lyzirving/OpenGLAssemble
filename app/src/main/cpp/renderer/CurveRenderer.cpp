@@ -56,8 +56,8 @@ void CurveRenderer::drawCurve(const Point2d &startPt, const Point2d &controlPt, 
 
     glEnableVertexAttribArray(mVaHandler);
     glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, mSegmentCnt * 2 * 3 * sizeof(GLfloat), mVa, GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(mVaHandler, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
+    glBufferData(GL_ARRAY_BUFFER, mSegmentCnt * 2 * 4 * sizeof(GLfloat), mVa, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(mVaHandler, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), nullptr);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glUniformMatrix4fv(mMatrixHandler, 1, false, mMatrix);
@@ -129,22 +129,35 @@ void CurveRenderer::initCoordinate() {
 void CurveRenderer::initBuffer() {
     uint32_t segCnt = 1.f / mStep;
     mSegmentCnt = segCnt + 1;
-    mVa = static_cast<float *>(std::calloc(mSegmentCnt * 2 * 3, sizeof(float)));
-    for(uint32_t i = 0; i < segCnt; i++) {
-        mVa[i * 6 + 0] = i * mStep;
-        mVa[i * 6 + 1] = i * mStep + mStep;
-        mVa[i * 6 + 2] = 1.f;
-        mVa[i * 6 + 3] = i * mStep;
-        mVa[i * 6 + 4] = i * mStep + mStep;
-        mVa[i * 6 + 5] = -1.f;
+    mVa = static_cast<float *>(std::calloc(mSegmentCnt * 2 * 4, sizeof(float)));
+    //set for the two vertex
+    mVa[0] = 0.f;   //t0
+    mVa[1] = mStep; //t1
+    mVa[2] = 1.f;   //side
+    mVa[3] = -1.f;  //cap
+    mVa[4] = 0.f;   //t0
+    mVa[5] = mStep; //t1
+    mVa[6] = -1.f;  //side
+    mVa[7] = -1.f;  //edge
+    for(uint32_t i = 1; i < segCnt; i++) {
+        mVa[i * 8 + 0] = i * mStep;
+        mVa[i * 8 + 1] = i * mStep + mStep;
+        mVa[i * 8 + 2] = 1.f;
+        mVa[i * 8 + 3] = 0.f;// no cap for middle segment
+        mVa[i * 8 + 4] = i * mStep;
+        mVa[i * 8 + 5] = i * mStep + mStep;
+        mVa[i * 8 + 6] = -1.f;
+        mVa[i * 8 + 7] = 0.f;// no cap for middle segment
     }
     // set for the last segment
-    mVa[segCnt * 6 + 0] = 1.f;
-    mVa[segCnt * 6 + 1] = 1.f + mStep;
-    mVa[segCnt * 6 + 2] = 1.f;
-    mVa[segCnt * 6 + 3] = 1.f;
-    mVa[segCnt * 6 + 4] = 1.f + mStep;
-    mVa[segCnt * 6 + 5] = -1.f;
+    mVa[segCnt * 8 + 0] = 1.f;
+    mVa[segCnt * 8 + 1] = 1.f + mStep;
+    mVa[segCnt * 8 + 2] = 1.f;
+    mVa[segCnt * 8 + 3] = 1.f;// outer cap for end segment
+    mVa[segCnt * 8 + 4] = 1.f;
+    mVa[segCnt * 8 + 5] = 1.f + mStep;
+    mVa[segCnt * 8 + 6] = -1.f;
+    mVa[segCnt * 8 + 7] = 1.f;// outer cap for end segment
 }
 
 void CurveRenderer::onBeforeInit() {}

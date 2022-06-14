@@ -60,10 +60,12 @@ void main() {
      */
     vec2 posViewcoord = vec2(gl_FragCoord.x, gl_FragCoord.y);
     float dist = approxDistance(posViewcoord, vStart, vControl, vEnd);
-    if (dist < vLineWidth * 0.5 * uThreshold) {
+    float thresholdVal = vLineWidth * 0.5 * uThreshold;
+    float limit = vLineWidth * 0.5;
+    if (dist < thresholdVal) {
         mFragColor = uColor;
     } else {
-        float factor = (dist - vLineWidth * 0.5 * uThreshold) / (vLineWidth * 0.5 * (1.0 - uThreshold));
+        float factor = (dist - thresholdVal) / (limit * (1.0 - uThreshold));
         mFragColor = vec4(uColor.r, uColor.g, uColor.b, smoothstep(0.0, 1.0, 1.0 - factor));
     }
 }
