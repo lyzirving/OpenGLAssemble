@@ -9,6 +9,14 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/common CPP_COMMON)
 aux_source_directory(${CMAKE_SOURCE_DIR}/renderer CPP_RENDERER)
 aux_source_directory(${CMAKE_SOURCE_DIR}/helper CPP_HELPER)
 
+add_library(lib-assimp
+            SHARED
+            IMPORTED)
+
+set_target_properties(lib-assimp# lib name
+                      PROPERTIES IMPORTED_LOCATION# property
+                      ${CMAKE_SOURCE_DIR}/third/libs/assimp/${ANDROID_ABI}/libassimp.so)
+
 add_library( # Sets the name of the library.
              lib-assembler
              # Sets the library as a shared library.
