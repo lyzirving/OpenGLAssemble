@@ -5,6 +5,7 @@
 #define OPENGLASSEMBLE_MODEL_H
 
 #include "Mesh.h"
+#include "FileSystem.h"
 
 class aiScene;
 class aiNode;
@@ -21,6 +22,11 @@ private:
     std::vector<Mesh> mMeshes;
     std::string mDirectory;
 
+    /**
+     * load model from specific path
+     * @param path: a path that specify the .obj file
+     * @return true if success; false otherwise
+     */
     bool loadModel(const std::string &path);
     std::vector<Texture> loadMaterialTextures(aiMaterial *material,
                                               aiTextureType type,

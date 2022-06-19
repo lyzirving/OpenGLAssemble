@@ -31,6 +31,14 @@ struct Texture {
                                     type(other.type) {}
     Texture(Texture &&other) : textureId(other.textureId), path(std::move(other.path)),
                                type(std::move(other.type)) {}
+    Texture & operator =(const Texture &other) {
+        if(this != &other) {
+            this->textureId = other.textureId;
+            this->path = other.path;
+            this->type = other.type;
+        }
+        return *this;
+    }
 };
 
 class Mesh {

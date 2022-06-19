@@ -1,6 +1,7 @@
 package com.lyzirving.opengl.assemble.ui;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -8,6 +9,9 @@ import android.view.SurfaceView;
 import com.lyzirving.opengl.assemble.R;
 import com.lyzirving.opengl.assemble.renderer.RendererConstant;
 import com.lyzirving.opengl.assemble.renderer.RendererContext;
+import com.lyzirving.opengl.assemble.utils.LogUtil;
+
+import java.io.File;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * @author lyzirving
  */
 public class LineActivity extends AppCompatActivity implements SurfaceHolder.Callback {
+    private static final String TAG = "LineActivity";
     private RendererContext mRenderer;
 
     @Override
