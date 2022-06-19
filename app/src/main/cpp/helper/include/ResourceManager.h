@@ -5,15 +5,20 @@
 #define OPENGLASSEMBLE_RESOURCEMANAGER_H
 
 #include <string>
+#include <unordered_map>
 
 class ResourceManager {
 public:
-    static unsigned int loadTextureFromFile(const char* path, const std::string &directory,
-                                            bool gamma = false);
+    static ResourceManager *get();
+
+    unsigned int loadTextureFromFile(const std::string &texPath, bool gamma = false);
+    void releaseTexture(const std::string &texPath, const unsigned int textureId);
 
 private:
     ResourceManager();
     ~ResourceManager();
+
+    std::unordered_map<std::string, unsigned int> mTexMap;
 };
 
 #endif //OPENGLASSEMBLE_RESOURCEMANAGER_H

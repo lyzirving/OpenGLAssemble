@@ -47,13 +47,15 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *material,
     std::vector<Texture> textures;
     unsigned int count = material->GetTextureCount(type);
     for(unsigned int i = 0; i < count; i++) {
-        aiString str;
-        material->GetTexture(type, i, &str);
-        Texture unit;
-        unit.textureId = ResourceManager::loadTextureFromFile(str.C_Str(), mDirectory);
-        unit.type = typeName;
-        unit.path = str.C_Str();
-        textures.push_back(unit);
+        aiString texName;
+        material->GetTexture(type, i, &texName);
+        std::string texPath;
+        texPath = mDirectory + '/' + texName.C_Str();
+        Texture texUnit;
+        texUnit.textureId = ResourceManager::get()->loadTextureFromFile(texPath);
+        texUnit.type = typeName;
+        texUnit.path = texPath;
+        textures.push_back(texUnit);
     }
     return textures;
 }
