@@ -3,7 +3,7 @@
 //
 #include <android/native_window_jni.h>
 
-#include "RendererContext.h"
+#include "Scene3d.h"
 #include "GlHelper.h"
 #include "LogUtil.h"
 
@@ -16,6 +16,7 @@
 
 enum RendererType : uint8_t {
     BASE = 0x01,
+    SCENE
 };
 
 static struct {
@@ -30,6 +31,10 @@ static jlong nativeCreateContext(JNIEnv *env, jclass clazz, jstring jName,
     switch (type) {
         case RendererType::BASE: {
             ptr = new RendererContext(name);
+            break;
+        }
+        case RendererType::SCENE: {
+            ptr = new Scene3d(name);
             break;
         }
         default: {

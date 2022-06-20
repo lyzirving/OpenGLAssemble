@@ -8,6 +8,7 @@ import android.view.SurfaceView;
 import com.lyzirving.opengl.assemble.R;
 import com.lyzirving.opengl.assemble.renderer.RendererConstant;
 import com.lyzirving.opengl.assemble.renderer.RendererContext;
+import com.lyzirving.opengl.assemble.renderer.Scene3d;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,16 +16,16 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * @author lyzirving
  */
-public class LineActivity extends AppCompatActivity implements SurfaceHolder.Callback {
-    private static final String TAG = "LineActivity";
-    private RendererContext mRenderer;
+public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Callback {
+
+    private Scene3d mScene;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_line);
-        mRenderer = RendererContext.createContext(getApplicationContext(),
-                RendererContext.class.getName(), "Line");
+        setContentView(R.layout.activity_scene);
+        mScene = (Scene3d) RendererContext.createContext(getApplicationContext(),
+                Scene3d.class.getName(), "Scene3d");
 
         SurfaceView surfaceView = findViewById(R.id.view_surface);
         surfaceView.getHolder().addCallback(this);
@@ -33,8 +34,8 @@ public class LineActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mRenderer != null)
-            RendererContext.releaseContext(mRenderer);
+        if (mScene != null)
+            RendererContext.releaseContext(mScene);
     }
 
     @Override
@@ -43,12 +44,12 @@ public class LineActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
         Surface surface = holder.getSurface();
-        mRenderer.registerWindow("Line", surface);
-        mRenderer.sendMessage(RendererConstant.MSG_DRAW, 0, 0);
+        mScene.registerWindow("Scene3d", surface);
+        mScene.sendMessage(RendererConstant.MSG_DRAW, 0, 0);
     }
 
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-        mRenderer.removeWindow("Line");
+        mScene.removeWindow("Scene3d");
     }
 }

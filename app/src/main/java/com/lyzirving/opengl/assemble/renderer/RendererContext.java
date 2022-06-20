@@ -2,6 +2,7 @@ package com.lyzirving.opengl.assemble.renderer;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.transition.Scene;
 import android.view.Surface;
 
 import com.lyzirving.opengl.assemble.utils.LogUtil;
@@ -20,20 +21,19 @@ public class RendererContext {
     static { System.loadLibrary("lib-assembler"); }
 
     private static final int BASE = 1;
+    private static final int SCENE = 2;
 
-    @IntDef({BASE})
+    @IntDef({BASE, SCENE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ContextType {}
 
 
     private long mAddress = INVALID_ADDRESS;
-    private String mName;
 
     protected RendererContext() {}
 
-    protected RendererContext(long address, String name) {
+    protected RendererContext(long address) {
         mAddress = address;
-        mName = name;
     }
 
     public static RendererContext createContext(Context context,
@@ -41,7 +41,9 @@ public class RendererContext {
                                                 String name) {
         LogUtil.logI(TAG, "createContext: class " + className);
         if(RendererContext.class.getName().equals(className)) {
-            return new RendererContext(nCreateContext(name, context.getAssets(), BASE), name);
+            return new RendererContext(nCreateContext(name, context.getAssets(), BASE));
+        } else if(Scene3d.class.getName().equals(className)) {
+            return new Scene3d(nCreateContext(name, context.getAssets(), SCENE));
         } else {
             return null;
         }

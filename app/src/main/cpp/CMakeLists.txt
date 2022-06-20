@@ -4,12 +4,14 @@ include_directories(${CMAKE_SOURCE_DIR}/common/include)
 include_directories(${CMAKE_SOURCE_DIR}/renderer/include)
 include_directories(${CMAKE_SOURCE_DIR}/helper/include)
 include_directories(${CMAKE_SOURCE_DIR}/model/include)
+include_directories(${CMAKE_SOURCE_DIR}/line/include)
 include_directories(${CMAKE_SOURCE_DIR}/third/include)
 
 aux_source_directory(${CMAKE_SOURCE_DIR}/common CPP_COMMON)
 aux_source_directory(${CMAKE_SOURCE_DIR}/renderer CPP_RENDERER)
 aux_source_directory(${CMAKE_SOURCE_DIR}/helper CPP_HELPER)
 aux_source_directory(${CMAKE_SOURCE_DIR}/model CPP_MODEL)
+aux_source_directory(${CMAKE_SOURCE_DIR}/line CPP_LINE)
 
 add_library(lib-assimp
             SHARED
@@ -28,6 +30,7 @@ add_library( # Sets the name of the library.
              ${CPP_COMMON}
              ${CPP_RENDERER}
              ${CPP_HELPER}
+             ${CPP_LINE}
              ${CPP_MODEL})
 
 target_link_libraries( # Specifies the target library.

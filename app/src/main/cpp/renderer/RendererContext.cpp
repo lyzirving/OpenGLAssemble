@@ -8,7 +8,6 @@
 
 #include "RendererContext.h"
 #include "WindowSurface.h"
-#include "TwoDimensRenderer.h"
 #include "AntialiasLineRenderer.h"
 #include "CurveRenderer.h"
 #include "RendererMetadata.h"
@@ -33,14 +32,12 @@ void *threadStart(void *arg) {
 RendererContext::RendererContext(const char *name) : mThreadId(0), mLooper(name),
                                                      mEglCore(new EglCore),
                                                      mWindows(),
-                                                     mTwoDimensRenderer(nullptr),
                                                      mAntialiasLineRenderer(nullptr),
                                                      mCurveRenderer(nullptr) {
     pthread_create(&mThreadId, nullptr, threadStart, this);
 }
 
 RendererContext::~RendererContext() {
-    mTwoDimensRenderer.reset();
     mAntialiasLineRenderer.reset();
     mCurveRenderer.reset();
     mEglCore.reset();
@@ -116,10 +113,6 @@ void RendererContext::handleRegisterWindow(const char *name) {
 }
 
 bool RendererContext::onPrepare() {
-    mTwoDimensRenderer = std::make_shared<TwoDimensRenderer>(renderer::TWO_DIMEN_RENDERER);
-    if (!mTwoDimensRenderer->init())
-        goto fail;
-
     mAntialiasLineRenderer = std::make_shared<AntialiasLineRenderer>(renderer::ANTI_ALIAS_RENDERER);
     if (!mAntialiasLineRenderer->init())
         goto fail;
@@ -135,8 +128,6 @@ bool RendererContext::onPrepare() {
 }
 
 void RendererContext::onQuit() {
-    if(mTwoDimensRenderer)
-        mTwoDimensRenderer->release();
     if(mAntialiasLineRenderer)
         mAntialiasLineRenderer->release();
     if (mCurveRenderer)

@@ -18,4 +18,15 @@
         android:enabled="false"
         android:text="Line"/>
 
+    <Button
+        android:id="@+id/btn_scene"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/btn_line_ac"
+        app:layout_constraintTop_toTopOf="@+id/btn_line_ac"
+        android:layout_marginStart="10dp"
+        android:textAllCaps="false"
+        android:enabled="false"
+        android:text="Scene 3d"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

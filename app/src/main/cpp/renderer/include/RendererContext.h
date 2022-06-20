@@ -12,7 +12,6 @@
 struct ANativeWindow;
 class EglCore;
 class WindowSurface;
-class TwoDimensRenderer;
 class AntialiasLineRenderer;
 class CurveRenderer;
 
@@ -48,7 +47,6 @@ protected:
     std::unordered_map<std::string, std::shared_ptr<WindowSurface>> mWindows;
 
 private:
-    std::shared_ptr<TwoDimensRenderer> mTwoDimensRenderer;
     std::shared_ptr<AntialiasLineRenderer> mAntialiasLineRenderer;
     std::shared_ptr<CurveRenderer> mCurveRenderer;
 };

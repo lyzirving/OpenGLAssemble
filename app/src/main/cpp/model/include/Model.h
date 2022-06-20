@@ -7,7 +7,6 @@
 #include <assimp/material.h>
 
 #include "Mesh.h"
-#include "FileSystem.h"
 
 class aiScene;
 class aiNode;

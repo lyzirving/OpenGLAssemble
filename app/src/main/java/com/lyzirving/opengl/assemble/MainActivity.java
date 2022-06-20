@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.lyzirving.opengl.assemble.ui.LineActivity;
+import com.lyzirving.opengl.assemble.ui.SceneActivity;
 import com.lyzirving.opengl.assemble.utils.LogUtil;
 
 /**
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViewById(R.id.btn_line_ac).setOnClickListener(this);
+        findViewById(R.id.btn_scene).setOnClickListener(this);
     }
 
     @Override
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     LogUtil.logI(TAG, "onRequestPermissionsResult: read write permission granted");
                     enableButtons(R.id.btn_line_ac,true);
+                    enableButtons(R.id.btn_scene,true);
                 }
                 break;
             }
@@ -59,6 +62,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.btn_line_ac: {
                 startActivity(LineActivity.class);
+                break;
+            }
+            case R.id.btn_scene: {
+                startActivity(SceneActivity.class);
                 break;
             }
             default: {
@@ -84,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     LogUtil.logI(TAG, "requestUserPermission: permission granted");
                     enableButtons(R.id.btn_line_ac,true);
+                    enableButtons(R.id.btn_scene,true);
                 }
                 break;
             }

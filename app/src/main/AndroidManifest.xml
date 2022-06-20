@@ -23,6 +23,9 @@
         <activity android:name=".ui.LineActivity"
             android:launchMode="singleTask" />
 
+        <activity android:name=".ui.SceneActivity"
+            android:launchMode="singleTask" />
+
     </application>
 
 </manifest>
