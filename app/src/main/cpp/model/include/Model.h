@@ -4,6 +4,8 @@
 #ifndef OPENGLASSEMBLE_MODEL_H
 #define OPENGLASSEMBLE_MODEL_H
 
+#include <assimp/material.h>
+
 #include "Mesh.h"
 #include "FileSystem.h"
 
@@ -11,7 +13,6 @@ class aiScene;
 class aiNode;
 class aiMesh;
 class aiMaterial;
-enum aiTextureType;
 
 class Model {
 public:

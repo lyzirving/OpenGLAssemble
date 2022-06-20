@@ -6,8 +6,7 @@
 
 #include <string>
 
-//#define ROOT "/storage/emulated/0"
-#define ROOT "/sdcard"
+#define ROOT "/sdcard/test"
 
 class FileSystem {
 public:

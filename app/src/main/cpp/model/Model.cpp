@@ -32,9 +32,11 @@ bool Model::loadModel(const std::string &path) {
         goto fail;
     }
     mDirectory = path.substr(0, path.find_last_of('/'));
-    LogI("succeed to load src from(%s)", path.c_str());
+    LogI("load scene from(%s), begin to parse", path.c_str());
+    LogI("********************************");
     processNode(scene->mRootNode, scene);
-
+    LogI("********************************");
+    LogI("finish parse node");
     return true;
 
     fail:
@@ -64,11 +66,14 @@ void Model::processNode(aiNode *node, const aiScene *scene) {
     // note that Node only contains index of object
     // Scene contains all the meshes and elements which are needed for rendering
     // so we need to get objects from Scene by their index
+    LogI("node's mesh num(%u), node's children count (%u)",
+            node->mNumMeshes, node->mNumChildren);
 
     // process mesh for current node if the node has any meshes
     for(unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        mMeshes.push_back(processMesh(mesh, scene));
+        if(mesh != nullptr)
+            mMeshes.push_back(processMesh(mesh, scene));
     }
 
     // process the children for current node
@@ -81,6 +86,9 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     std::vector<Texture> textures;
+    LogI("mesh' vertices num(%u), mesh's face num(%u), mesh has material (%s)",
+         mesh->mNumVertices, mesh->mNumFaces,
+         (mesh->mMaterialIndex >= 0) ? "true" : "false");
 
     for(unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
@@ -110,14 +118,15 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     // every mesh only has one Material
     if(mesh->mMaterialIndex >= 0) {
         aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+        if(material != nullptr) {
+            std::vector<Texture> diffuse = loadMaterialTextures(material, aiTextureType_DIFFUSE,
+                                                                "texture_diffuse");
+            textures.insert(textures.end(), diffuse.begin(), diffuse.end());
 
-        std::vector<Texture> diffuse = loadMaterialTextures(material, aiTextureType_DIFFUSE,
-                                                            "texture_diffuse");
-        textures.insert(textures.end(), diffuse.begin(), diffuse.end());
-
-        std::vector<Texture> specular = loadMaterialTextures(material, aiTextureType_SPECULAR,
-                                                             "texture_specular");
-        textures.insert(textures.end(), specular.begin(), specular.end());
+            std::vector<Texture> specular = loadMaterialTextures(material, aiTextureType_SPECULAR,
+                                                                 "texture_specular");
+            textures.insert(textures.end(), specular.begin(), specular.end());
+        }
     }
 
     return Mesh(vertices, indices, textures);
