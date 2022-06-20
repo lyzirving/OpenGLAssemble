@@ -13,9 +13,7 @@ struct ANativeWindow;
 class EglCore;
 class WindowSurface;
 class TwoDimensRenderer;
-class GraphicRenderer;
 class AntialiasLineRenderer;
-class ContinuousLineRenderer;
 class CurveRenderer;
 
 enum MessageId : uint8_t {
@@ -51,9 +49,7 @@ protected:
 
 private:
     std::shared_ptr<TwoDimensRenderer> mTwoDimensRenderer;
-    std::shared_ptr<GraphicRenderer> mGraphicRenderer;
     std::shared_ptr<AntialiasLineRenderer> mAntialiasLineRenderer;
-    std::shared_ptr<ContinuousLineRenderer> mContinuousLineRenderer;
     std::shared_ptr<CurveRenderer> mCurveRenderer;
 };
 

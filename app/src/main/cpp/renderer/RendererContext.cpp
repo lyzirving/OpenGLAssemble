@@ -9,9 +9,7 @@
 #include "RendererContext.h"
 #include "WindowSurface.h"
 #include "TwoDimensRenderer.h"
-#include "GraphicRenderer.h"
 #include "AntialiasLineRenderer.h"
-#include "ContinuousLineRenderer.h"
 #include "CurveRenderer.h"
 #include "RendererMetadata.h"
 #include "VectorHelper.h"
@@ -36,18 +34,14 @@ RendererContext::RendererContext(const char *name) : mThreadId(0), mLooper(name)
                                                      mEglCore(new EglCore),
                                                      mWindows(),
                                                      mTwoDimensRenderer(nullptr),
-                                                     mGraphicRenderer(nullptr),
                                                      mAntialiasLineRenderer(nullptr),
-                                                     mContinuousLineRenderer(nullptr),
                                                      mCurveRenderer(nullptr) {
     pthread_create(&mThreadId, nullptr, threadStart, this);
 }
 
 RendererContext::~RendererContext() {
     mTwoDimensRenderer.reset();
-    mGraphicRenderer.reset();
     mAntialiasLineRenderer.reset();
-    mContinuousLineRenderer.reset();
     mCurveRenderer.reset();
     mEglCore.reset();
 }
@@ -97,8 +91,6 @@ void RendererContext::draw() {
 
         glViewport(0, 0, width, height);
         mCurveRenderer->updateViewport(0, 0, width, height);
-        //mContinuousLineRenderer->updateViewport(0, 0, width, height);
-        //mAntialiasLineRenderer->updateViewport(0, 0, width, height);
 
         Point2d lines[3];
         lines[0].mX = float(width) / 2.f - float(width) / 5.f;
@@ -108,27 +100,7 @@ void RendererContext::draw() {
         lines[2].mX = float(width) / 2.f + float(width) / 8.f;
         lines[2].mY = float(height) / 2.f + float(height) / 4.f;
 
-        //mCurveRenderer->drawLine(lines[0], lines[2], 20, 0xff0000ff);
         mCurveRenderer->drawCurve(lines[0], lines[1], lines[2], 30, 0xff0000ff);
-//        mContinuousLineRenderer->drawLines(lines, 4, 40, 0xf26522ff);
-//        lines[3].mX = float(width) / 2.f + float(width) / 3.f - float(width) / 7.f;
-//        lines[3].mY = float(height) / 2.f + float(height) / 4.f + float(height) / 8.f;
-
-//        mAntialiasLineRenderer->drawLines(lines, 4, 40, 0xf26522ff);
-//        mAntialiasLineRenderer->drawSegment(lines[0], lines[1], 40, 0xf26522ff);
-//        mAntialiasLineRenderer->drawSegment(lines[1], lines[2], 40, 0xf26522ff);
-//        mAntialiasLineRenderer->drawSegment(lines[2], lines[3], 40, 0xf26522ff);
-
-//        float vArray[4];
-//        mGraphicRenderer->updateViewport(0, 0, width, height);
-//        VectorHelper::vertex2d(vArray, lines[0].mX, lines[0].mY, mGraphicRenderer->getViewport());
-//        VectorHelper::vertex2d(vArray + 2, lines[1].mX, lines[1].mY, mGraphicRenderer->getViewport());
-//        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 10);
-//
-//        mGraphicRenderer->updateViewport(0, 0, width, height);
-//        VectorHelper::vertex2d(vArray, lines[1].mX, lines[1].mY, mGraphicRenderer->getViewport());
-//        VectorHelper::vertex2d(vArray + 2, lines[2].mX, lines[2].mY, mGraphicRenderer->getViewport());
-//        mGraphicRenderer->drawLines(vArray, 2, 2, 0x000000ff, 10);
 
         window->swapBuffer();
         it++;
@@ -148,16 +120,8 @@ bool RendererContext::onPrepare() {
     if (!mTwoDimensRenderer->init())
         goto fail;
 
-    mGraphicRenderer = std::make_shared<GraphicRenderer>(renderer::GRAPHIC_RENDERER);
-    if (!mGraphicRenderer->init())
-        goto fail;
-
     mAntialiasLineRenderer = std::make_shared<AntialiasLineRenderer>(renderer::ANTI_ALIAS_RENDERER);
     if (!mAntialiasLineRenderer->init())
-        goto fail;
-
-    mContinuousLineRenderer = std::make_shared<ContinuousLineRenderer>(renderer::CONTINUOUS_LINE_RENDERER);
-    if (!mContinuousLineRenderer->init())
         goto fail;
 
     mCurveRenderer = std::make_shared<CurveRenderer>(renderer::CURVE_RENDERER);
@@ -173,12 +137,8 @@ bool RendererContext::onPrepare() {
 void RendererContext::onQuit() {
     if(mTwoDimensRenderer)
         mTwoDimensRenderer->release();
-    if (mGraphicRenderer)
-        mGraphicRenderer->release();
     if(mAntialiasLineRenderer)
         mAntialiasLineRenderer->release();
-    if (mContinuousLineRenderer)
-        mContinuousLineRenderer->release();
     if (mCurveRenderer)
         mCurveRenderer->release();
 }
