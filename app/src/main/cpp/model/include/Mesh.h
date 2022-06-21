@@ -4,9 +4,12 @@
 #ifndef OPENGLASSEMBLE_MESH_H
 #define OPENGLASSEMBLE_MESH_H
 
+#include <memory>
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>
+
+class Shader;
 
 struct Vertex {
     // field is public as default in struct
@@ -54,6 +57,7 @@ public:
          std::vector<Texture> &&textures);
     ~Mesh();
 
+    void draw(const std::shared_ptr<Shader> &shader);
     void release();
     void setupMesh();
 private:

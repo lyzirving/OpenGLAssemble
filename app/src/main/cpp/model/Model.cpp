@@ -6,6 +6,7 @@
 #include <assimp/postprocess.h>
 
 #include "Model.h"
+#include "Shader.h"
 #include "ResourceManager.h"
 #include "LogUtil.h"
 
@@ -20,6 +21,11 @@ Model::Model(const char *path) : mMeshes(), mDirectory() {
 
 Model::~Model() {
     release();
+}
+
+void Model::draw(const std::shared_ptr<Shader> &shader) {
+    for (auto &mesh : mMeshes)
+        mesh.draw(shader);
 }
 
 bool Model::loadModel(const std::string &path) {
@@ -138,10 +144,12 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 
 void Model::release() {
     LogFunctionEnter;
-    for (auto &mesh : mMeshes)
-        mesh.release();
-    std::vector<Mesh> tmp;
-    mMeshes.swap(tmp);
+    if (!mMeshes.empty()) {
+        for (auto &mesh : mMeshes)
+            mesh.release();
+        std::vector<Mesh> tmp;
+        mMeshes.swap(tmp);
+    }
 }
 
 void Model::setupMesh() {

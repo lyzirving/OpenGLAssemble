@@ -18,6 +18,7 @@ public:
     Model(const char *path);
     ~Model();
 
+    void draw(const std::shared_ptr<Shader> &shader);
     void release();
     void setupMesh();
 

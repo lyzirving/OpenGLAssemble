@@ -5,6 +5,7 @@
 #include <GLES3/gl3.h>
 
 #include "Mesh.h"
+#include "Shader.h"
 #include "ResourceManager.h"
 #include "LogUtil.h"
 
@@ -31,23 +32,36 @@ Mesh::~Mesh() {
     release();
 }
 
+void Mesh::draw(const std::shared_ptr<Shader> &shader) {
+
+}
+
 void Mesh::release() {
-    //todo release Vao, Vbo and Ebo
-    {
+    if (!mVertices.empty()) {
         std::vector<Vertex> tmp;
         mVertices.swap(tmp);
     }
-    {
+    if (!mIndices.empty()) {
         std::vector<unsigned int> tmp;
         mIndices.swap(tmp);
     }
-    {
-        if (!mTextures.empty()) {
-            for (auto &tex : mTextures)
-                ResourceManager::get()->releaseTexture(tex.path, tex.textureId);
-        }
+    if (!mTextures.empty()) {
+        for (auto &tex : mTextures)
+            ResourceManager::get()->releaseTexture(tex.path, tex.textureId);
         std::vector<Texture> tmp;
         mTextures.swap(tmp);
+    }
+    if (mEbo != 0) {
+        glDeleteBuffers(1, &mEbo);
+        mEbo = 0;
+    }
+    if (mVbo != 0) {
+        glDeleteBuffers(1, &mVbo);
+        mVbo = 0;
+    }
+    if (mVao != 0) {
+        glDeleteVertexArrays(1, &mVao);
+        mVao = 0;
     }
 }
 

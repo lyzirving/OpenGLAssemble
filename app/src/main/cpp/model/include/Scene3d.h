@@ -7,6 +7,7 @@
 #include "RendererContext.h"
 
 class Model;
+class Shader;
 
 class Scene3d : public RendererContext {
 public:
@@ -21,6 +22,7 @@ protected:
 
 private:
     std::shared_ptr<Model> mModel;
+    std::shared_ptr<Shader> mShader;
 };
 
 #endif //OPENGLASSEMBLE_SCENE3D_H
