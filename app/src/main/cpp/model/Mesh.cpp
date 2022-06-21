@@ -5,6 +5,7 @@
 #include <GLES3/gl3.h>
 
 #include "Mesh.h"
+#include "ResourceManager.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -26,7 +27,29 @@ Mesh::Mesh(std::vector<Vertex> &&vertices, std::vector<unsigned int> &&indices,
            : mVertices(std::move(vertices)), mIndices(std::move(indices)),
              mTextures(std::move(textures)), mVao(0), mVbo(0), mEbo(0) {}
 
-Mesh::~Mesh() = default;
+Mesh::~Mesh() {
+    release();
+}
+
+void Mesh::release() {
+    //todo release Vao, Vbo and Ebo
+    {
+        std::vector<Vertex> tmp;
+        mVertices.swap(tmp);
+    }
+    {
+        std::vector<unsigned int> tmp;
+        mIndices.swap(tmp);
+    }
+    {
+        if (!mTextures.empty()) {
+            for (auto &tex : mTextures)
+                ResourceManager::get()->releaseTexture(tex.path, tex.textureId);
+        }
+        std::vector<Texture> tmp;
+        mTextures.swap(tmp);
+    }
+}
 
 void Mesh::setupMesh() {
     if(mVao != 0) {

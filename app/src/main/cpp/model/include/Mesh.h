@@ -54,6 +54,7 @@ public:
          std::vector<Texture> &&textures);
     ~Mesh();
 
+    void release();
     void setupMesh();
 private:
     unsigned int mVao, mVbo, mEbo;

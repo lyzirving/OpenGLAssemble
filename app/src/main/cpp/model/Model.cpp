@@ -18,7 +18,9 @@ Model::Model(const char *path) : mMeshes(), mDirectory() {
     loadModel(path);
 }
 
-Model::~Model() {}
+Model::~Model() {
+    release();
+}
 
 bool Model::loadModel(const std::string &path) {
     // use assimp load model and get aiScene
@@ -104,6 +106,8 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
             vertex.texCoords.x = mesh->mTextureCoords[0][i].x;
             vertex.texCoords.y = mesh->mTextureCoords[0][i].y;
         }
+
+        vertices.push_back(vertex);
     }
 
     // process the indices
@@ -130,4 +134,18 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     }
 
     return Mesh(vertices, indices, textures);
+}
+
+void Model::release() {
+    LogFunctionEnter;
+    for (auto &mesh : mMeshes)
+        mesh.release();
+    std::vector<Mesh> tmp;
+    mMeshes.swap(tmp);
+}
+
+void Model::setupMesh() {
+    LogFunctionEnter;
+    for (auto &mesh : mMeshes)
+        mesh.setupMesh();
 }

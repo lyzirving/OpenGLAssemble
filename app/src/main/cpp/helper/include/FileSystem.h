@@ -10,6 +10,11 @@
 
 class FileSystem {
 public:
+
+    static std::string getPath(const char *path) {
+        return getPath(std::string(path));
+    }
+
     static std::string getPath(const std::string& path) {
         static std::string(*pathBuilder)(std::string const &) = getPathBuilder();
         return (*pathBuilder)(path);

@@ -18,6 +18,9 @@ public:
     Model(const char *path);
     ~Model();
 
+    void release();
+    void setupMesh();
+
 private:
     std::vector<Mesh> mMeshes;
     std::string mDirectory;
