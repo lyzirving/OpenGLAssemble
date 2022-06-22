@@ -6,6 +6,7 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "GlHelper.h"
 #include "Constant.h"
 #include "ResourceManager.h"
 #include "LogUtil.h"
@@ -52,6 +53,7 @@ void Mesh::draw(const std::shared_ptr<Shader> &shader) {
     glBindVertexArray(mVao);
     glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(mIndices.size()),
                    GL_UNSIGNED_INT, nullptr);
+    GlHelper::checkGlError("draw elements error", "Mesh");
 
     glBindVertexArray(0);
     glActiveTexture(GL_TEXTURE0);
