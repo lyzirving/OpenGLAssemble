@@ -5,6 +5,7 @@
 
 #include "Scene3d.h"
 #include "Shader.h"
+#include "Constant.h"
 #include "Model.h"
 #include "WindowSurface.h"
 #include "FileSystem.h"
@@ -18,7 +19,9 @@
 
 Scene3d::Scene3d(const char *name) : RendererContext(name),
                                      mModel(nullptr),
-                                     mShader(nullptr) {}
+                                     mShader(nullptr),
+                                     mViewM(),
+                                     mProjectionM() {}
 
 Scene3d::~Scene3d() {
     mModel.reset();
@@ -38,7 +41,12 @@ void Scene3d::draw() {
         glViewport(0, 0, width, height);
 
         mShader->use(true);
+
+        mShader->setMat4(shader::view, mViewM);
+        mShader->setMat4(shader::projection, mProjectionM);
+
         mModel->draw(mShader);
+
         mShader->use(false);
 
         window->swapBuffer();
@@ -48,7 +56,7 @@ void Scene3d::draw() {
 
 bool Scene3d::onPrepare() {
     //todo the vertex shader and fragment shader should be revised
-    mShader = std::make_shared<Shader>("shader/curve_vertex_shader.glsl", "shader/curve_fragment_shader.glsl");
+    mShader = std::make_shared<Shader>("shader/model_vs.glsl", "shader/model_fs.glsl");
     if(!mShader->valid())
         goto fail;
 

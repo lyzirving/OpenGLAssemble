@@ -7,6 +7,7 @@
 
 #include "Model.h"
 #include "Shader.h"
+#include "Constant.h"
 #include "ResourceManager.h"
 #include "LogUtil.h"
 
@@ -15,7 +16,7 @@
 #endif
 #define LOCAL_TAG "Model"
 
-Model::Model(const char *path) : mMeshes(), mDirectory() {
+Model::Model(const char *path) : mMeshes(), mDirectory(), mModelM() {
     loadModel(path);
 }
 
@@ -24,6 +25,7 @@ Model::~Model() {
 }
 
 void Model::draw(const std::shared_ptr<Shader> &shader) {
+    shader->setMat4(shader::model, mModelM);
     for (auto &mesh : mMeshes)
         mesh.draw(shader);
 }
@@ -130,11 +132,11 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
         if(material != nullptr) {
             std::vector<Texture> diffuse = loadMaterialTextures(material, aiTextureType_DIFFUSE,
-                                                                "texture_diffuse");
+                                                                tex::diffuse);
             textures.insert(textures.end(), diffuse.begin(), diffuse.end());
 
             std::vector<Texture> specular = loadMaterialTextures(material, aiTextureType_SPECULAR,
-                                                                 "texture_specular");
+                                                                 tex::specular);
             textures.insert(textures.end(), specular.begin(), specular.end());
         }
     }

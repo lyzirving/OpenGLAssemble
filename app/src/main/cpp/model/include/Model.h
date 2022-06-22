@@ -5,6 +5,7 @@
 #define OPENGLASSEMBLE_MODEL_H
 
 #include <assimp/material.h>
+#include <glm/glm.hpp>
 
 #include "Mesh.h"
 
@@ -25,6 +26,7 @@ public:
 private:
     std::vector<Mesh> mMeshes;
     std::string mDirectory;
+    glm::mat4x4 mModelM;
 
     /**
      * load model from specific path

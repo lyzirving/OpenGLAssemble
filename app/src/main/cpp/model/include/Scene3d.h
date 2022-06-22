@@ -4,6 +4,8 @@
 #ifndef OPENGLASSEMBLE_SCENE3D_H
 #define OPENGLASSEMBLE_SCENE3D_H
 
+#include <glm/glm.hpp>
+
 #include "RendererContext.h"
 
 class Model;
@@ -23,6 +25,9 @@ protected:
 private:
     std::shared_ptr<Model> mModel;
     std::shared_ptr<Shader> mShader;
+
+    glm::mat4x4 mViewM;
+    glm::mat4x4 mProjectionM;
 };
 
 #endif //OPENGLASSEMBLE_SCENE3D_H

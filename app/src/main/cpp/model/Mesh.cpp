@@ -6,6 +6,7 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "Constant.h"
 #include "ResourceManager.h"
 #include "LogUtil.h"
 
@@ -33,7 +34,27 @@ Mesh::~Mesh() {
 }
 
 void Mesh::draw(const std::shared_ptr<Shader> &shader) {
+    unsigned int diffuseNr = 1;
+    unsigned int specularNr = 1;
+    for(unsigned int i = 0; i < mTextures.size(); i++) {
+        glActiveTexture(GL_TEXTURE0 + i);
+        std::string number;
+        std::string name = mTextures[i].type;
 
+        if(name == tex::diffuse)
+            number = std::to_string(diffuseNr++);
+        else if(name == tex::specular)
+            number = std::to_string(specularNr++);
+
+        glBindTexture(GL_TEXTURE_2D, mTextures[i].textureId);
+        shader->setInt(name + number, i);
+    }
+    glBindVertexArray(mVao);
+    glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(mIndices.size()),
+                   GL_UNSIGNED_INT, nullptr);
+
+    glBindVertexArray(0);
+    glActiveTexture(GL_TEXTURE0);
 }
 
 void Mesh::release() {
