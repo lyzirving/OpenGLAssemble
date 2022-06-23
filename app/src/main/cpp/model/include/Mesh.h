@@ -53,14 +53,13 @@ public:
     Mesh();
     Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices,
          const std::vector<Texture> &textures);
-    Mesh(std::vector<Vertex> &&vertices, std::vector<unsigned int> &&indices,
-         std::vector<Texture> &&textures);
     ~Mesh();
 
     void draw(const std::shared_ptr<Shader> &shader);
     void release();
-    void setupMesh();
 private:
+    void setupMesh();
+
     unsigned int mVao, mVbo, mEbo;
 };
 

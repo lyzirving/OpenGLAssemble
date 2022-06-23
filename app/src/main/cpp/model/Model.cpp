@@ -9,6 +9,7 @@
 #include "Shader.h"
 #include "Constant.h"
 #include "ResourceManager.h"
+#include "GlHelper.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -26,6 +27,7 @@ Model::~Model() {
 
 void Model::draw(const std::shared_ptr<Shader> &shader) {
     shader->setMat4(shader::model, mModelM);
+    GlHelper::checkGlError("set matrix model", "Model");
     for (auto &mesh : mMeshes)
         mesh.draw(shader);
 }
@@ -152,10 +154,4 @@ void Model::release() {
         std::vector<Mesh> tmp;
         mMeshes.swap(tmp);
     }
-}
-
-void Model::setupMesh() {
-    LogFunctionEnter;
-    for (auto &mesh : mMeshes)
-        mesh.setupMesh();
 }

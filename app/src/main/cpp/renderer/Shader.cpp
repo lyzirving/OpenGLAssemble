@@ -1,6 +1,7 @@
 //
 // Created by lyzirving on 2022/6/21.
 //
+#include <glm/gtc/type_ptr.hpp>
 #include <GLES2/gl2.h>
 
 #include "Shader.h"
@@ -39,6 +40,6 @@ void Shader::setInt(const std::string &name, int value) const {
 
 void Shader::setMat4(const std::string &name, const glm::mat4x4 &mat) const {
     GLint ind = glGetUniformLocation(mProgram, name.c_str());
-    glUniformMatrix4fv(ind, 1, GL_FALSE, &mat[0][0]);
+    glUniformMatrix4fv(ind, 1, GL_FALSE, glm::value_ptr(mat));
 }
 

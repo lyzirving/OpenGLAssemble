@@ -9,6 +9,7 @@
 #include "Model.h"
 #include "WindowSurface.h"
 #include "FileSystem.h"
+#include "GlHelper.h"
 
 #include "LogUtil.h"
 
@@ -20,8 +21,8 @@
 Scene3d::Scene3d(const char *name) : RendererContext(name),
                                      mModel(nullptr),
                                      mShader(nullptr),
-                                     mViewM(),
-                                     mProjectionM() {}
+                                     mViewM(1.f),
+                                     mProjectionM(1.f) {}
 
 Scene3d::~Scene3d() {
     mModel.reset();
@@ -43,7 +44,9 @@ void Scene3d::draw() {
         mShader->use(true);
 
         mShader->setMat4(shader::view, mViewM);
+        GlHelper::checkGlError("set matrix view", "Scene3d");
         mShader->setMat4(shader::projection, mProjectionM);
+        GlHelper::checkGlError("set matrix projection", "Scene3d");
 
         mModel->draw(mShader);
 
@@ -55,13 +58,11 @@ void Scene3d::draw() {
 }
 
 bool Scene3d::onPrepare() {
-    //todo the vertex shader and fragment shader should be revised
     mShader = std::make_shared<Shader>("shader/model_vs.glsl", "shader/model_fs.glsl");
     if(!mShader->valid())
         goto fail;
 
     mModel = std::make_shared<Model>(FileSystem::getPath("nanosuit/nanosuit.obj").c_str());
-    mModel->setupMesh();
     return true;
 
     fail:

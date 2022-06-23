@@ -21,7 +21,6 @@ public:
 
     void draw(const std::shared_ptr<Shader> &shader);
     void release();
-    void setupMesh();
 
 private:
     std::vector<Mesh> mMeshes;
