@@ -27,7 +27,7 @@ Model::~Model() {
 
 void Model::draw(const std::shared_ptr<Shader> &shader) {
     shader->setMat4(shader::model, mModelM);
-    GlHelper::checkGlError("set matrix model", "Model");
+    GlHelper::checkGlError("set model matrix");
     for (auto &mesh : mMeshes)
         mesh.draw(shader);
 }

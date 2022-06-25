@@ -1,5 +1,5 @@
 #version 320 es
-precision highp float;
+precision mediump float;
 
 in vec2 vTexCoords;
 uniform sampler2D texture_diffuse1;

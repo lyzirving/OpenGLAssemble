@@ -6,6 +6,7 @@
 #include <mutex>
 
 #include "ResourceManager.h"
+#include "GlHelper.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -38,37 +39,43 @@ unsigned int ResourceManager::loadTextureFromFile(const std::string &texPath, bo
         LogI("already contains texture from (%s), use cache", texPath.c_str());
         return iterator->second;
     }
-    unsigned int textureId(0);
-    glGenTextures(1, &textureId);
 
-    int width, height, nComponents;
-    unsigned char *data = stbi_load(texPath.c_str(), &width, &height, &nComponents, 0);
+    unsigned int textureId(0);
+    int width, height, components;
+    unsigned char *data = stbi_load(texPath.c_str(), &width, &height, &components, 0);
     if(data) {
         GLenum format;
-        if (nComponents == 1)
+        if (components == 1)
             format = GL_RED;
-        else if (nComponents == 3)
+        else if (components == 3)
             format = GL_RGB;
-        else if (nComponents == 4)
+        else if (components == 4)
             format = GL_RGBA;
+        else {
+            LogE("component(%d) format does not match", components);
+            goto done;
+        }
 
+        glGenTextures(1, &textureId);
         glBindTexture(GL_TEXTURE_2D, textureId);
 
-        glGenerateMipmap(GL_TEXTURE_2D);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        GlHelper::checkGlError("form texture");
 
         //cache the texture id
         mTexMap.insert(std::unordered_map<std::string, unsigned int>::value_type(texPath, textureId));
-        LogI("load texture, size(%d, %d), component(%d), path(%s)", width, height, nComponents, texPath.c_str());
+        LogI("load texture, size(%d, %d), component(%d), path(%s)", width, height, components, texPath.c_str());
     } else {
-        LogE("fail to load texture from(%s)", texPath.c_str());
+        LogE("fail to load byte data from(%s)", texPath.c_str());
     }
-    stbi_image_free(data);
 
+    done:
+    stbi_image_free(data);
     return textureId;
 }
 

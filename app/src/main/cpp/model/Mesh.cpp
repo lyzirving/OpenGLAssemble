@@ -48,8 +48,8 @@ void Mesh::draw(const std::shared_ptr<Shader> &shader) {
 
         glBindTexture(GL_TEXTURE_2D, mTextures[i].textureId);
         shader->setInt(name + number, i);
+        GlHelper::checkGlError("bind texture", "Mesh");
         LogI("bind texture (%s)", (name + number).c_str());
-        GlHelper::checkGlError("bind texture error", "Mesh");
     }
     glBindVertexArray(mVao);
     glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(mIndices.size()),
@@ -90,24 +90,27 @@ void Mesh::release() {
 }
 
 void Mesh::setupMesh() {
+    // create buffers/arrays
     glGenVertexArrays(1, &mVao);
-    glBindVertexArray(mVao);
-
     glGenBuffers(1, &mVbo);
+    glGenBuffers(1, &mEbo);
+
+    glBindVertexArray(mVao);
+    // load vertex data into array buffer
     glBindBuffer(GL_ARRAY_BUFFER, mVbo);
     glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), &mVertices[0], GL_STATIC_DRAW);
-
-    // vertex's handler is position 0 in vertex shader
+    // set the vertex attribute pointer
+    // vertex position
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
-    // normal's handler is position 1 in vertex shader
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)nullptr);
+    // vertex normal
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
-    // texture coordinate's handler is position 2 in vertex shader
+    // texture coordinates
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoords));
 
-    glGenBuffers(1, &mEbo);
+    // load indices data into element buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(unsigned int), &mIndices[0], GL_STATIC_DRAW);
 

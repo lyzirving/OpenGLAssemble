@@ -44,9 +44,7 @@ void Scene3d::draw() {
         mShader->use(true);
 
         mShader->setMat4(shader::view, mViewM);
-        GlHelper::checkGlError("set matrix view", "Scene3d");
         mShader->setMat4(shader::projection, mProjectionM);
-        GlHelper::checkGlError("set matrix projection", "Scene3d");
 
         mModel->draw(mShader);
 
