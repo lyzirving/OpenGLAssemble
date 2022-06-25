@@ -36,26 +36,36 @@ Mesh::~Mesh() {
 void Mesh::draw(const std::shared_ptr<Shader> &shader) {
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
-    for(unsigned int i = 0; i < mTextures.size(); i++) {
-        glActiveTexture(GL_TEXTURE0 + i);
+    bool match{false};
+    int index{0};
+    for(auto &texture : mTextures) {
         std::string number;
-        std::string name = mTextures[i].type;
-
-        if(name == tex::diffuse)
+        std::string name = texture.type;
+        if (name == tex::diffuse) {
             number = std::to_string(diffuseNr++);
-        else if(name == tex::specular)
+            match = true;
+        } else if (name == tex::specular) {
             number = std::to_string(specularNr++);
-
-        glBindTexture(GL_TEXTURE_2D, mTextures[i].textureId);
-        shader->setInt(name + number, i);
-        GlHelper::checkGlError("bind texture", "Mesh");
-        LogI("bind texture (%s)", (name + number).c_str());
+            match = true;
+        }
+        if(match) {
+            glActiveTexture(GL_TEXTURE0 + index);
+            glBindTexture(GL_TEXTURE_2D, texture.textureId);
+            shader->setInt(name + number, index);
+            GlHelper::checkGlError("bind texture", "Mesh");
+            LogI("bind texture (%s)", (name + number).c_str());
+            index++;
+        } else {
+            LogE("texture type(%s) does not match", name.c_str());
+        }
+        match = false;
     }
-    glBindVertexArray(mVao);
-    glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(mIndices.size()),
-                   GL_UNSIGNED_INT, nullptr);
-    GlHelper::checkGlError("draw elements error", "Mesh");
 
+    GlHelper::checkGlError("before bind vao", "Mesh");
+    glBindVertexArray(mVao);
+    GlHelper::checkGlError("before draw elements", "Mesh");
+    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, nullptr);
+    GlHelper::checkGlError("after draw elements", "Mesh");
     glBindVertexArray(0);
     glActiveTexture(GL_TEXTURE0);
 }
@@ -90,17 +100,24 @@ void Mesh::release() {
 }
 
 void Mesh::setupMesh() {
-    // create buffers/arrays
-    glGenVertexArrays(1, &mVao);
+    // **********create buffers**********
     glGenBuffers(1, &mVbo);
     glGenBuffers(1, &mEbo);
-
-    glBindVertexArray(mVao);
     // load vertex data into array buffer
     glBindBuffer(GL_ARRAY_BUFFER, mVbo);
     glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), &mVertices[0], GL_STATIC_DRAW);
-    // set the vertex attribute pointer
-    // vertex position
+    // load indices data into element buffer
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(unsigned int), &mIndices[0], GL_STATIC_DRAW);
+    // **********finish create buffer **********
+
+    // create vao
+    glGenVertexArrays(1, &mVao);
+    glBindVertexArray(mVao);
+    // bind buffer to vao
+    glBindBuffer(GL_ARRAY_BUFFER, mVbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
+    // set the vertex attribute pointer, vertex position
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)nullptr);
     // vertex normal
@@ -109,10 +126,6 @@ void Mesh::setupMesh() {
     // texture coordinates
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoords));
-
-    // load indices data into element buffer
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(unsigned int), &mIndices[0], GL_STATIC_DRAW);
 
     glBindVertexArray(0);
     LogI("mesh setup");
