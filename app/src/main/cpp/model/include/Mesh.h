@@ -20,8 +20,25 @@ struct Vertex {
     Vertex() : position(), normal(), texCoords() {}
     Vertex(const Vertex &other) : position(other.position), normal(other.normal),
                              texCoords(other.texCoords) {}
-    Vertex(Vertex &&other) : position(other.position), normal(other.normal),
-                             texCoords(other.texCoords) {}
+    Vertex(Vertex &&other) : position(std::move(other.position)), normal(std::move(other.normal)),
+                             texCoords(std::move(other.texCoords)) {}
+
+    Vertex &operator=(const Vertex &other) {
+        if (this != &other) {
+            this->position = other.position;
+            this->normal = other.normal;
+            this->texCoords = other.texCoords;
+        }
+        return *this;
+    }
+    Vertex& operator =(Vertex &&other) {
+        if(this != &other) {
+            this->position = std::move(other.position);
+            this->normal = std::move(other.normal);
+            this->texCoords = std::move(other.texCoords);
+        }
+        return *this;
+    }
 };
 
 struct Texture {
@@ -33,12 +50,23 @@ struct Texture {
     Texture(const Texture &other) : textureId(other.textureId), path(other.path),
                                     type(other.type) {}
     Texture(Texture &&other) : textureId(other.textureId), path(std::move(other.path)),
-                               type(std::move(other.type)) {}
-    Texture & operator =(const Texture &other) {
+                               type(std::move(other.type)) {
+        other.textureId = 0;
+    }
+    Texture& operator =(const Texture &other) {
         if(this != &other) {
             this->textureId = other.textureId;
             this->path = other.path;
             this->type = other.type;
+        }
+        return *this;
+    }
+    Texture& operator =(Texture &&other) {
+        if(this != &other) {
+            this->textureId = other.textureId;
+            this->path = std::move(other.path);
+            this->type = std::move(other.type);
+            other.textureId = 0;
         }
         return *this;
     }
@@ -51,15 +79,14 @@ public:
     std::vector<Texture> mTextures;
 
     Mesh();
-    Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices,
-         const std::vector<Texture> &textures);
+    Mesh(Mesh &&other) noexcept;
+    Mesh& operator =(Mesh &&other) noexcept;
     ~Mesh();
 
     void draw(const std::shared_ptr<Shader> &shader);
     void release();
-private:
     void setupMesh();
-
+private:
     unsigned int mVao, mVbo, mEbo;
 };
 

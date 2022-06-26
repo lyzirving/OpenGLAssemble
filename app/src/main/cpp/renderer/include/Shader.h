@@ -18,7 +18,7 @@ public:
 
     void setInt(const std::string &name, int value) const;
     void setMat4(const std::string &name, const glm::mat4x4 &mat) const;
-protected:
+
     unsigned int mProgram;
 };
 

@@ -84,7 +84,7 @@ void Model::processNode(aiNode *node, const aiScene *scene) {
     for(unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
         if(mesh != nullptr)
-            mMeshes.push_back(processMesh(mesh, scene));
+            mMeshes.push_back(std::move(processMesh(mesh, scene)));
     }
 
     // process the children for current node
@@ -142,7 +142,13 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         }
     }
 
-    return Mesh(vertices, indices, textures);
+    Mesh result{};
+    result.mVertices = vertices;
+    result.mIndices = indices;
+    result.mTextures = textures;
+    result.setupMesh();
+
+    return result;
 }
 
 void Model::release() {

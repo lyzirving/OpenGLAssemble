@@ -21,12 +21,32 @@
 Mesh::Mesh() : mVertices(), mIndices(), mTextures(),
                mVao(0), mVbo(0), mEbo(0) {}
 
-Mesh::Mesh(const std::vector<Vertex> &vertices,
-           const std::vector<unsigned int> &indices,
-           const std::vector<Texture> &textures)
-           : mVertices(vertices), mIndices(indices), mTextures(textures),
-             mVao(0), mVbo(0), mEbo(0) {
-    setupMesh();
+Mesh::Mesh(Mesh &&other) noexcept {
+    if (this != &other) {
+        this->mVertices = std::move(other.mVertices);
+        this->mIndices = std::move(other.mIndices);
+        this->mTextures = std::move(other.mTextures);
+        this->mVao = other.mVao;
+        this->mVbo = other.mVbo;
+        this->mEbo = other.mEbo;
+        other.mVao = 0;
+        other.mVbo = 0;
+        other.mEbo = 0;
+    }
+}
+
+Mesh &Mesh::operator=(Mesh &&other) noexcept {
+    if (this != &other) {
+        this->mVertices = std::move(other.mVertices);
+        this->mIndices = std::move(other.mIndices);
+        this->mTextures = std::move(other.mTextures);
+        this->mVao = other.mVao;
+        this->mVbo = other.mVbo;
+        this->mEbo = other.mEbo;
+        other.mVao = 0;
+        other.mVbo = 0;
+        other.mEbo = 0;
+    }
 }
 
 Mesh::~Mesh() {
@@ -53,47 +73,50 @@ void Mesh::draw(const std::shared_ptr<Shader> &shader) {
             glBindTexture(GL_TEXTURE_2D, texture.textureId);
             shader->setInt(name + number, index);
             GlHelper::checkGlError("bind texture", "Mesh");
-            LogI("bind texture (%s)", (name + number).c_str());
             index++;
         } else {
             LogE("texture type(%s) does not match", name.c_str());
         }
         match = false;
     }
-
-    GlHelper::checkGlError("before bind vao", "Mesh");
     glBindVertexArray(mVao);
-    GlHelper::checkGlError("before draw elements", "Mesh");
     glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, nullptr);
     GlHelper::checkGlError("after draw elements", "Mesh");
+
     glBindVertexArray(0);
     glActiveTexture(GL_TEXTURE0);
 }
 
 void Mesh::release() {
     if (!mVertices.empty()) {
+        LogI("release vertices, size = %lu", mVertices.size());
         std::vector<Vertex> tmp;
         mVertices.swap(tmp);
     }
     if (!mIndices.empty()) {
+        LogI("release indices, size = %lu", mIndices.size());
         std::vector<unsigned int> tmp;
         mIndices.swap(tmp);
     }
     if (!mTextures.empty()) {
+        LogI("release textures, size = %lu", mTextures.size());
         for (auto &tex : mTextures)
             ResourceManager::get()->releaseTexture(tex.path, tex.textureId);
         std::vector<Texture> tmp;
         mTextures.swap(tmp);
     }
     if (mEbo != 0) {
+        LogI("release ebo(%u)", mEbo);
         glDeleteBuffers(1, &mEbo);
         mEbo = 0;
     }
     if (mVbo != 0) {
+        LogI("release vbo(%u)", mVbo);
         glDeleteBuffers(1, &mVbo);
         mVbo = 0;
     }
     if (mVao != 0) {
+        LogI("release vao(%u)", mVao);
         glDeleteVertexArrays(1, &mVao);
         mVao = 0;
     }
@@ -128,6 +151,6 @@ void Mesh::setupMesh() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoords));
 
     glBindVertexArray(0);
-    LogI("mesh setup");
+    LogI("mesh setup, vao(%u), vbo(%u), ebo(%u)", mVao, mVbo, mEbo);
 }
 

@@ -82,14 +82,17 @@ unsigned int ResourceManager::loadTextureFromFile(const std::string &texPath, bo
 void ResourceManager::releaseTexture(const std::string &texPath, const unsigned int textureId) {
     auto iterator =  mTexMap.find(texPath);
     if (iterator != mTexMap.end()) {
-        if (textureId == iterator->second)
+        if (textureId == iterator->second) {
+            LogI("texture id(%u), path(%s)", textureId, texPath.c_str());
             glDeleteTextures(1, &textureId);
-        else {
+        } else {
+            LogI("texture cache id(%u), input id(%u), delete both, path(%s)", iterator->second, textureId, texPath.c_str());
             glDeleteTextures(1, &textureId);
             glDeleteTextures(1, &(iterator->second));
         }
         mTexMap.erase(iterator);
     } else {
+        LogI("texture id(%u) does not match, delete directly, path (%s)", textureId, texPath.c_str());
         glDeleteTextures(1, &textureId);
     }
 }

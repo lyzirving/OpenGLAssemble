@@ -11,6 +11,8 @@ class GlHelper {
 public:
     static unsigned int buildProgram(const char *vertexShaderSource, const char *fragmentShaderSource);
     static bool checkGlError(const char *msg, const char* tag = "");
+    static void logProgramInfo(unsigned int program);
+    static void logShaderInfo(unsigned int shader);
     static char *readAssets(const char *path);
     static void release();
     static void setAssetsManager(_JNIEnv *env, _jobject *manager);
@@ -19,8 +21,6 @@ private:
     ~GlHelper();
 
     static unsigned int createShader(unsigned int type, const char *source);
-    static void logShaderInfo(unsigned int shader);
-    static void logProgramInfo(unsigned int program);
 };
 
 #endif //OPENGLASSEMBLE_GLHELPER_H
