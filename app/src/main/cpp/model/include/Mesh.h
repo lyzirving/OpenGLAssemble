@@ -83,6 +83,7 @@ public:
     Mesh& operator =(Mesh &&other) noexcept;
     ~Mesh();
 
+    void clampPosition(const glm::vec3 &max, const glm::vec3 &min);
     void draw(const std::shared_ptr<Shader> &shader);
     void release();
     void setupMesh();

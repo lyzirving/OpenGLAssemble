@@ -17,7 +17,8 @@
 #endif
 #define LOCAL_TAG "Model"
 
-Model::Model(const char *path) : mMeshes(), mDirectory(), mModelM() {
+Model::Model(const char *path) : mMeshes(), mDirectory(), mModelM(),
+                                 mMaxPos(), mMinPos() {
     loadModel(path);
 }
 
@@ -106,6 +107,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         vertex.position.x = mesh->mVertices[i].x;
         vertex.position.y = mesh->mVertices[i].y;
         vertex.position.z = mesh->mVertices[i].z;
+        updateMaxMinPosition(vertex.position);
 
         vertex.normal.x = mesh->mNormals[i].x;
         vertex.normal.y = mesh->mNormals[i].y;
@@ -146,6 +148,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     result.mVertices = vertices;
     result.mIndices = indices;
     result.mTextures = textures;
+    result.clampPosition(mMaxPos, mMinPos);
     result.setupMesh();
 
     return result;
@@ -159,4 +162,14 @@ void Model::release() {
         std::vector<Mesh> tmp;
         mMeshes.swap(tmp);
     }
+}
+
+void Model::updateMaxMinPosition(const glm::vec3 &vertex) {
+    mMaxPos.x = vertex.x >= mMaxPos.x ? vertex.x : mMaxPos.x;
+    mMaxPos.y = vertex.y >= mMaxPos.y ? vertex.y : mMaxPos.y;
+    mMaxPos.z = vertex.z >= mMaxPos.z ? vertex.z : mMaxPos.z;
+
+    mMinPos.x = vertex.x < mMinPos.x ? vertex.x : mMinPos.x;
+    mMinPos.y = vertex.y < mMinPos.y ? vertex.y : mMinPos.y;
+    mMinPos.z = vertex.z < mMinPos.z ? vertex.z : mMinPos.z;
 }

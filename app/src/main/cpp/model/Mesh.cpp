@@ -5,6 +5,7 @@
 #include <GLES2/gl2ext.h>
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
+#include <cmath>
 
 #include "Mesh.h"
 #include "Shader.h"
@@ -51,6 +52,14 @@ Mesh &Mesh::operator=(Mesh &&other) noexcept {
 
 Mesh::~Mesh() {
     release();
+}
+
+void Mesh::clampPosition(const glm::vec3 &max, const glm::vec3 &min) {
+    for(auto &vertex : mVertices) {
+        vertex.position.x = vertex.position.x / std::abs(max.x);
+        vertex.position.y = vertex.position.y / std::abs(max.y);
+        vertex.position.z = vertex.position.z / std::abs(max.z);
+    }
 }
 
 void Mesh::draw(const std::shared_ptr<Shader> &shader) {

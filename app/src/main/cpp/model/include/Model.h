@@ -23,10 +23,6 @@ public:
     void release();
 
 private:
-    std::vector<Mesh> mMeshes;
-    std::string mDirectory;
-    glm::mat4x4 mModelM;
-
     /**
      * load model from specific path
      * @param path: a path that specify the .obj file
@@ -39,6 +35,13 @@ private:
 
     void processNode(aiNode *node, const aiScene *scene);
     Mesh processMesh(aiMesh *mesh, const aiScene *scene);
+
+    void updateMaxMinPosition(const glm::vec3 &vertex);
+
+    std::vector<Mesh> mMeshes;
+    std::string mDirectory;
+    glm::mat4x4 mModelM;
+    glm::vec3 mMaxPos, mMinPos;
 };
 
 #endif //OPENGLASSEMBLE_MODEL_H
