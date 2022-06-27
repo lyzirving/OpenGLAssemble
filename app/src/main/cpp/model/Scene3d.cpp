@@ -2,8 +2,10 @@
 // Created by lyzirving on 2022/6/20.
 //
 #include <GLES2/gl2.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Scene3d.h"
+#include "Camera.h"
 #include "Shader.h"
 #include "Constant.h"
 #include "Model.h"
@@ -19,12 +21,14 @@
 #define LOCAL_TAG "Scene3d"
 
 Scene3d::Scene3d(const char *name) : RendererContext(name),
+                                     mCamera(new Camera(glm::vec3(0.0f, 0.0f, 3.0f))),
                                      mModel(nullptr),
                                      mShader(nullptr),
                                      mViewM(1.f),
                                      mProjectionM(1.f) {}
 
 Scene3d::~Scene3d() {
+    mCamera.reset();
     mModel.reset();
     mShader.reset();
 }
@@ -43,7 +47,12 @@ void Scene3d::draw() {
 
         mShader->use(true);
 
+        mViewM = mCamera->getViewMatrix();
         mShader->setMat4(shader::view, mViewM);
+
+        mProjectionM = glm::perspective(glm::radians(mCamera->mZoom),
+                                        float(width) / float(height),
+                                        0.1f, 100.f);
         mShader->setMat4(shader::projection, mProjectionM);
 
         mModel->draw(mShader);

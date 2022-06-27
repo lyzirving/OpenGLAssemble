@@ -4,6 +4,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Model.h"
 #include "Shader.h"
@@ -27,6 +28,11 @@ Model::~Model() {
 }
 
 void Model::draw(const std::shared_ptr<Shader> &shader) {
+    mModelM = glm::mat4(1.f);
+    // translate it down so it's at the center of the scene
+    mModelM = glm::translate(mModelM, glm::vec3(0.f, -0.5f, 0.f));
+    // it's a bit too big for our scene, so scale it down
+    mModelM = glm::scale(mModelM, glm::vec3(0.1f, 0.1f, 0.1f));
     shader->setMat4(shader::model, mModelM);
     for (auto &mesh : mMeshes)
         mesh.draw(shader);
@@ -148,7 +154,6 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     result.mVertices = vertices;
     result.mIndices = indices;
     result.mTextures = textures;
-    result.clampPosition(mMaxPos, mMinPos);
     result.setupMesh();
 
     return result;

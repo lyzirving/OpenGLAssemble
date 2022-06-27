@@ -54,14 +54,6 @@ Mesh::~Mesh() {
     release();
 }
 
-void Mesh::clampPosition(const glm::vec3 &max, const glm::vec3 &min) {
-    for(auto &vertex : mVertices) {
-        vertex.position.x = vertex.position.x / std::abs(max.x);
-        vertex.position.y = vertex.position.y / std::abs(max.y);
-        vertex.position.z = vertex.position.z / std::abs(max.z);
-    }
-}
-
 void Mesh::draw(const std::shared_ptr<Shader> &shader) {
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;

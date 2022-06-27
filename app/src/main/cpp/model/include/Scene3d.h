@@ -5,9 +5,9 @@
 #define OPENGLASSEMBLE_SCENE3D_H
 
 #include <glm/glm.hpp>
-
 #include "RendererContext.h"
 
+class Camera;
 class Model;
 class Shader;
 
@@ -23,6 +23,7 @@ protected:
     virtual void onQuit() override;
 
 private:
+    std::shared_ptr<Camera> mCamera;
     std::shared_ptr<Model> mModel;
     std::shared_ptr<Shader> mShader;
 
