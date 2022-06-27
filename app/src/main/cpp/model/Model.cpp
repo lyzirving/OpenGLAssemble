@@ -29,7 +29,12 @@ Model::~Model() {
 
 void Model::draw(const std::shared_ptr<Shader> &shader) {
     mModelM = glm::mat4(1.f);
-    // translate it down so it's at the center of the scene
+    /**
+     * In code, we do translate first and then scale.
+     * But actually, math performs scale first, and then rotate.
+     * Because glm performs matrix multiplication, we must follow the order mentioned bellow.
+     */
+    // translate it to the center of the scene
     mModelM = glm::translate(mModelM, glm::vec3(0.f, -0.5f, 0.f));
     // it's a bit too big for our scene, so scale it down
     mModelM = glm::scale(mModelM, glm::vec3(0.1f, 0.1f, 0.1f));
