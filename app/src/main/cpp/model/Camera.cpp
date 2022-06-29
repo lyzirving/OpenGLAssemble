@@ -5,15 +5,11 @@
 
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
-        mFront(glm::vec3(0.0f, 0.0f, -1.0f)),
-        mMovementSpeed(SPEED),
-        mMouseSensitivity(SENSITIVITY),
+Camera::Camera(glm::vec3 position, glm::vec3 worldUp, float pitch, float yaw) :
+        mPosition(position), mWorldUp(worldUp),
+        mFront(), mRight(), mUp(),
+        mPitch(pitch), mYaw(yaw),
         mZoom(ZOOM) {
-    mPosition = position;
-    mWorldUp = up;
-    mYaw = yaw;
-    mPitch = pitch;
     updateCameraVectors();
 }
 
@@ -22,15 +18,14 @@ glm::mat4 Camera::getViewMatrix() {
 }
 
 void Camera::updateCameraVectors() {
-    // calculate the new front vector
+    // calculate the front vector by pitch and yaw
     glm::vec3 front;
-    front.x = cos(glm::radians(mYaw)) * cos(glm::radians(mPitch));
+    front.x = cos(glm::radians(mPitch)) * cos(glm::radians(mYaw));
     front.y = sin(glm::radians(mPitch));
-    front.z = sin(glm::radians(mYaw)) * cos(glm::radians(mPitch));
+    front.z = cos(glm::radians(mPitch)) * sin(glm::radians(mYaw));
     mFront = glm::normalize(front);
-    // re-calculate the right and up vector
-    // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-    mRight = glm::normalize(glm::cross(mFront,mWorldUp));
+    // calculate the right and up vector
+    mRight = glm::normalize(glm::cross(mFront, mWorldUp));
     mUp = glm::normalize(glm::cross(mRight, mFront));
 }
 

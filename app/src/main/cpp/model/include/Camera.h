@@ -7,32 +7,28 @@
 #include <glm/glm.hpp>
 
 // Default camera values
-const static float YAW         = -90.0f;
 const static float PITCH       =  0.0f;
-const static float SPEED       =  2.5f;
-const static float SENSITIVITY =  0.1f;
+const static float YAW         = -90.0f;
 const static float ZOOM        =  45.0f;
 
 class Camera {
 public:
     // camera Attributes
     glm::vec3 mPosition;
-    glm::vec3 mFront;
-    glm::vec3 mUp;
-    glm::vec3 mRight;
     glm::vec3 mWorldUp;
+    glm::vec3 mFront; // -(dst - position)
+    glm::vec3 mRight; // camera's x
+    glm::vec3 mUp;    // camera's y
     // euler Angles
-    float mYaw;
-    float mPitch;
+    float mPitch;// rotate around x
+    float mYaw;  // rotate around y
     // camera options
-    float mMovementSpeed;
-    float mMouseSensitivity;
     float mZoom;
 
-    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
-           glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
-           float yaw = YAW,
-           float pitch = PITCH);
+    Camera(glm::vec3 position,
+           glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f),
+           float pitch = PITCH,
+           float yaw = YAW);
 
     glm::mat4 getViewMatrix();
 
