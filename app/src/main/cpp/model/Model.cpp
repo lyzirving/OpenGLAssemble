@@ -5,6 +5,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <cmath>
 
 #include "Model.h"
 #include "Shader.h"
@@ -18,8 +19,8 @@
 #endif
 #define LOCAL_TAG "Model"
 
-Model::Model(const char *path) : mMeshes(), mDirectory(), mModelM(),
-                                 mMaxPos(), mMinPos() {
+Model::Model(const char *path) : mMeshes(), mDirectory(), mModelM(1.f),
+                                 mMaxPos(0.f), mMinPos(0.f) {
     loadModel(path);
 }
 
@@ -41,6 +42,12 @@ void Model::draw(const std::shared_ptr<Shader> &shader) {
     shader->setMat4(shader::model, mModelM);
     for (auto &mesh : mMeshes)
         mesh.draw(shader);
+}
+
+float Model::getMaxViewDist() {
+    glm::vec3 tmp((glm::abs(mMaxPos) + glm::abs(mMinPos)) * 0.5f);
+    float max = std::fmax(tmp.x, std::fmax(tmp.y, tmp.z));
+    return max;
 }
 
 bool Model::loadModel(const std::string &path) {
@@ -68,7 +75,7 @@ bool Model::loadModel(const std::string &path) {
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial *material,
                                                  aiTextureType type,
-                                                 const std::string typeName) {
+                                                 const std::string &typeName) {
     std::vector<Texture> textures;
     unsigned int count = material->GetTextureCount(type);
     for(unsigned int i = 0; i < count; i++) {

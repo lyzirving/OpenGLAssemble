@@ -21,10 +21,9 @@
 #define LOCAL_TAG "Scene3d"
 
 Scene3d::Scene3d(const char *name) : RendererContext(name),
-                                     mCamera(new Camera(glm::vec3(0.0f, 0.0f, 3.0f))),
+                                     mCamera(new Camera),
                                      mModel(nullptr),
                                      mShader(nullptr),
-                                     mViewM(1.f),
                                      mProjectionM(1.f) {}
 
 Scene3d::~Scene3d() {
@@ -41,16 +40,17 @@ void Scene3d::draw() {
 
         glClearColor(float(1), float(1), float(1), float(1));
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+
         uint32_t width = window->getWidth();
         uint32_t height = window->getHeight();
         glViewport(0, 0, width, height);
 
         mShader->use(true);
 
-        mViewM = mCamera->getViewMatrix();
-        mShader->setMat4(shader::view, mViewM);
+        mShader->setMat4(shader::view, mCamera->getViewMatrix());
 
-        mProjectionM = glm::perspective(glm::radians(mCamera->mZoom),
+        mProjectionM = glm::perspective(glm::radians(mCamera->getViewFieldY()),
                                         float(width) / float(height),
                                         0.1f, 100.f);
         mShader->setMat4(shader::projection, mProjectionM);

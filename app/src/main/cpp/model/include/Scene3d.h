@@ -27,7 +27,6 @@ private:
     std::shared_ptr<Model> mModel;
     std::shared_ptr<Shader> mShader;
 
-    glm::mat4x4 mViewM;
     glm::mat4x4 mProjectionM;
 };
 

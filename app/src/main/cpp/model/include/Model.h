@@ -19,6 +19,7 @@ public:
     Model(const char *path);
     ~Model();
 
+    float getMaxViewDist();
     void draw(const std::shared_ptr<Shader> &shader);
     void release();
 
@@ -31,7 +32,7 @@ private:
     bool loadModel(const std::string &path);
     std::vector<Texture> loadMaterialTextures(aiMaterial *material,
                                               aiTextureType type,
-                                              const std::string typeName);
+                                              const std::string &typeName);
 
     void processNode(aiNode *node, const aiScene *scene);
     Mesh processMesh(aiMesh *mesh, const aiScene *scene);
@@ -40,7 +41,7 @@ private:
 
     std::vector<Mesh> mMeshes;
     std::string mDirectory;
-    glm::mat4x4 mModelM;
+    glm::mat4 mModelM;
     glm::vec3 mMaxPos, mMinPos;
 };
 

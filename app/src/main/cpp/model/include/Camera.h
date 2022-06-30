@@ -5,6 +5,7 @@
 #define OPENGLASSEMBLE_CAMERA_H
 
 #include <glm/glm.hpp>
+#include <atomic>
 
 // default camera values
 const static float PITCH       =  0.0f;
@@ -13,7 +14,22 @@ const static float ZOOM        =  45.0f;
 
 class Camera {
 public:
-    // camera Attributes
+    Camera(glm::vec3 camPos = glm::vec3(0.f, 0.f, 3.f),
+           glm::vec3 worldUp = glm::vec3(0.f, 1.f, 0.f),
+           float pitch = PITCH,
+           float yaw = YAW);
+
+    const glm::mat4& getViewMatrix();
+    float getViewFieldY();
+    void moveTo(float x, float y, float z);
+
+private:
+    /**
+     * @brief calculates camera's x-axis and y-axis by camera-sight's pitch and yaw
+     */
+    void updateViewMatrix();
+
+    // camera attributes
     glm::vec3 mCamPosition;
     glm::vec3 mWorldUp;
     /**
@@ -47,21 +63,13 @@ public:
     float mCamSightYaw;
 
     // camera options
-    float mZoom;
-
-    Camera(glm::vec3 camPos,
-           glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f),
-           float pitch = PITCH,
-           float yaw = YAW);
-
-    glm::mat4 getViewMatrix();
-
-private:
     /**
-     * @brief calculates camera's x-axis and y-axis by camera-sight's pitch and yaw
+     * @brief field of view in y direction, and it's valued in degree
      */
-    void updateCameraVectors();
+    float mViewFieldY;
 
+    glm::mat4 mViewM;
+    std::atomic<bool> mChange;
 };
 
 #endif //OPENGLASSEMBLE_CAMERA_H
