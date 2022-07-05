@@ -19,7 +19,6 @@ public:
     Model(const char *path);
     ~Model();
 
-    float getMaxViewDist();
     void draw(const std::shared_ptr<Shader> &shader);
     void release();
 

@@ -44,12 +44,6 @@ void Model::draw(const std::shared_ptr<Shader> &shader) {
         mesh.draw(shader);
 }
 
-float Model::getMaxViewDist() {
-    glm::vec3 tmp((glm::abs(mMaxPos) + glm::abs(mMinPos)) * 0.5f);
-    float max = std::fmax(tmp.x, std::fmax(tmp.y, tmp.z));
-    return max;
-}
-
 bool Model::loadModel(const std::string &path) {
     // use assimp load model and get aiScene
     Assimp::Importer importer;
