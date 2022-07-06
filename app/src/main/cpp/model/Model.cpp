@@ -30,15 +30,23 @@ Model::~Model() {
 
 void Model::draw(const std::shared_ptr<Shader> &shader) {
     mModelM = glm::mat4(1.f);
+
+    float centerX = (mMaxPos.x + mMinPos.x) * 0.5f;
+    float centerY = (mMaxPos.y + mMinPos.y) * 0.5f;
+    float centerZ = (mMaxPos.z + mMinPos.z) * 0.5f;
+
+    float scaleX =(mMaxPos.x - mMinPos.x) * 0.5f;
+    float scaleY =(mMaxPos.y - mMinPos.y) * 0.5f;
+    float scaleZ =(mMaxPos.z - mMinPos.z) * 0.5f;
+    float scale = 1.f / std::max(std::max(scaleX, scaleY), scaleZ);
+
     /**
-     * In code, we do translate first and then scale.
-     * But actually, math performs scale first, and then rotate.
-     * Because glm performs matrix multiplication, we must follow the order mentioned bellow.
+     * the code below will perform translate first, and then scale.
+     * it will translate the model to the center of window, and scale the model's size to window.
      */
-    // translate it to the center of the scene
-    mModelM = glm::translate(mModelM, glm::vec3(0.f, -0.5f, 0.f));
-    // it's a bit too big for our scene, so scale it down
-    mModelM = glm::scale(mModelM, glm::vec3(0.1f, 0.1f, 0.1f));
+    mModelM = glm::scale(mModelM, glm::vec3(scale, scale, scale));
+    mModelM = glm::translate(mModelM, glm::vec3(-centerX, -centerY, -centerZ));
+
     shader->setMat4(shader::model, mModelM);
     for (auto &mesh : mMeshes)
         mesh.draw(shader);

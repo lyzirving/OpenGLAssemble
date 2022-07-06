@@ -21,7 +21,7 @@ public:
 
     const glm::mat4& getViewMatrix();
     float getViewFieldY();
-    void moveTo(float x, float y, float z);
+    void moveCamPosition(float x, float y, float z);
 
 private:
     /**
@@ -31,6 +31,7 @@ private:
 
     // camera attributes
     glm::vec3 mCamPosition;
+    glm::vec3 mCamDstPos;
     glm::vec3 mWorldUp;
     /**
      * @brief camera's view direction
@@ -48,7 +49,7 @@ private:
      * @brief pitch and yaw are euler angles that are used to decide the camera-sight vector.
      *        note that the x, y and z axises mentioned below are OpenGL's standard coordinate axises.
      *        pitch is rotated around x-axis, and it is an intersection angle between camera-sight vector and x-z plane.
-     *        pitch is positive when it rotates from x-z plane to positive y-axis.
+     *        pitch is positive when it rotates from x-z plane to +y-axis.
      *        pitch will decide how high the camera is from the x-z plane.
      */
     float mCamSightPitch;
@@ -57,8 +58,8 @@ private:
      * @brief pitch and yaw are euler angles that are used to decide the camera-sight vector.
      *        note that the x, y and z axises mentioned below are OpenGL's standard coordinate axises.
      *        yaw is rotated around y-axis, and it should be only expressed in x-z plane.
-     *        yaw is positive when it rotates from positive x-axis to positive z-axis.
-     *        yaw will decide the rotation between camera and positive z-axis.
+     *        yaw is positive when it rotates from  +x-axis to +z-axis.
+     *        yaw will decide the rotation between camera and +z-axis.
      */
     float mCamSightYaw;
 

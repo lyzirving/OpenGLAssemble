@@ -4,9 +4,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Camera.h"
+#include "LogUtil.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "Camera"
 
 Camera::Camera(glm::vec3 camPos, glm::vec3 worldUp, float pitch, float yaw) :
-        mCamPosition(camPos), mWorldUp(worldUp),
+        mCamPosition(camPos), mCamDstPos(0.f),
+        mWorldUp(worldUp),
         mCamSight(), mCamRight(), mCamUp(),
         mCamSightPitch(pitch), mCamSightYaw(yaw),
         mViewFieldY(ZOOM),
@@ -22,7 +29,7 @@ float Camera::getViewFieldY() {
     return mViewFieldY;
 }
 
-void Camera::moveTo(float x, float y, float z) {
+void Camera::moveCamPosition(float x, float y, float z) {
     mCamPosition.x = x;
     mCamPosition.y = y;
     mCamPosition.z = z;
@@ -43,7 +50,8 @@ void Camera::updateViewMatrix() {
         mCamRight = glm::normalize(glm::cross(mCamSight, mWorldUp));
         mCamUp = glm::normalize(glm::cross(mCamRight, mCamSight));
         // calculate view matrix
-        mViewM = glm::lookAt(mCamPosition, mCamPosition + mCamSight, mCamUp);
+        mCamDstPos = mCamPosition + mCamSight;
+        mViewM = glm::lookAt(mCamPosition, mCamDstPos, mCamUp);
         mChange.store(false);
     }
 }
