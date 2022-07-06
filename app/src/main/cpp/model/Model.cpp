@@ -40,13 +40,14 @@ void Model::draw(const std::shared_ptr<Shader> &shader) {
     float scaleZ =(mMaxPos.z - mMinPos.z) * 0.5f;
     float scale = 1.f / std::max(std::max(scaleX, scaleY), scaleZ);
 
-    /**
-     * the code below will perform translate first, and then scale.
-     * it will translate the model to the center of window, and scale the model's size to window.
-     */
-    mModelM = glm::scale(mModelM, glm::vec3(scale, scale, scale));
-    mModelM = glm::translate(mModelM, glm::vec3(-centerX, -centerY, -centerZ));
+    glm::mat4 scaleM(1.f);
+    glm::mat4 translateM(1.f);
 
+    scaleM = glm::scale(scaleM, glm::vec3(scale, scale, scale));
+    translateM = glm::translate(translateM, glm::vec3(-centerX, -centerY, -centerZ));
+
+    // in shader, the program needs to do translation first, then do scale.
+    mModelM = scaleM * translateM;
     shader->setMat4(shader::model, mModelM);
     for (auto &mesh : mMeshes)
         mesh.draw(shader);
