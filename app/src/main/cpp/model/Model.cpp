@@ -39,15 +39,16 @@ void Model::draw(const std::shared_ptr<Shader> &shader) {
     float scaleY =(mMaxPos.y - mMinPos.y) * 0.5f;
     float scaleZ =(mMaxPos.z - mMinPos.z) * 0.5f;
     float scale = 1.f / std::max(std::max(scaleX, scaleY), scaleZ);
+    scale = std::min(scale, 1.f);
 
+    glm::mat4 centralM(1.f);
     glm::mat4 scaleM(1.f);
-    glm::mat4 translateM(1.f);
 
+    centralM = glm::translate(centralM, glm::vec3(-centerX, -centerY, -centerZ));
     scaleM = glm::scale(scaleM, glm::vec3(scale, scale, scale));
-    translateM = glm::translate(translateM, glm::vec3(-centerX, -centerY, -centerZ));
 
-    // in shader, the program needs to do translation first, then do scale.
-    mModelM = scaleM * translateM;
+    // the matrix will take effect from the right side
+    mModelM = scaleM * centralM;
     shader->setMat4(shader::model, mModelM);
     for (auto &mesh : mMeshes)
         mesh.draw(shader);
