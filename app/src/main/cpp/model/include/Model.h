@@ -21,6 +21,7 @@ public:
 
     void draw(const std::shared_ptr<Shader> &shader);
     void release();
+    void rotate(int angle, float x, float y, float z);
 
 private:
     /**
@@ -41,6 +42,7 @@ private:
     std::vector<Mesh> mMeshes;
     std::string mDirectory;
     glm::mat4 mModelM;
+    glm::mat4 mTransM, mRotateM;
     glm::vec3 mMaxPos, mMinPos;
 };
 

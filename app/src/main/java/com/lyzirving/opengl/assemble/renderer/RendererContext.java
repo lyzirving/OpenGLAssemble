@@ -16,7 +16,7 @@ import androidx.annotation.IntDef;
  * @author lyzirving
  */
 public class RendererContext {
-    private static final long INVALID_ADDRESS = -1;
+    protected static final long INVALID_ADDRESS = -1;
     private static final String TAG = "RendererContext";
     static { System.loadLibrary("lib-assembler"); }
 
@@ -28,7 +28,7 @@ public class RendererContext {
     public @interface ContextType {}
 
 
-    private long mAddress = INVALID_ADDRESS;
+    protected long mAddress = INVALID_ADDRESS;
 
     protected RendererContext() {}
 

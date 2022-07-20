@@ -19,4 +19,23 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/guid_hor_0.85" />
 
+    <TextView
+        android:id="@+id/tv_rotate_model"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="Rotate Model"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guid_hor_0.85" />
+
+    <SeekBar
+        android:id="@+id/seek_rotate_model"
+        android:layout_width="240dp"
+        android:layout_height="20dp"
+        android:max="100"
+        android:progress="50"
+        app:layout_constraintLeft_toRightOf="@+id/tv_rotate_model"
+        app:layout_constraintTop_toBottomOf="@+id/guid_hor_0.85"
+        android:layout_marginTop="5dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,9 +14,21 @@
 #endif
 #define LOCAL_TAG "Shader"
 
+#define ASSETS_ROOT "shader"
+
 Shader::Shader(const char *vertexShader, const char *fragmentShader) {
-    mProgram = GlHelper::buildProgram(GlHelper::readAssets(vertexShader),
-                                      GlHelper::readAssets(fragmentShader));
+    std::string vShader(ASSETS_ROOT);
+    vShader.append("/");
+    vShader.append(vertexShader);
+    vShader.append(".glsl");
+
+    std::string fShader(ASSETS_ROOT);
+    fShader.append("/");
+    fShader.append(fragmentShader);
+    fShader.append(".glsl");
+
+    mProgram = GlHelper::buildProgram(GlHelper::readAssets(vShader.c_str()),
+                                      GlHelper::readAssets(fShader.c_str()));
 }
 
 Shader::~Shader() {

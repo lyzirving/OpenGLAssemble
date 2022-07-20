@@ -19,7 +19,10 @@
 #endif
 #define LOCAL_TAG "Model"
 
-Model::Model(const char *path) : mMeshes(), mDirectory(), mModelM(1.f),
+Model::Model(const char *path) : mMeshes(), mDirectory(),
+                                 mModelM(1.f),
+                                 mTransM(1.f),
+                                 mRotateM(1.f),
                                  mMaxPos(0.f), mMinPos(0.f) {
     loadModel(path);
 }
@@ -41,6 +44,7 @@ void Model::draw(const std::shared_ptr<Shader> &shader) {
     float scale = 1.f / std::max(std::max(scaleX, scaleY), scaleZ);
     scale = std::min(scale, 1.f);
 
+    // center matrix and scale matrix will set the model to the center of viewport
     glm::mat4 centralM(1.f);
     glm::mat4 scaleM(1.f);
 
@@ -48,7 +52,7 @@ void Model::draw(const std::shared_ptr<Shader> &shader) {
     scaleM = glm::scale(scaleM, glm::vec3(scale, scale, scale));
 
     // the matrix will take effect from the right side
-    mModelM = scaleM * centralM;
+    mModelM =  mTransM * mRotateM * scaleM * centralM;
     shader->setMat4(shader::model, mModelM);
     for (auto &mesh : mMeshes)
         mesh.draw(shader);
@@ -183,6 +187,11 @@ void Model::release() {
         std::vector<Mesh> tmp;
         mMeshes.swap(tmp);
     }
+}
+
+void Model::rotate(int angle, float x, float y, float z) {
+    glm::mat4 unit(1.f);
+    mRotateM = glm::rotate(unit, glm::radians(float(angle)), glm::vec3(x, y, z));
 }
 
 void Model::updateMaxMinPosition(const glm::vec3 &vertex) {

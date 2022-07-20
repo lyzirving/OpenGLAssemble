@@ -13,6 +13,7 @@
 #define LOCAL_TAG "native_RendererContext"
 
 #define JAVA_CLASS "com/lyzirving/opengl/assemble/renderer/RendererContext"
+#define JAVA_CLASS_SCENE "com/lyzirving/opengl/assemble/renderer/Scene3d"
 
 enum RendererType : uint8_t {
     BASE = 0x01,
@@ -83,6 +84,12 @@ static void nativeRemoveWindow(JNIEnv *env, jclass clazz, jlong address, jstring
     }
 }
 
+static void nativeRotateModel(JNIEnv *env, jclass clazz, jlong address, jint angle) {
+    auto *scene = reinterpret_cast<Scene3d *>(address);
+    if (scene)
+        scene->rotateModel(angle);
+}
+
 static JNINativeMethod methods[] = {
         {
                 "nCreateContext",
@@ -111,6 +118,14 @@ static JNINativeMethod methods[] = {
         },
 };
 
+static JNINativeMethod scene3dMethods[] = {
+        {
+                "nRotateModel"  ,
+                "(JI)V",
+                (void *) nativeRotateModel
+        },
+};
+
 bool register_native_RendererContext(JNIEnv *env) {
     int count = sizeof(methods) / sizeof(methods[0]);
     jclass javaClass = env->FindClass(JAVA_CLASS);
@@ -124,6 +139,18 @@ bool register_native_RendererContext(JNIEnv *env) {
     }
     gRendererContextClassInfo.mClazz = static_cast<jclass>(env->NewGlobalRef(javaClass));
     LogI("succeed to load class %s", JAVA_CLASS);
+
+    count = sizeof(scene3dMethods) / sizeof(scene3dMethods[0]);
+    javaClass = env->FindClass(JAVA_CLASS_SCENE);
+    if(!javaClass) {
+        LogE("fail to find java class %s", JAVA_CLASS_SCENE);
+        goto error;
+    }
+    if (env->RegisterNatives(javaClass, scene3dMethods, count) < 0) {
+        LogE("fail to register jni methods for class %s", JAVA_CLASS_SCENE);
+        goto error;
+    }
+    LogI("succeed to load class %s", JAVA_CLASS_SCENE);
     return true;
 
     error:

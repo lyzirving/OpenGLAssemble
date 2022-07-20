@@ -11,6 +11,21 @@
 class FileSystem {
 public:
 
+    static std::string getShader(const char *name) {
+        std::string path("shader/");
+        path.append(name);
+        path.append(".glsl");
+        return getPath(path);
+    }
+
+    static std::string getObj(const char *name) {
+        std::string path(name);
+        path.append("/");
+        path.append(name);
+        path.append(".obj");
+        return getPath(path);
+    }
+
     static std::string getPath(const char *path) {
         return getPath(std::string(path));
     }

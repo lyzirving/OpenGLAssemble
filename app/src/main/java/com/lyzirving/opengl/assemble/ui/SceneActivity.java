@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.SeekBar;
 
 import com.lyzirving.opengl.assemble.R;
 import com.lyzirving.opengl.assemble.renderer.RendererConstant;
 import com.lyzirving.opengl.assemble.renderer.RendererContext;
 import com.lyzirving.opengl.assemble.renderer.Scene3d;
+import com.lyzirving.opengl.assemble.utils.LogUtil;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,8 +18,9 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * @author lyzirving
  */
-public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Callback {
-
+public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Callback,
+                                                                SeekBar.OnSeekBarChangeListener {
+    private static final String TAG = "SceneActivity";
     private Scene3d mScene;
 
     @Override
@@ -28,7 +31,10 @@ public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Ca
                 Scene3d.class.getName(), "Scene3d");
 
         SurfaceView surfaceView = findViewById(R.id.view_surface);
+        SeekBar seekBarRotate = findViewById(R.id.seek_rotate_model);
+
         surfaceView.getHolder().addCallback(this);
+        seekBarRotate.setOnSeekBarChangeListener(this);
     }
 
     @Override
@@ -52,4 +58,28 @@ public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Ca
     public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
         mScene.removeWindow("Scene3d");
     }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        switch (seekBar.getId())
+        {
+            case R.id.seek_rotate_model:
+            {
+                int angle = (int) (((progress - 50) * 1f / 50) * 180);
+                if (mScene != null)
+                    mScene.rotateModel(angle);
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {}
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {}
 }

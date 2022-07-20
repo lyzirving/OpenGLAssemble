@@ -18,6 +18,8 @@ public:
 
     virtual void draw() override;
 
+    void rotateModel(int angle);
+
 protected:
     virtual bool onPrepare() override;
     virtual void onQuit() override;

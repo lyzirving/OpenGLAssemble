@@ -40,7 +40,12 @@ void Scene3d::draw() {
 
         glClearColor(float(1), float(1), float(1), float(1));
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
         glEnable(GL_DEPTH_TEST);
+
+        glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CCW);
+        glCullFace(GL_BACK);
 
         uint32_t width = window->getWidth();
         uint32_t height = window->getHeight();
@@ -69,6 +74,9 @@ void Scene3d::draw() {
 
         mModel->draw(mShader);
 
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+
         mShader->use(false);
 
         window->swapBuffer();
@@ -77,11 +85,11 @@ void Scene3d::draw() {
 }
 
 bool Scene3d::onPrepare() {
-    mShader = std::make_shared<Shader>("shader/model_vs.glsl", "shader/model_fs.glsl");
+    mShader = std::make_shared<Shader>("model_vs", "model_fs");
     if(!mShader->valid())
         goto fail;
 
-    mModel = std::make_shared<Model>(FileSystem::getPath("nanosuit/nanosuit.obj").c_str());
+    mModel = std::make_shared<Model>(FileSystem::getObj("spiderman").c_str());
     return true;
 
     fail:
@@ -91,5 +99,13 @@ bool Scene3d::onPrepare() {
 void Scene3d::onQuit() {
     mModel.reset();
     mShader.reset();
+}
+
+void Scene3d::rotateModel(int angle) {
+    if (mModel)
+    {
+        mModel->rotate(angle, 0.f, 1.f, 0.f);
+        sendMessage(MessageId::MESSAGE_REQUEST_DRAW);
+    }
 }
 
