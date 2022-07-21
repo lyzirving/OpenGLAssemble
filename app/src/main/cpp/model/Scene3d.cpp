@@ -67,7 +67,7 @@ void Scene3d::draw() {
         // Thus all vertices of the model are visible for this perspective projection.
         mProjectionM = glm::perspective(glm::radians(mCamera->getViewFieldY()),
                                         float(width) / float(height),
-                                        1.f, (1.f + 2 * 1.5f));
+                                        0.1f, 10.f);
         // h = tan[(field of view in y) * 0.5] * near, bottom = -h
         // left = -aspect ratio * h, right = -left
         mShader->setMat4(shader::projection, mProjectionM);

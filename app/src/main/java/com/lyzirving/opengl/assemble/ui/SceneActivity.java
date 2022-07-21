@@ -19,7 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * @author lyzirving
  */
 public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Callback,
-                                                                SeekBar.OnSeekBarChangeListener {
+                                                                MotionView3d.MotionTrackListener {
     private static final String TAG = "SceneActivity";
     private Scene3d mScene;
 
@@ -31,10 +31,10 @@ public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Ca
                 Scene3d.class.getName(), "Scene3d");
 
         SurfaceView surfaceView = findViewById(R.id.view_surface);
-        SeekBar seekBarRotate = findViewById(R.id.seek_rotate_model);
+        MotionView3d view3d = findViewById(R.id.view_3d);
 
         surfaceView.getHolder().addCallback(this);
-        seekBarRotate.setOnSeekBarChangeListener(this);
+        view3d.setMotionListener(this);
     }
 
     @Override
@@ -60,26 +60,9 @@ public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Ca
     }
 
     @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        switch (seekBar.getId())
-        {
-            case R.id.seek_rotate_model:
-            {
-                int angle = (int) (((progress - 50) * 1f / 50) * 180);
-                if (mScene != null)
-                    mScene.rotateModel(angle);
-                break;
-            }
-            default:
-            {
-                break;
-            }
-        }
+    public void onMove(float xDist, float yDist, float xRatio, float yRatio) {
+        int angle = (int) (xRatio * 180);
+        if (mScene != null)
+            mScene.rotateModel(angle);
     }
-
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {}
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {}
 }

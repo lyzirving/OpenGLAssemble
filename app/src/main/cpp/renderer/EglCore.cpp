@@ -80,6 +80,7 @@ bool EglCore::prepare(EGLContext shareContext) {
             EGL_GREEN_SIZE, 8,
             EGL_BLUE_SIZE, 8,
             EGL_ALPHA_SIZE, 8,
+            EGL_DEPTH_SIZE, 24,
             EGL_RECORDABLE_ANDROID, EGL_TRUE,
             EGL_NONE};
 
