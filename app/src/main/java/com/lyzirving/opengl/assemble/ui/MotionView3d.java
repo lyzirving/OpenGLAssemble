@@ -5,6 +5,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.lyzirving.opengl.assemble.utils.LogUtil;
+
 import androidx.annotation.Nullable;
 
 /**
@@ -82,15 +84,18 @@ public class MotionView3d extends View {
         mMoveX += event.getX() - mLastX;
         mMoveY += event.getY() - mLastY;
 
-        if (mMoveX > getMeasuredWidth() * 0.5f)
-            mMoveX = getMeasuredWidth() * 0.5f;
-        else if(mMoveX < -getMeasuredWidth() * 0.5f)
-            mMoveX = -getMeasuredWidth() * 0.5f;
+        float limitX = getMeasuredWidth() * 0.5f;
+        float limitY = getMeasuredHeight() * 0.5f;
 
-        if (mMoveY > getMeasuredHeight() * 0.5f)
-            mMoveY = getMeasuredHeight() * 0.5f;
-        else if(mMoveY < -getMeasuredHeight() * 0.5f)
-            mMoveY = -getMeasuredHeight() * 0.5f;
+        if (mMoveX > limitX)
+            mMoveX = mMoveX % limitX - limitX;
+        else if(mMoveX < -limitX)
+            mMoveX = limitX - Math.abs(mMoveX) % limitX;
+
+        if (mMoveY > limitY)
+            mMoveY = mMoveY % limitY - limitY;
+        else if(mMoveY < -limitY)
+            mMoveY = limitY - Math.abs(mMoveY) % limitY;
 
         mLastX = event.getX();
         mLastY = event.getY();

@@ -10,13 +10,8 @@ public class Scene3d extends RendererContext{
     }
 
     public void rotateModel(int angle) {
-        if(mAddress != INVALID_ADDRESS) {
-            if (angle > 180)
-                angle = 180;
-            else if(angle < -180)
-                angle = -180;
+        if(mAddress != INVALID_ADDRESS)
             nRotateModel(mAddress, angle);
-        }
     }
 
     private static native void nRotateModel(long address, int angle);
