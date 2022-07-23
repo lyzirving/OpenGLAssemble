@@ -18,6 +18,7 @@ public:
 
     virtual void draw() override;
 
+    void liftUpVision(float zDist, int angle);
     void rotateModel(int angle);
 
 protected:

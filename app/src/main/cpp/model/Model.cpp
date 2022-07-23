@@ -20,10 +20,14 @@
 #define LOCAL_TAG "Model"
 
 Model::Model(const char *path) : mMeshes(), mDirectory(),
+                                 mScaleFitW(1.f),
+                                 mFitWindowM(1.f),
                                  mModelM(1.f),
                                  mTransM(1.f),
                                  mRotateM(1.f),
-                                 mMaxPos(0.f), mMinPos(0.f) {
+                                 mMaxPos(0.f), mMinPos(0.f),
+                                 mMaxPosFitW(0.f), mMinPosFitW(0.f),
+                                 mChange(false) {
     loadModel(path);
 }
 
@@ -31,31 +35,67 @@ Model::~Model() {
     release();
 }
 
-void Model::draw(const std::shared_ptr<Shader> &shader) {
-    mModelM = glm::mat4(1.f);
-
+void Model::computeCentralM() {
     float centerX = (mMaxPos.x + mMinPos.x) * 0.5f;
     float centerY = (mMaxPos.y + mMinPos.y) * 0.5f;
     float centerZ = (mMaxPos.z + mMinPos.z) * 0.5f;
 
-    float scaleX =(mMaxPos.x - mMinPos.x) * 0.5f;
-    float scaleY =(mMaxPos.y - mMinPos.y) * 0.5f;
-    float scaleZ =(mMaxPos.z - mMinPos.z) * 0.5f;
-    float scale = 1.f / std::max(std::max(scaleX, scaleY), scaleZ);
-    scale = std::min(scale, 1.f);
+    float intervalX =(mMaxPos.x - mMinPos.x);
+    float intervalY =(mMaxPos.y - mMinPos.y);
+    float intervalZ =(mMaxPos.z - mMinPos.z);
+    mScaleFitW = 2.f / std::max(std::max(intervalX, intervalY), intervalZ);
+
+    mMaxPosFitW.x = (mMaxPos.x - centerX) * mScaleFitW;
+    mMaxPosFitW.y = (mMaxPos.y - centerY) * mScaleFitW;
+    mMaxPosFitW.z = (mMaxPos.z - centerZ) * mScaleFitW;
+
+    mMinPosFitW.x = (mMinPos.x - centerX) * mScaleFitW;
+    mMinPosFitW.y = (mMinPos.y - centerY) * mScaleFitW;
+    mMinPosFitW.z = (mMinPos.z - centerZ) * mScaleFitW;
+
+    LogI("\nmax(%f, %f, %f), fit window max(%f, %f, %f)\n"
+         "min(%f, %f, %f), fit window min(%f, %f, %f)\n"
+         "center(%f, %f, %f)\n"
+         "interval(%f, %f, %f)\n"
+         "scale(%f)",
+         mMaxPos.x, mMaxPos.y, mMaxPos.z, mMaxPosFitW.x, mMaxPosFitW.y, mMaxPosFitW.z,
+         mMinPos.x, mMinPos.y, mMinPos.z, mMinPosFitW.x, mMinPosFitW.y, mMinPosFitW.z,
+         centerX, centerY, centerZ, intervalX, intervalY, intervalZ,
+         mScaleFitW);
 
     // center matrix and scale matrix will set the model to the center of viewport
-    glm::mat4 centralM(1.f);
+    glm::mat4 centralM = glm::mat4(1.f);
     glm::mat4 scaleM(1.f);
 
     centralM = glm::translate(centralM, glm::vec3(-centerX, -centerY, -centerZ));
-    scaleM = glm::scale(scaleM, glm::vec3(scale, scale, scale));
+    scaleM = glm::scale(scaleM, glm::vec3(mScaleFitW, mScaleFitW, mScaleFitW));
 
-    // the matrix will take effect from the right side
-    mModelM =  mTransM * mRotateM * scaleM * centralM;
-    shader->setMat4(shader::model, mModelM);
+    mFitWindowM = scaleM * centralM;
+    mChange.store(true);
+}
+
+void Model::draw(const std::shared_ptr<Shader> &shader) {
     for (auto &mesh : mMeshes)
         mesh.draw(shader);
+}
+
+const glm::mat4& Model::getModelMatrix() {
+    if (mChange.load())
+    {
+        mChange.store(false);
+        mModelM = glm::mat4(1.f);
+        // the matrix will take effect from the right side
+        mModelM =  mTransM * mRotateM * mFitWindowM;
+    }
+    return mModelM;
+}
+
+const glm::vec3 & Model::getMaxPos() {
+    return mMaxPosFitW;
+}
+
+const glm::vec3 & Model::getMinPos() {
+    return mMinPosFitW;
 }
 
 bool Model::loadModel(const std::string &path) {
@@ -73,6 +113,7 @@ bool Model::loadModel(const std::string &path) {
     LogI("load scene from(%s), begin to parse", path.c_str());
     LogI("********************************");
     processNode(scene->mRootNode, scene);
+    computeCentralM();
     LogI("********************************");
     LogI("finish parse node");
     return true;
@@ -192,6 +233,7 @@ void Model::release() {
 void Model::rotate(int angle, float x, float y, float z) {
     glm::mat4 unit(1.f);
     mRotateM = glm::rotate(unit, glm::radians(float(angle)), glm::vec3(x, y, z));
+    mChange.store(true);
 }
 
 void Model::updateMaxMinPosition(const glm::vec3 &vertex) {

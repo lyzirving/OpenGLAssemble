@@ -14,14 +14,14 @@ const static float ZOOM        =  45.0f;
 
 class Camera {
 public:
-    Camera(glm::vec3 camPos = glm::vec3(0.f, 0.f, 3.f),
-           glm::vec3 worldUp = glm::vec3(0.f, 1.f, 0.f),
+    Camera(glm::vec3 camPos = glm::vec3(0.f, 0.f, 0.f),
            float pitch = PITCH,
            float yaw = YAW);
 
     const glm::mat4& getViewMatrix();
     float getViewFieldY();
-    void moveCamPosition(float x, float y, float z);
+    void liftUpVision(float zDist, int angle);
+    void moveCameraTo(float x, float y, float z);
 
 private:
     /**
@@ -31,7 +31,6 @@ private:
 
     // camera attributes
     glm::vec3 mCamPosition;
-    glm::vec3 mCamDstPos;
     glm::vec3 mWorldUp;
     /**
      * @brief camera's view direction

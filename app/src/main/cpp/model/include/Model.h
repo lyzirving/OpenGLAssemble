@@ -6,6 +6,7 @@
 
 #include <assimp/material.h>
 #include <glm/glm.hpp>
+#include <atomic>
 
 #include "Mesh.h"
 
@@ -19,11 +20,15 @@ public:
     Model(const char *path);
     ~Model();
 
+    const glm::mat4& getModelMatrix();
+    const glm::vec3& getMaxPos();
+    const glm::vec3& getMinPos();
     void draw(const std::shared_ptr<Shader> &shader);
     void release();
     void rotate(int angle, float x, float y, float z);
 
 private:
+    void computeCentralM();
     /**
      * load model from specific path
      * @param path: a path that specify the .obj file
@@ -41,9 +46,12 @@ private:
 
     std::vector<Mesh> mMeshes;
     std::string mDirectory;
+    float mScaleFitW;
+    glm::mat4 mFitWindowM;
     glm::mat4 mModelM;
     glm::mat4 mTransM, mRotateM;
-    glm::vec3 mMaxPos, mMinPos;
+    glm::vec3 mMaxPos, mMinPos, mMaxPosFitW, mMinPosFitW;
+    std::atomic<bool> mChange;
 };
 
 #endif //OPENGLASSEMBLE_MODEL_H

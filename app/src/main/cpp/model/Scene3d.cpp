@@ -53,9 +53,13 @@ void Scene3d::draw() {
 
         mShader->use(true);
 
+        mShader->setMat4(shader::model, mModel->getModelMatrix());
         // View matrix specifies camera's position and sight direction in world coordinate,
         // When all vertices apply view matrix, they are transformed into camera coordinate.
         // In camera coordinate, camera is set at (0, 0, 0), and sight direction is parallel to (0, 0, -1).
+        const glm::vec3 &maxPos = mModel->getMaxPos();
+        //todo: find the algorithm to compute one camera's z-position that will show the whole model on screen
+        mCamera->moveCameraTo(0, 0, maxPos.z * 15);
         mShader->setMat4(shader::view, mCamera->getViewMatrix());
 
         // Cond 1: model will be set to center, and vertices will be scaled to [-1, 1] later.
@@ -99,6 +103,14 @@ bool Scene3d::onPrepare() {
 void Scene3d::onQuit() {
     mModel.reset();
     mShader.reset();
+}
+
+void Scene3d::liftUpVision(float zDist, int angle) {
+    if (mCamera)
+    {
+        mCamera->liftUpVision(zDist, angle);
+        sendMessage(MessageId::MESSAGE_REQUEST_DRAW);
+    }
 }
 
 void Scene3d::rotateModel(int angle) {

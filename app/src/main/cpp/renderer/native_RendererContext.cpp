@@ -90,6 +90,12 @@ static void nativeRotateModel(JNIEnv *env, jclass clazz, jlong address, jint ang
         scene->rotateModel(angle);
 }
 
+static void nativeLiftUpVision(JNIEnv *env, jclass clazz, jlong address, jfloat zDist, jint angle) {
+    auto *scene = reinterpret_cast<Scene3d *>(address);
+    if (scene)
+        scene->liftUpVision(zDist, angle);
+}
+
 static JNINativeMethod methods[] = {
         {
                 "nCreateContext",
@@ -123,6 +129,11 @@ static JNINativeMethod scene3dMethods[] = {
                 "nRotateModel"  ,
                 "(JI)V",
                 (void *) nativeRotateModel
+        },
+        {
+                "nLiftUpVision"  ,
+                "(JFI)V",
+                (void *) nativeLiftUpVision
         },
 };
 
