@@ -27,22 +27,22 @@
         app:layout_constraintBottom_toTopOf="@+id/guid_hor_0.85" />
 
     <ImageView
-        android:id="@+id/iv_model_icon"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:id="@+id/iv_hor_icon"
+        android:layout_width="@dimen/dp_icon_width"
+        android:layout_height="@dimen/dp_icon_width"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"
-        android:src="@drawable/model_normal"/>
+        android:layout_marginTop="5dp"
+        android:src="@drawable/horizontal_normal"/>
 
     <ImageView
-        android:id="@+id/iv_camera_icon"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        app:layout_constraintStart_toEndOf="@+id/iv_model_icon"
-        app:layout_constraintTop_toTopOf="@+id/iv_model_icon"
+        android:id="@+id/iv_ver_icon"
+        android:layout_width="@dimen/dp_icon_width"
+        android:layout_height="@dimen/dp_icon_width"
+        app:layout_constraintStart_toEndOf="@+id/iv_hor_icon"
+        app:layout_constraintTop_toTopOf="@+id/iv_hor_icon"
         android:layout_marginStart="10dp"
-        android:src="@drawable/camera_normal"/>
+        android:src="@drawable/vertical_normal"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,7 +11,6 @@ import com.lyzirving.opengl.assemble.R;
 import com.lyzirving.opengl.assemble.renderer.RendererConstant;
 import com.lyzirving.opengl.assemble.renderer.RendererContext;
 import com.lyzirving.opengl.assemble.renderer.Scene3d;
-import com.lyzirving.opengl.assemble.utils.LogUtil;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,37 +35,37 @@ public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Ca
 
         SurfaceView surfaceView = findViewById(R.id.view_surface);
         mModelView = findViewById(R.id.view_3d);
-        ImageView modelIcon = findViewById(R.id.iv_model_icon);
-        ImageView cameraIcon = findViewById(R.id.iv_camera_icon);
+        ImageView modelIcon = findViewById(R.id.iv_hor_icon);
+        ImageView cameraIcon = findViewById(R.id.iv_ver_icon);
 
         mModelView.setMotionListener(this);
         surfaceView.getHolder().addCallback(this);
         modelIcon.setOnClickListener(this);
         cameraIcon.setOnClickListener(this);
 
-        modelIcon.setImageResource(R.drawable.model_selected);
+        modelIcon.setImageResource(R.drawable.horizontal_selected);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.iv_model_icon:
+            case R.id.iv_hor_icon:
             {
                 if (mModelView.getMode() != MotionView3d.OpMode.MODE_MODEL) {
                     mModelView.setMode(MotionView3d.OpMode.MODE_MODEL);
                     cancelAllSelect();
-                    ImageView view = (ImageView)(findViewById(R.id.iv_model_icon));
-                    view.setImageResource(R.drawable.model_selected);
+                    ImageView view = (ImageView)(findViewById(R.id.iv_hor_icon));
+                    view.setImageResource(R.drawable.horizontal_selected);
                 }
                 break;
             }
-            case R.id.iv_camera_icon:
+            case R.id.iv_ver_icon:
             {
                 if (mModelView.getMode() != MotionView3d.OpMode.MODEL_CAMERA) {
                     mModelView.setMode(MotionView3d.OpMode.MODEL_CAMERA);
                     cancelAllSelect();
-                    ImageView view = (ImageView)(findViewById(R.id.iv_camera_icon));
-                    view.setImageResource(R.drawable.camera_selected);
+                    ImageView view = (ImageView)(findViewById(R.id.iv_ver_icon));
+                    view.setImageResource(R.drawable.vertical_selected);
                 }
                 break;
             }
@@ -108,18 +107,15 @@ public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Ca
 
     @Override
     public void onCameraMove(float xDist, float yDist, float xRatio, float yRatio) {
-        float zDist = -yRatio;
-        int angle = (int) (zDist / Math.abs(zDist)) * (int) (Math.toDegrees(Math.atan(Math.abs(zDist))));
-        LogUtil.logI(TAG, "camera: ratio = " + yRatio + ", dist = " + zDist + ", angle = " + angle);
         if (mScene != null)
-            mScene.liftUpVision(zDist, angle);
+            mScene.liftUpVision(yRatio);
     }
 
     private void cancelAllSelect() {
-        ImageView view = (ImageView)(findViewById(R.id.iv_camera_icon));
-        view.setImageResource(R.drawable.camera_normal);
+        ImageView view = (ImageView)(findViewById(R.id.iv_hor_icon));
+        view.setImageResource(R.drawable.horizontal_normal);
 
-        view = (ImageView)(findViewById(R.id.iv_model_icon));
-        view.setImageResource(R.drawable.model_normal);
+        view = (ImageView)(findViewById(R.id.iv_ver_icon));
+        view.setImageResource(R.drawable.vertical_normal);
     }
 }

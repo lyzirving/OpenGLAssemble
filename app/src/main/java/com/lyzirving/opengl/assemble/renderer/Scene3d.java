@@ -14,11 +14,11 @@ public class Scene3d extends RendererContext{
             nRotateModel(mAddress, angle);
     }
 
-    public void liftUpVision(float zDist, int angle) {
+    public void liftUpVision(float ratio) {
         if(mAddress != INVALID_ADDRESS)
-            nLiftUpVision(mAddress, zDist, angle);
+            nLiftUpVision(mAddress, ratio);
     }
 
-    private static native void nLiftUpVision(long address, float zDist, int angle);
+    private static native void nLiftUpVision(long address, float ratio);
     private static native void nRotateModel(long address, int angle);
 }

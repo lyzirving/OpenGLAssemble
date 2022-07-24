@@ -8,20 +8,20 @@
 #include <atomic>
 
 // default camera values
-const static float PITCH            =  0.0f;
-const static float YAW              = -90.0f;
-const static float ZOOM             =  45.0f;
-const static float DEFAULT_CAM_DIST =  3.f;
+const static float PITCH         =  0.0f;
+const static float YAW           = -90.0f;
+const static float ZOOM          =  45.0f;
+const static float CAMERA_LENS   =  3.f;
 
 class Camera {
 public:
-    Camera(glm::vec3 camPos = glm::vec3(0.f, 0.f, DEFAULT_CAM_DIST),
+    Camera(glm::vec3 camPos = glm::vec3(0.f, 0.f, CAMERA_LENS),
            float pitch = PITCH,
            float yaw = YAW);
 
     const glm::mat4& getViewMatrix();
     float getViewFieldY();
-    void liftUpVision(float zDist, int angle);
+    void liftUpVision(float ratio);
     void moveCameraTo(float x, float y, float z);
 
 private:
@@ -70,6 +70,7 @@ private:
     float mViewFieldY;
 
     glm::mat4 mViewM;
+    float mRightAxisSign;
     std::atomic<bool> mChange;
 };
 

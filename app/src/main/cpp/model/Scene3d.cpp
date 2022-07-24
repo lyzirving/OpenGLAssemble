@@ -104,10 +104,10 @@ void Scene3d::onQuit() {
     mShader.reset();
 }
 
-void Scene3d::liftUpVision(float zDist, int angle) {
+void Scene3d::liftUpVision(float ratio) {
     if (mCamera)
     {
-        mCamera->liftUpVision(zDist, angle);
+        mCamera->liftUpVision(ratio);
         sendMessage(MessageId::MESSAGE_REQUEST_DRAW);
     }
 }

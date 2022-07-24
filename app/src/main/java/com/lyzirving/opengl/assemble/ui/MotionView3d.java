@@ -29,7 +29,6 @@ public class MotionView3d extends View {
     private boolean mFirstMove;
     private float mDownX, mDownY;
     private float mLastX, mLastY;
-    private float mMoveX, mMoveY;
 
     private float mModelMoveX, mModelMoveY;
     private float mCameraMoveX, mCameraMoveY;

@@ -2,6 +2,7 @@
 // Created by lyzirving on 2022/6/27.
 //
 #include <glm/gtc/matrix_transform.hpp>
+#include <cmath>
 
 #include "Camera.h"
 #include "LogUtil.h"
@@ -18,6 +19,7 @@ Camera::Camera(glm::vec3 camPos, float pitch, float yaw) :
         mCamSightPitch(pitch), mCamSightYaw(yaw),
         mViewFieldY(ZOOM),
         mViewM(1.f),
+        mRightAxisSign(1.f),
         mChange(true) {}
 
 const glm::mat4& Camera::getViewMatrix() {
@@ -29,13 +31,27 @@ float Camera::getViewFieldY() {
     return mViewFieldY;
 }
 
-void Camera::liftUpVision(float zDist, int angle) {
-    if (angle > 90)
-        angle = 90;
-    else if (angle < -90)
-        angle = -90;
-    mCamPosition.y = zDist;
-    mCamSightPitch = float(angle);
+void Camera::liftUpVision(float ratio) {
+    if(ratio > 1.f)
+        ratio = 1.f;
+    else if (ratio < -1.f)
+        ratio = -1.f;
+
+    float sign = std::abs(ratio) / ratio;
+    mCamPosition.y = std::sin(M_PI * ratio) * CAMERA_LENS;
+    mCamPosition.z = std::cos(M_PI * ratio) * CAMERA_LENS;
+    if(std::abs(ratio) <= 0.5f)
+    {
+        mRightAxisSign = 1.f;
+        mCamSightYaw = YAW;
+        mCamSightPitch = glm::degrees(-M_PI * ratio);
+    }
+    else
+    {
+        mRightAxisSign = -1.f;
+        mCamSightYaw = -YAW;
+        mCamSightPitch = -sign * (float)glm::degrees(M_PI - M_PI * std::abs(ratio));
+    }
     mChange.store(true);
 }
 
@@ -58,7 +74,7 @@ void Camera::updateViewMatrix() {
         // if we use default camera attribute(pitch = 0, yaw = -90), the camera sight vector is (0, 0, -1)
         mCamSight = glm::normalize(vision);
         // calculate the right and up vector
-        mCamRight = glm::normalize(glm::cross(mCamSight, mWorldUp));
+        mCamRight = mRightAxisSign * glm::normalize(glm::cross(mCamSight, mWorldUp));
         mCamUp = glm::normalize(glm::cross(mCamRight, mCamSight));
         // calculate view matrix
         mViewM = glm::lookAt(mCamPosition, mCamPosition + mCamSight, mCamUp);
