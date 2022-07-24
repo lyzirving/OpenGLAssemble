@@ -8,13 +8,14 @@
 #include <atomic>
 
 // default camera values
-const static float PITCH       =  0.0f;
-const static float YAW         = -90.0f;
-const static float ZOOM        =  45.0f;
+const static float PITCH            =  0.0f;
+const static float YAW              = -90.0f;
+const static float ZOOM             =  45.0f;
+const static float DEFAULT_CAM_DIST =  3.f;
 
 class Camera {
 public:
-    Camera(glm::vec3 camPos = glm::vec3(0.f, 0.f, 3.f),
+    Camera(glm::vec3 camPos = glm::vec3(0.f, 0.f, DEFAULT_CAM_DIST),
            float pitch = PITCH,
            float yaw = YAW);
 
