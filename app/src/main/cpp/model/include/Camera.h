@@ -14,7 +14,7 @@ const static float ZOOM        =  45.0f;
 
 class Camera {
 public:
-    Camera(glm::vec3 camPos = glm::vec3(0.f, 0.f, 0.f),
+    Camera(glm::vec3 camPos = glm::vec3(0.f, 0.f, 3.f),
            float pitch = PITCH,
            float yaw = YAW);
 

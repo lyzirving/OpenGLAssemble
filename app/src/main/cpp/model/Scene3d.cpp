@@ -57,9 +57,8 @@ void Scene3d::draw() {
         // View matrix specifies camera's position and sight direction in world coordinate,
         // When all vertices apply view matrix, they are transformed into camera coordinate.
         // In camera coordinate, camera is set at (0, 0, 0), and sight direction is parallel to (0, 0, -1).
-        const glm::vec3 &maxPos = mModel->getMaxPos();
         //todo: find the algorithm to compute one camera's z-position that will show the whole model on screen
-        mCamera->moveCameraTo(0, 0, maxPos.z * 15);
+        //mCamera->moveCameraTo(0, 0, maxPos.z * 15);
         mShader->setMat4(shader::view, mCamera->getViewMatrix());
 
         // Cond 1: model will be set to center, and vertices will be scaled to [-1, 1] later.
@@ -67,11 +66,11 @@ void Scene3d::draw() {
         // Cond 3: the distance from near clip plane to camera is 1.
         // According to the three conditions above, in camera coordinate, camera is set at (0, 0, 0).
         // Near clip plane is set at (0, 0, -1).
-        // Model's center is at (0, 0, -3), and the z value of model vertices ranges in [-2, -4].
+        // Model's center is at (0, 0, -3), and the z value of model vertices ranges in [-2, ...].
         // Thus all vertices of the model are visible for this perspective projection.
         mProjectionM = glm::perspective(glm::radians(mCamera->getViewFieldY()),
                                         float(width) / float(height),
-                                        0.1f, 10.f);
+                                        1.f, 10.f);
         // h = tan[(field of view in y) * 0.5] * near, bottom = -h
         // left = -aspect ratio * h, right = -left
         mShader->setMat4(shader::projection, mProjectionM);

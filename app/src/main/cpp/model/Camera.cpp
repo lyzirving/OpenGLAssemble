@@ -62,6 +62,10 @@ void Camera::updateViewMatrix() {
         mCamUp = glm::normalize(glm::cross(mCamRight, mCamSight));
         // calculate view matrix
         mViewM = glm::lookAt(mCamPosition, mCamPosition + mCamSight, mCamUp);
+        LogI("cam pos(%f, %f, %f)\ncam sight(%f, %f, %f)\ncam up(%f, %f, %f)",
+             mCamPosition.x, mCamPosition.y, mCamPosition.z,
+             mCamSight.x, mCamSight.y, mCamSight.z,
+             mCamUp.x, mCamUp.y, mCamUp.z);
         mChange.store(false);
     }
 }
