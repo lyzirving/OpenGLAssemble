@@ -17,7 +17,7 @@ Camera::Camera(glm::vec3 camPos, float pitch, float yaw) :
         mWorldUp(glm::vec3(0.f, 1.f, 0.f)),
         mCamSight(), mCamRight(), mCamUp(),
         mCamSightPitch(pitch), mCamSightYaw(yaw),
-        mViewFieldY(ZOOM),
+        mFov(DEFAULT_ZOOM),
         mViewM(1.f),
         mRightAxisSign(1.f),
         mChange(true) {}
@@ -27,8 +27,21 @@ const glm::mat4& Camera::getViewMatrix() {
     return mViewM;
 }
 
-float Camera::getViewFieldY() {
-    return mViewFieldY;
+float Camera::getFov() {
+    return mFov;
+}
+
+void Camera::adjustFov(float ratio) {
+    if (ratio > 1)
+        mFov -= ratio * 0.6f;
+    else
+        mFov += ratio * 2.f;
+
+    if (mFov > DEFAULT_ZOOM + ZOOM_SPAN)
+        mFov = DEFAULT_ZOOM + ZOOM_SPAN;
+    else if(mFov < DEFAULT_ZOOM - ZOOM_SPAN)
+        mFov = DEFAULT_ZOOM - ZOOM_SPAN;
+    mChange.store(true);
 }
 
 void Camera::liftUpVision(float ratio) {

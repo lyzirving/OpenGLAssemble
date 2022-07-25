@@ -10,7 +10,8 @@
 // default camera values
 const static float PITCH         =  0.0f;
 const static float YAW           = -90.0f;
-const static float ZOOM          =  45.0f;
+const static float DEFAULT_ZOOM  =  45.0f;
+const static float ZOOM_SPAN     =  35.0f;
 const static float CAMERA_LENS   =  3.f;
 
 class Camera {
@@ -19,8 +20,9 @@ public:
            float pitch = PITCH,
            float yaw = YAW);
 
+    void adjustFov(float ratio);
     const glm::mat4& getViewMatrix();
-    float getViewFieldY();
+    float getFov();
     void liftUpVision(float ratio);
     void moveCameraTo(float x, float y, float z);
 
@@ -67,7 +69,7 @@ private:
     /**
      * @brief field of view in y direction, and it's valued in degree
      */
-    float mViewFieldY;
+    float mFov;
 
     glm::mat4 mViewM;
     float mRightAxisSign;

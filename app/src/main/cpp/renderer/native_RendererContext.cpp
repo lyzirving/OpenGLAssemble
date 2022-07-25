@@ -84,6 +84,12 @@ static void nativeRemoveWindow(JNIEnv *env, jclass clazz, jlong address, jstring
     }
 }
 
+static void nativeAdjustFov(JNIEnv *env, jclass clazz, jlong address, jfloat ratio) {
+    auto *scene = reinterpret_cast<Scene3d *>(address);
+    if (scene)
+        scene->adjustFov(ratio);
+}
+
 static void nativeRotateModel(JNIEnv *env, jclass clazz, jlong address, jint angle) {
     auto *scene = reinterpret_cast<Scene3d *>(address);
     if (scene)
@@ -134,6 +140,11 @@ static JNINativeMethod scene3dMethods[] = {
                 "nLiftUpVision"  ,
                 "(JF)V",
                 (void *) nativeLiftUpVision
+        },
+        {
+                "nAdjustFov"  ,
+                "(JF)V",
+                (void *) nativeAdjustFov
         },
 };
 

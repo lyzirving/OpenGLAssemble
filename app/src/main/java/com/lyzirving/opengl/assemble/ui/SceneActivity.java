@@ -37,11 +37,13 @@ public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Ca
         mModelView = findViewById(R.id.view_3d);
         ImageView modelIcon = findViewById(R.id.iv_hor_icon);
         ImageView cameraIcon = findViewById(R.id.iv_ver_icon);
+        ImageView scaleIcon = findViewById(R.id.iv_scale_icon);
 
         mModelView.setMotionListener(this);
         surfaceView.getHolder().addCallback(this);
         modelIcon.setOnClickListener(this);
         cameraIcon.setOnClickListener(this);
+        scaleIcon.setOnClickListener(this);
 
         modelIcon.setImageResource(R.drawable.horizontal_selected);
     }
@@ -51,8 +53,8 @@ public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Ca
         switch (v.getId()) {
             case R.id.iv_hor_icon:
             {
-                if (mModelView.getMode() != MotionView3d.OpMode.MODE_MODEL) {
-                    mModelView.setMode(MotionView3d.OpMode.MODE_MODEL);
+                if (mModelView.getMode() != MotionView3d.OpMode.MODE_HORIZONTAL) {
+                    mModelView.setMode(MotionView3d.OpMode.MODE_HORIZONTAL);
                     cancelAllSelect();
                     ImageView view = (ImageView)(findViewById(R.id.iv_hor_icon));
                     view.setImageResource(R.drawable.horizontal_selected);
@@ -61,11 +63,21 @@ public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Ca
             }
             case R.id.iv_ver_icon:
             {
-                if (mModelView.getMode() != MotionView3d.OpMode.MODEL_CAMERA) {
-                    mModelView.setMode(MotionView3d.OpMode.MODEL_CAMERA);
+                if (mModelView.getMode() != MotionView3d.OpMode.MODE_VERTICAL) {
+                    mModelView.setMode(MotionView3d.OpMode.MODE_VERTICAL);
                     cancelAllSelect();
                     ImageView view = (ImageView)(findViewById(R.id.iv_ver_icon));
                     view.setImageResource(R.drawable.vertical_selected);
+                }
+                break;
+            }
+            case R.id.iv_scale_icon:
+            {
+                if (mModelView.getMode() != MotionView3d.OpMode.MODE_SCALE) {
+                    mModelView.setMode(MotionView3d.OpMode.MODE_SCALE);
+                    cancelAllSelect();
+                    ImageView view = (ImageView)(findViewById(R.id.iv_scale_icon));
+                    view.setImageResource(R.drawable.scale_selected);
                 }
                 break;
             }
@@ -111,11 +123,20 @@ public class SceneActivity extends AppCompatActivity implements SurfaceHolder.Ca
             mScene.liftUpVision(yRatio);
     }
 
+    @Override
+    public void onScale(float ratio) {
+        if (mScene != null)
+            mScene.adjustFov(ratio);
+    }
+
     private void cancelAllSelect() {
         ImageView view = (ImageView)(findViewById(R.id.iv_hor_icon));
         view.setImageResource(R.drawable.horizontal_normal);
 
         view = (ImageView)(findViewById(R.id.iv_ver_icon));
         view.setImageResource(R.drawable.vertical_normal);
+
+        view = (ImageView)(findViewById(R.id.iv_scale_icon));
+        view.setImageResource(R.drawable.scale_normal);
     }
 }

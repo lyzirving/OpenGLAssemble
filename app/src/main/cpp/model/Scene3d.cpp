@@ -68,7 +68,7 @@ void Scene3d::draw() {
         // According to the three conditions above, in camera coordinate, camera is set at (0, 0, 0).
         // Near clip plane is set at (0, 0, -0.1), and far clip plane is set at (0, 0, -10).
         // Model's center is at (0, 0, -3).
-        mProjectionM = glm::perspective(glm::radians(mCamera->getViewFieldY()),
+        mProjectionM = glm::perspective(glm::radians(mCamera->getFov()),
                                         float(width) / float(height),
                                         0.1f, 10.f);
         // h = tan[(field of view in y) * 0.5] * near, bottom = -h
@@ -102,6 +102,14 @@ bool Scene3d::onPrepare() {
 void Scene3d::onQuit() {
     mModel.reset();
     mShader.reset();
+}
+
+void Scene3d::adjustFov(float ratio) {
+    if (mCamera)
+    {
+        mCamera->adjustFov(ratio);
+        sendMessage(MessageId::MESSAGE_REQUEST_DRAW);
+    }
 }
 
 void Scene3d::liftUpVision(float ratio) {

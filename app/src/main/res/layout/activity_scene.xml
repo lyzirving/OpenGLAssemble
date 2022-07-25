@@ -42,7 +42,16 @@
         android:layout_height="@dimen/dp_icon_width"
         app:layout_constraintStart_toEndOf="@+id/iv_hor_icon"
         app:layout_constraintTop_toTopOf="@+id/iv_hor_icon"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="5dp"
         android:src="@drawable/vertical_normal"/>
+
+    <ImageView
+        android:id="@+id/iv_scale_icon"
+        android:layout_width="@dimen/dp_icon_width"
+        android:layout_height="@dimen/dp_icon_width"
+        app:layout_constraintStart_toEndOf="@+id/iv_ver_icon"
+        app:layout_constraintTop_toTopOf="@+id/iv_ver_icon"
+        android:layout_marginStart="5dp"
+        android:src="@drawable/scale_normal"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

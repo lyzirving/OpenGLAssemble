@@ -9,9 +9,9 @@ public class Scene3d extends RendererContext{
         super(address);
     }
 
-    public void rotateModel(int angle) {
+    public void adjustFov(float ratio) {
         if(mAddress != INVALID_ADDRESS)
-            nRotateModel(mAddress, angle);
+            nAdjustFov(mAddress, ratio);
     }
 
     public void liftUpVision(float ratio) {
@@ -19,6 +19,12 @@ public class Scene3d extends RendererContext{
             nLiftUpVision(mAddress, ratio);
     }
 
+    public void rotateModel(int angle) {
+        if(mAddress != INVALID_ADDRESS)
+            nRotateModel(mAddress, angle);
+    }
+
+    private static native void nAdjustFov(long address, float ratio);
     private static native void nLiftUpVision(long address, float ratio);
     private static native void nRotateModel(long address, int angle);
 }

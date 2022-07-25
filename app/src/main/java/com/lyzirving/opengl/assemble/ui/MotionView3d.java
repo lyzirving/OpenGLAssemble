@@ -1,28 +1,36 @@
 package com.lyzirving.opengl.assemble.ui;
 
 import android.content.Context;
+import android.graphics.ImageFormat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
+
+import com.lyzirving.opengl.assemble.utils.LogUtil;
 
 import androidx.annotation.Nullable;
 
 /**
  * @author lyzirving
  */
-public class MotionView3d extends View {
+public class MotionView3d extends View implements ScaleGestureDetector.OnScaleGestureListener {
     private static final String TAG = "MotionView3d";
     private static final float INVALID_POS = Float.MAX_VALUE;
 
     public enum OpMode {
         /**
-         * mode to control model
+         * mode to control horizontal rotation
          */
-        MODE_MODEL,
+        MODE_HORIZONTAL,
         /**
-         * mode to control camera
+         * mode to control vertical rotation
          */
-        MODEL_CAMERA
+        MODE_VERTICAL,
+        /**
+         * mode to control scale
+         */
+        MODE_SCALE
     }
 
     private OpMode mMode;
@@ -32,6 +40,8 @@ public class MotionView3d extends View {
 
     private float mModelMoveX, mModelMoveY;
     private float mCameraMoveX, mCameraMoveY;
+
+    private ScaleGestureDetector mScaleDetector;
 
     private MotionTrackListener mListener;
 
@@ -45,12 +55,41 @@ public class MotionView3d extends View {
 
     public MotionView3d(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mMode = OpMode.MODE_MODEL;
+        mMode = OpMode.MODE_HORIZONTAL;
+        mScaleDetector = new ScaleGestureDetector(context, this);
         reset();
     }
 
     @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mListener = null;
+    }
+
+    @Override
+    public boolean onScale(ScaleGestureDetector detector) {
+        LogUtil.logI(TAG, "onScale: " + detector.getScaleFactor());
+        if (mListener != null)
+            mListener.onScale(detector.getScaleFactor());
+        return false;
+    }
+
+    @Override
+    public boolean onScaleBegin(ScaleGestureDetector detector) {
+        LogUtil.logI(TAG, "onScaleBegin");
+        return true;
+    }
+
+    @Override
+    public void onScaleEnd(ScaleGestureDetector detector) {
+        LogUtil.logI(TAG, "onScaleEnd");
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (mMode == OpMode.MODE_SCALE && mScaleDetector.onTouchEvent(event))
+            return true;
+
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
@@ -73,12 +112,6 @@ public class MotionView3d extends View {
             }
         }
         return true;
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        mListener = null;
     }
 
     public OpMode getMode() {
@@ -107,7 +140,7 @@ public class MotionView3d extends View {
         float deltaY = event.getY() - mLastY;
 
         switch (mMode) {
-            case MODE_MODEL:
+            case MODE_HORIZONTAL:
             {
                 mModelMoveX += deltaX;
                 mModelMoveY += deltaY;
@@ -124,7 +157,7 @@ public class MotionView3d extends View {
 
                 break;
             }
-            case MODEL_CAMERA:
+            case MODE_VERTICAL:
             {
                 mCameraMoveX += deltaX;
                 mCameraMoveY += deltaY;
@@ -156,14 +189,14 @@ public class MotionView3d extends View {
             float limitX = getMeasuredWidth() * 0.5f;
             float limitY = getMeasuredHeight() * 0.5f;
             switch (mMode) {
-                case MODE_MODEL:
+                case MODE_HORIZONTAL:
                 {
                     mListener.onModelMove(mModelMoveX, mModelMoveY,
                             mModelMoveX / limitX,
                             mModelMoveY / limitY);
                     break;
                 }
-                case MODEL_CAMERA:
+                case MODE_VERTICAL:
                 {
                     mListener.onCameraMove(mCameraMoveX, mCameraMoveY,
                             mCameraMoveX / limitX,
@@ -188,5 +221,6 @@ public class MotionView3d extends View {
     public interface MotionTrackListener {
         void onModelMove(float xDist, float yDist, float xRatio, float yRatio);
         void onCameraMove(float xDist, float yDist, float xRatio, float yRatio);
+        void onScale(float ratio);
     }
 }

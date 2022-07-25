@@ -18,6 +18,7 @@ public:
 
     virtual void draw() override;
 
+    void adjustFov(float ratio);
     void liftUpVision(float ratio);
     void rotateModel(int angle);
 
