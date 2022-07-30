@@ -8,6 +8,8 @@ namespace shader {
     static constexpr const char* const model      = "uModel";
     static constexpr const char* const view       = "uView";
     static constexpr const char* const projection = "uProjection";
+    static constexpr const char* const lightColor = "uLightColor";
+    static constexpr const char* const aCoefficient = "uAmbientCoefficient";
 }
 
 namespace tex {

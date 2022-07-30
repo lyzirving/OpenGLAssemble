@@ -45,6 +45,11 @@ void Shader::use(bool active) {
 
 bool Shader::valid() { return mProgram > 0; }
 
+void Shader::setFloat(const std::string &name, float value) const {
+    GLint ind = glGetUniformLocation(mProgram, name.c_str());
+    glUniform1f(ind, value);
+}
+
 void Shader::setInt(const std::string &name, int value) const {
     GLint ind = glGetUniformLocation(mProgram, name.c_str());
     glUniform1i(ind, value);
@@ -53,5 +58,10 @@ void Shader::setInt(const std::string &name, int value) const {
 void Shader::setMat4(const std::string &name, const glm::mat4x4 &mat) const {
     GLint ind = glGetUniformLocation(mProgram, name.c_str());
     glUniformMatrix4fv(ind, 1, GL_FALSE, glm::value_ptr(mat));
+}
+
+void Shader::setVec3(const std::string &name, const glm::vec3 &vec3) const {
+    GLint ind = glGetUniformLocation(mProgram, name.c_str());
+    glUniform3f(ind, vec3.x, vec3.y, vec3.z);
 }
 

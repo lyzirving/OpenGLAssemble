@@ -24,7 +24,9 @@ Scene3d::Scene3d(const char *name) : RendererContext(name),
                                      mCamera(new Camera),
                                      mModel(nullptr),
                                      mShader(nullptr),
-                                     mProjectionM(1.f) {}
+                                     mProjectionM(1.f),
+                                     mLightColor(1.f, 1.f, 1.f),
+                                     mAmbientCoefficient(0.1f) {}
 
 Scene3d::~Scene3d() {
     mCamera.reset();
@@ -38,7 +40,7 @@ void Scene3d::draw() {
         std::shared_ptr<WindowSurface> window = it->second;
         window->makeCurrent();
 
-        glClearColor(float(1), float(1), float(1), float(1));
+        glClearColor(float(0), float(0), float(0), float(1));
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
         glEnable(GL_DEPTH_TEST);
@@ -74,6 +76,9 @@ void Scene3d::draw() {
         // h = tan[(field of view in y) * 0.5] * near, bottom = -h
         // left = -aspect ratio * h, right = -left
         mShader->setMat4(shader::projection, mProjectionM);
+
+        mShader->setFloat(shader::aCoefficient, mAmbientCoefficient);
+        mShader->setVec3(shader::lightColor, mLightColor);
 
         mModel->draw(mShader);
 

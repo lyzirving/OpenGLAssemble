@@ -32,6 +32,9 @@ private:
     std::shared_ptr<Shader> mShader;
 
     glm::mat4x4 mProjectionM;
+
+    glm::vec3 mLightColor;
+    float mAmbientCoefficient;
 };
 
 #endif //OPENGLASSEMBLE_SCENE3D_H
