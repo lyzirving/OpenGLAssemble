@@ -21,12 +21,12 @@
 #define LOCAL_TAG "Scene3d"
 
 Scene3d::Scene3d(const char *name) : RendererContext(name),
+                                     mLight(),
                                      mCamera(new Camera),
                                      mModel(nullptr),
                                      mShader(nullptr),
                                      mProjectionM(1.f),
-                                     mNormalM(1.f),
-                                     mLight() {}
+                                     mNormalM(1.f){}
 
 Scene3d::~Scene3d() {
     mCamera.reset();

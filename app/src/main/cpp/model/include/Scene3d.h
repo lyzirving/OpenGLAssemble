@@ -42,6 +42,7 @@ protected:
     void computeNormalM(const glm::mat4 &inputModelM, glm::mat3 &out);
 
 private:
+    Light mLight;
     std::shared_ptr<Camera> mCamera;
     std::shared_ptr<Model> mModel;
     std::shared_ptr<Shader> mShader;
@@ -61,8 +62,6 @@ private:
      *  @author: lyzirving
      */
     glm::mat3 mNormalM;
-
-    Light mLight;
 };
 
 #endif //OPENGLASSEMBLE_SCENE3D_H
