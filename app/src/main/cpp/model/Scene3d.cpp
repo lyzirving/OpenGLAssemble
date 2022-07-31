@@ -26,9 +26,7 @@ Scene3d::Scene3d(const char *name) : RendererContext(name),
                                      mShader(nullptr),
                                      mProjectionM(1.f),
                                      mNormalM(1.f),
-                                     mLightColor(1.f, 1.f, 1.f),
-                                     mLightWorldPos(-1.f, 1.f, 0.f),
-                                     mAmbientCoefficient(0.1f) {}
+                                     mLight() {}
 
 Scene3d::~Scene3d() {
     mCamera.reset();
@@ -84,12 +82,21 @@ void Scene3d::draw() {
         // left = -aspect ratio * h, right = -left
         mShader->setMat4(shader::projection, mProjectionM);
 
-        mShader->setFloat(shader::aCoefficient, mAmbientCoefficient);
-        mShader->setVec3(shader::lightColor, mLightColor);
         const glm::vec3 &maxModelPos = mModel->getMaxPos();
-        mLightWorldPos.x = std::abs(maxModelPos.x) * (-2.f);
-        mLightWorldPos.y = std::abs(maxModelPos.y) * 2.f;
-        mShader->setVec3(shader::lightWorldPos, mLightWorldPos);
+        mLight.position.x = std::abs(maxModelPos.x) * (-2.f);
+        mLight.position.y = std::abs(maxModelPos.y) * 2.f;
+        mShader->setVec3(shader::lightPos, mLight.position);
+
+        mShader->setVec3(shader::lightAmbientRgb, mLight.ambientRgb);
+        mShader->setVec3(shader::lightDiffuseRgb, mLight.diffuseRgb);
+        mShader->setVec3(shader::lightSpecularRgb, mLight.specularRgb);
+
+        mShader->setFloat(shader::lightKa, mLight.Ka);
+        mShader->setFloat(shader::lightKd, mLight.Kd);
+        mShader->setFloat(shader::lightKs, mLight.Ks);
+
+        mShader->setFloat(shader::lightShininess, mLight.shininess);
+
         mShader->setVec3(shader::cameraPos, mCamera->getCameraPosition());
 
         mModel->draw(mShader);

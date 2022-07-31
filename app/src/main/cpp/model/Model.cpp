@@ -27,8 +27,6 @@ Model::Model(const char *path) : mMeshes(), mDirectory(),
                                  mRotateM(1.f),
                                  mMaxPos(0.f), mMinPos(0.f),
                                  mMaxPosFitW(0.f), mMinPosFitW(0.f),
-                                 mDiffuseCoefficient(1.f),
-                                 mSpecularCoefficient(1.f),
                                  mChange(false) {
     loadModel(path);
 }
@@ -77,8 +75,6 @@ void Model::computeCentralM() {
 }
 
 void Model::draw(const std::shared_ptr<Shader> &shader) {
-    shader->setVec3(shader::dCoefficient, mDiffuseCoefficient);
-    shader->setVec3(shader::sCoefficient, mSpecularCoefficient);
     for (auto &mesh : mMeshes)
         mesh.draw(shader);
 }
@@ -215,24 +211,9 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
                                                                  tex::specular);
             textures.insert(textures.end(), specular.begin(), specular.end());
 
-            aiReturn ret{aiReturn::aiReturn_SUCCESS};
+            /*aiReturn ret{aiReturn::aiReturn_SUCCESS};
             aiColor3D color;
-            ret = material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-            if(ret == aiReturn::aiReturn_SUCCESS)
-            {
-                LogI("get diffuse coefficient(%f, %f, %f) from mtl", color.r, color.g, color.b);
-                mDiffuseCoefficient.x = color.r;
-                mDiffuseCoefficient.y = color.g;
-                mDiffuseCoefficient.z = color.b;
-            }
-            ret = material->Get(AI_MATKEY_COLOR_SPECULAR, color);
-            if(ret == aiReturn::aiReturn_SUCCESS)
-            {
-                LogI("get specular coefficient(%f, %f, %f) from mtl", color.r, color.g, color.b);
-                mSpecularCoefficient.x = color.r;
-                mSpecularCoefficient.y = color.g;
-                mSpecularCoefficient.z = color.b;
-            }
+            ret = material->Get(AI_MATKEY_COLOR_DIFFUSE, color);*/
         }
     }
     LogI("loaded texture count[%ld]", static_cast<unsigned long>(textures.size()));

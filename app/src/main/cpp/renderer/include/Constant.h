@@ -8,13 +8,17 @@ namespace shader {
     static constexpr const char* const model      = "uModel";
     static constexpr const char* const view       = "uView";
     static constexpr const char* const projection = "uProjection";
-    static constexpr const char* const lightColor = "uLightColor";
-    static constexpr const char* const lightWorldPos = "uLightWorldPos";
-    static constexpr const char* const aCoefficient = "uAmbientCoefficient";
-    static constexpr const char* const dCoefficient = "uDiffuseCoefficient";
-    static constexpr const char* const sCoefficient = "uSpecularCoefficient";
     static constexpr const char* const normalM = "uNormalMat3";
     static constexpr const char* const cameraPos = "uCameraPos";
+
+    static constexpr const char* const lightPos = "uLight.position";
+    static constexpr const char* const lightAmbientRgb = "uLight.ambientRgb";
+    static constexpr const char* const lightDiffuseRgb = "uLight.diffuseRgb";
+    static constexpr const char* const lightSpecularRgb = "uLight.specularRgb";
+    static constexpr const char* const lightKa = "uLight.Ka";
+    static constexpr const char* const lightKd = "uLight.Kd";
+    static constexpr const char* const lightKs = "uLight.Ks";
+    static constexpr const char* const lightShininess = "uLight.shininess";
 }
 
 namespace tex {

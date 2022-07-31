@@ -11,6 +11,19 @@ class Camera;
 class Model;
 class Shader;
 
+struct Light {
+    glm::vec3 position;
+
+    glm::vec3 ambientRgb, diffuseRgb, specularRgb;
+    float Ka, Kd, Ks;
+    float shininess;
+
+    Light() : position(0.f),
+              ambientRgb(1.f), diffuseRgb(1.f), specularRgb(1.f),
+              Ka(0.1f), Kd(0.5f), Ks(1.f),
+              shininess(64.f) {}
+};
+
 class Scene3d : public RendererContext {
 public:
     Scene3d(const char *name);
@@ -49,9 +62,7 @@ private:
      */
     glm::mat3 mNormalM;
 
-    glm::vec3 mLightColor;
-    glm::vec3 mLightWorldPos;
-    float mAmbientCoefficient;
+    Light mLight;
 };
 
 #endif //OPENGLASSEMBLE_SCENE3D_H
