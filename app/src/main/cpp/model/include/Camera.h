@@ -21,6 +21,7 @@ public:
            float yaw = YAW);
 
     void adjustFov(float ratio);
+    const glm::vec3& getCameraPosition();
     const glm::mat4& getViewMatrix();
     float getFov();
     void liftUpVision(float ratio);

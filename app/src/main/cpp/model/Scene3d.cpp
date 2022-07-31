@@ -90,6 +90,7 @@ void Scene3d::draw() {
         mLightWorldPos.x = std::abs(maxModelPos.x) * (-2.f);
         mLightWorldPos.y = std::abs(maxModelPos.y) * 2.f;
         mShader->setVec3(shader::lightWorldPos, mLightWorldPos);
+        mShader->setVec3(shader::cameraPos, mCamera->getCameraPosition());
 
         mModel->draw(mShader);
 

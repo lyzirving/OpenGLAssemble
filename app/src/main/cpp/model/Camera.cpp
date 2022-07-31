@@ -22,6 +22,9 @@ Camera::Camera(glm::vec3 camPos, float pitch, float yaw) :
         mRightAxisSign(1.f),
         mChange(true) {}
 
+const glm::vec3 &Camera::getCameraPosition() {
+    return mCamPosition;
+}
 const glm::mat4& Camera::getViewMatrix() {
     updateViewMatrix();
     return mViewM;

@@ -12,7 +12,9 @@ namespace shader {
     static constexpr const char* const lightWorldPos = "uLightWorldPos";
     static constexpr const char* const aCoefficient = "uAmbientCoefficient";
     static constexpr const char* const dCoefficient = "uDiffuseCoefficient";
+    static constexpr const char* const sCoefficient = "uSpecularCoefficient";
     static constexpr const char* const normalM = "uNormalMat3";
+    static constexpr const char* const cameraPos = "uCameraPos";
 }
 
 namespace tex {
