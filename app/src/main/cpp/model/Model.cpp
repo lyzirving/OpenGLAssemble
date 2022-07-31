@@ -27,6 +27,7 @@ Model::Model(const char *path) : mMeshes(), mDirectory(),
                                  mRotateM(1.f),
                                  mMaxPos(0.f), mMinPos(0.f),
                                  mMaxPosFitW(0.f), mMinPosFitW(0.f),
+                                 mDiffuseCoefficient(1.f),
                                  mChange(false) {
     loadModel(path);
 }
@@ -75,6 +76,7 @@ void Model::computeCentralM() {
 }
 
 void Model::draw(const std::shared_ptr<Shader> &shader) {
+    shader->setVec3(shader::dCoefficient, mDiffuseCoefficient);
     for (auto &mesh : mMeshes)
         mesh.draw(shader);
 }
@@ -201,20 +203,35 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     if(mesh->mMaterialIndex >= 0) {
         aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
         if(material != nullptr) {
-            std::vector<Texture> diffuse = loadMaterialTextures(material, aiTextureType_DIFFUSE,
+            std::vector<Texture> diffuse = loadMaterialTextures(material,
+                                                                aiTextureType_DIFFUSE,
                                                                 tex::diffuse);
             textures.insert(textures.end(), diffuse.begin(), diffuse.end());
 
-            std::vector<Texture> specular = loadMaterialTextures(material, aiTextureType_SPECULAR,
+            std::vector<Texture> specular = loadMaterialTextures(material,
+                                                                 aiTextureType_SPECULAR,
                                                                  tex::specular);
             textures.insert(textures.end(), specular.begin(), specular.end());
+
+            aiReturn ret{aiReturn::aiReturn_SUCCESS};
+            aiColor3D color;
+            ret = material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+            if(ret == aiReturn::aiReturn_SUCCESS)
+            {
+                LogI("get diffuse coefficient(%f, %f, %f) from mtl", color.r, color.g, color.b);
+                mDiffuseCoefficient.x = color.r;
+                mDiffuseCoefficient.y = color.g;
+                mDiffuseCoefficient.z = color.b;
+            }
         }
     }
+    LogI("loaded texture count[%ld]", static_cast<unsigned long>(textures.size()));
 
     Mesh result{};
     result.mVertices = vertices;
     result.mIndices = indices;
     result.mTextures = textures;
+
     result.setupMesh();
 
     return result;

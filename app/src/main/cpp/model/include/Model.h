@@ -51,6 +51,7 @@ private:
     glm::mat4 mModelM;
     glm::mat4 mTransM, mRotateM;
     glm::vec3 mMaxPos, mMinPos, mMaxPosFitW, mMinPosFitW;
+    glm::vec3 mDiffuseCoefficient;
     std::atomic<bool> mChange;
 };
 

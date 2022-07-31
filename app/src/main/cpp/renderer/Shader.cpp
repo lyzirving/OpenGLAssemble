@@ -55,7 +55,12 @@ void Shader::setInt(const std::string &name, int value) const {
     glUniform1i(ind, value);
 }
 
-void Shader::setMat4(const std::string &name, const glm::mat4x4 &mat) const {
+void Shader::setMat3(const std::string &name, const glm::mat3 &mat) const {
+    GLint ind = glGetUniformLocation(mProgram, name.c_str());
+    glUniformMatrix3fv(ind, 1, GL_FALSE, glm::value_ptr(mat));
+}
+
+void Shader::setMat4(const std::string &name, const glm::mat4 &mat) const {
     GLint ind = glGetUniformLocation(mProgram, name.c_str());
     glUniformMatrix4fv(ind, 1, GL_FALSE, glm::value_ptr(mat));
 }

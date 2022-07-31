@@ -25,7 +25,9 @@ Scene3d::Scene3d(const char *name) : RendererContext(name),
                                      mModel(nullptr),
                                      mShader(nullptr),
                                      mProjectionM(1.f),
+                                     mNormalM(1.f),
                                      mLightColor(1.f, 1.f, 1.f),
+                                     mLightWorldPos(-1.f, 1.f, 0.f),
                                      mAmbientCoefficient(0.1f) {}
 
 Scene3d::~Scene3d() {
@@ -55,7 +57,12 @@ void Scene3d::draw() {
 
         mShader->use(true);
 
-        mShader->setMat4(shader::model, mModel->getModelMatrix());
+        const glm::mat4& modelM = mModel->getModelMatrix();
+        mShader->setMat4(shader::model, modelM);
+
+        computeNormalM(modelM, mNormalM);
+        mShader->setMat3(shader::normalM, mNormalM);
+
         // View matrix specifies camera's position and sight direction in world coordinate,
         // When all vertices apply view matrix, they are transformed into camera coordinate.
         // In camera coordinate, camera is set at (0, 0, 0), and sight direction is parallel to (0, 0, -1).
@@ -79,6 +86,10 @@ void Scene3d::draw() {
 
         mShader->setFloat(shader::aCoefficient, mAmbientCoefficient);
         mShader->setVec3(shader::lightColor, mLightColor);
+        const glm::vec3 &maxModelPos = mModel->getMaxPos();
+        mLightWorldPos.x = std::abs(maxModelPos.x) * (-2.f);
+        mLightWorldPos.y = std::abs(maxModelPos.y) * 2.f;
+        mShader->setVec3(shader::lightWorldPos, mLightWorldPos);
 
         mModel->draw(mShader);
 
@@ -115,6 +126,24 @@ void Scene3d::adjustFov(float ratio) {
         mCamera->adjustFov(ratio);
         sendMessage(MessageId::MESSAGE_REQUEST_DRAW);
     }
+}
+
+void Scene3d::computeNormalM(const glm::mat4 &inputModelM, glm::mat3 &out) {
+    glm::mat4 tmpMat4(inputModelM);
+    tmpMat4 = glm::inverse(tmpMat4);
+    tmpMat4 = glm::transpose(tmpMat4);
+
+    out[0].x = tmpMat4[0].x;
+    out[0].y = tmpMat4[0].y;
+    out[0].z = tmpMat4[0].z;
+
+    out[1].x = tmpMat4[1].x;
+    out[1].y = tmpMat4[1].y;
+    out[1].z = tmpMat4[1].z;
+
+    out[2].x = tmpMat4[2].x;
+    out[2].y = tmpMat4[2].y;
+    out[2].z = tmpMat4[2].z;
 }
 
 void Scene3d::liftUpVision(float ratio) {

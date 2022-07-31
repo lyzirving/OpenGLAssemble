@@ -68,7 +68,6 @@ public class MotionView3d extends View implements ScaleGestureDetector.OnScaleGe
 
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
-        LogUtil.logI(TAG, "onScale: " + detector.getScaleFactor());
         if (mListener != null)
             mListener.onScale(detector.getScaleFactor());
         return false;
@@ -76,14 +75,11 @@ public class MotionView3d extends View implements ScaleGestureDetector.OnScaleGe
 
     @Override
     public boolean onScaleBegin(ScaleGestureDetector detector) {
-        LogUtil.logI(TAG, "onScaleBegin");
         return true;
     }
 
     @Override
-    public void onScaleEnd(ScaleGestureDetector detector) {
-        LogUtil.logI(TAG, "onScaleEnd");
-    }
+    public void onScaleEnd(ScaleGestureDetector detector) { }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
