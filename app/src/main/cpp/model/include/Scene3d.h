@@ -14,13 +14,19 @@ class Shader;
 struct Light {
     glm::vec3 position;
 
-    glm::vec3 ambientRgb, diffuseRgb, specularRgb;
-    float Ka, Kd, Ks;
+    /**
+     * @brief: Ka, Kd and Ks is the color of ambient, diffuse and specular
+     */
+    glm::vec3 Ka, Kd, Ks;
+    /**
+     * @brief: Ka, Kd and Ks is the intensity of ambient, diffuse and specular
+     */
+    float Ia, Id, Is;
     float shininess;
 
     Light() : position(0.f),
-              ambientRgb(1.f), diffuseRgb(1.f), specularRgb(1.f),
-              Ka(0.1f), Kd(0.5f), Ks(1.f),
+              Ka(1.f), Kd(1.f), Ks(1.f),
+              Ia(0.1f), Id(0.5f), Is(1.f),
               shininess(64.f) {}
 };
 

@@ -87,13 +87,13 @@ void Scene3d::draw() {
         mLight.position.y = std::abs(maxModelPos.y) * 2.f;
         mShader->setVec3(shader::lightPos, mLight.position);
 
-        mShader->setVec3(shader::lightAmbientRgb, mLight.ambientRgb);
-        mShader->setVec3(shader::lightDiffuseRgb, mLight.diffuseRgb);
-        mShader->setVec3(shader::lightSpecularRgb, mLight.specularRgb);
+        mShader->setVec3(shader::lightKa, mLight.Ka);
+        mShader->setVec3(shader::lightKd, mLight.Kd);
+        mShader->setVec3(shader::lightKs, mLight.Ks);
 
-        mShader->setFloat(shader::lightKa, mLight.Ka);
-        mShader->setFloat(shader::lightKd, mLight.Kd);
-        mShader->setFloat(shader::lightKs, mLight.Ks);
+        mShader->setFloat(shader::lightIa, mLight.Ia);
+        mShader->setFloat(shader::lightId, mLight.Id);
+        mShader->setFloat(shader::lightIs, mLight.Is);
 
         mShader->setFloat(shader::lightShininess, mLight.shininess);
 

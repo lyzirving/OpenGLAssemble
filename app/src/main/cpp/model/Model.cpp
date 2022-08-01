@@ -162,12 +162,11 @@ void Model::processNode(aiNode *node, const aiScene *scene) {
 }
 
 Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
-    std::vector<Texture> textures;
     LogI("mesh' vertices num(%u), mesh's face num(%u), mesh has material (%s)",
          mesh->mNumVertices, mesh->mNumFaces,
          (mesh->mMaterialIndex >= 0) ? "true" : "false");
+
+    Mesh result{};
 
     for(unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
@@ -185,7 +184,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
             vertex.texCoords.y = mesh->mTextureCoords[0][i].y;
         }
 
-        vertices.push_back(vertex);
+        result.mVertices.push_back(vertex);
     }
 
     // process the indices
@@ -194,7 +193,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     for(unsigned int i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
         for (int j = 0; j < face.mNumIndices; ++j)
-            indices.push_back(face.mIndices[j]);
+            result.mIndices.push_back(face.mIndices[j]);
     }
 
     // every mesh only has one Material
@@ -204,25 +203,29 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
             std::vector<Texture> diffuse = loadMaterialTextures(material,
                                                                 aiTextureType_DIFFUSE,
                                                                 tex::diffuse);
-            textures.insert(textures.end(), diffuse.begin(), diffuse.end());
+            result.mTextures.insert(result.mTextures.end(), diffuse.begin(), diffuse.end());
 
             std::vector<Texture> specular = loadMaterialTextures(material,
                                                                  aiTextureType_SPECULAR,
                                                                  tex::specular);
-            textures.insert(textures.end(), specular.begin(), specular.end());
+            result.mTextures.insert(result.mTextures.end(), specular.begin(), specular.end());
 
-            /*aiReturn ret{aiReturn::aiReturn_SUCCESS};
+            aiReturn ret{aiReturn::aiReturn_SUCCESS};
             aiColor3D color;
-            ret = material->Get(AI_MATKEY_COLOR_DIFFUSE, color);*/
+            ret = material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+            if(ret == aiReturn::aiReturn_SUCCESS)
+                result.mMaterialKd = glm::vec3(color.r, color.g, color.b);
+
+            ret = material->Get(AI_MATKEY_COLOR_SPECULAR, color);
+            if(ret == aiReturn::aiReturn_SUCCESS)
+                result.mMaterialKs = glm::vec3(color.r, color.g, color.b);
+
+            ret = material->Get(AI_MATKEY_COLOR_AMBIENT, color);
+            if(ret == aiReturn::aiReturn_SUCCESS)
+                result.mMaterialKa = glm::vec3(color.r, color.g, color.b);
         }
     }
-    LogI("loaded texture count[%ld]", static_cast<unsigned long>(textures.size()));
-
-    Mesh result{};
-    result.mVertices = vertices;
-    result.mIndices = indices;
-    result.mTextures = textures;
-
+    LogI("loaded texture count[%ld]", static_cast<unsigned long>(result.mTextures.size()));
     result.setupMesh();
 
     return result;

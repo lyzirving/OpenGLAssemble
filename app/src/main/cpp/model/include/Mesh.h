@@ -77,6 +77,9 @@ public:
     std::vector<Vertex> mVertices;
     std::vector<unsigned int> mIndices;
     std::vector<Texture> mTextures;
+    glm::vec3 mMaterialKa;
+    glm::vec3 mMaterialKd;
+    glm::vec3 mMaterialKs;
 
     Mesh();
     Mesh(Mesh &&other) noexcept;

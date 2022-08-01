@@ -20,6 +20,7 @@
 #define LOCAL_TAG "Mesh"
 
 Mesh::Mesh() : mVertices(), mIndices(), mTextures(),
+               mMaterialKa(0.f), mMaterialKd(0.f), mMaterialKs(0.f),
                mVao(0), mVbo(0), mEbo(0) {}
 
 Mesh::Mesh(Mesh &&other) noexcept {
@@ -27,6 +28,9 @@ Mesh::Mesh(Mesh &&other) noexcept {
         this->mVertices = std::move(other.mVertices);
         this->mIndices = std::move(other.mIndices);
         this->mTextures = std::move(other.mTextures);
+        this->mMaterialKa = other.mMaterialKa;
+        this->mMaterialKd = other.mMaterialKd;
+        this->mMaterialKs = other.mMaterialKs;
         this->mVao = other.mVao;
         this->mVbo = other.mVbo;
         this->mEbo = other.mEbo;
@@ -41,6 +45,9 @@ Mesh &Mesh::operator=(Mesh &&other) noexcept {
         this->mVertices = std::move(other.mVertices);
         this->mIndices = std::move(other.mIndices);
         this->mTextures = std::move(other.mTextures);
+        this->mMaterialKa = other.mMaterialKa;
+        this->mMaterialKd = other.mMaterialKd;
+        this->mMaterialKs = other.mMaterialKs;
         this->mVao = other.mVao;
         this->mVbo = other.mVbo;
         this->mEbo = other.mEbo;
@@ -48,6 +55,7 @@ Mesh &Mesh::operator=(Mesh &&other) noexcept {
         other.mVbo = 0;
         other.mEbo = 0;
     }
+    return *this;
 }
 
 Mesh::~Mesh() {
@@ -55,30 +63,22 @@ Mesh::~Mesh() {
 }
 
 void Mesh::draw(const std::shared_ptr<Shader> &shader) {
-    unsigned int diffuseNr = 1;
-    unsigned int specularNr = 1;
-    bool match{false};
     int index{0};
     for(auto &texture : mTextures) {
-        std::string number;
         std::string name = texture.type;
         if (name == tex::diffuse) {
-            number = std::to_string(diffuseNr++);
-            match = true;
-        } else if (name == tex::specular) {
-            number = std::to_string(specularNr++);
-            match = true;
-        }
-        if(match) {
             glActiveTexture(GL_TEXTURE0 + index);
             glBindTexture(GL_TEXTURE_2D, texture.textureId);
-            shader->setInt(name + number, index);
-            GlHelper::checkGlError("bind texture", "Mesh");
+            shader->setInt(name, index);
+            index++;
+        } else if (name == tex::specular) {
+            glActiveTexture(GL_TEXTURE0 + index);
+            glBindTexture(GL_TEXTURE_2D, texture.textureId);
+            shader->setInt(name, index);
             index++;
         } else {
             LogE("texture type(%s) does not match", name.c_str());
         }
-        match = false;
     }
     glBindVertexArray(mVao);
     glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, nullptr);
